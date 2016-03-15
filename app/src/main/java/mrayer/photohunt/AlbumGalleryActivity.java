@@ -1,12 +1,24 @@
 package mrayer.photohunt;
 
+import android.app.ListActivity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 
-public class AlbumGalleryActivity extends AppCompatActivity {
+import java.util.ArrayList;
+
+/* Aila's TODO:
+UI includes the ActivityBar and then just a list
+Need to populate list from DB
+*/
+
+public class AlbumGalleryActivity extends ListActivity {
+
+    private ListView view;
+    private ArrayList<String> photoAlbums;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

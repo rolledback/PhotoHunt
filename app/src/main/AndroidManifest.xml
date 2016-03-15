@@ -18,6 +18,10 @@
         <activity
             android:name=".CreateNewPhotoHuntActivity"
             android:label="@string/title_activity_create_new_photo_hunt"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".SetChangeLocationActivity"
+            android:label="@string/title_activity_set_change_location"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
