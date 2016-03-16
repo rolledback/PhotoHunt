@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -34,6 +35,8 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_new_photo_hunt);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
@@ -55,10 +58,27 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             }
         });
 
+        cancelButton = (Button) findViewById(R.id.cancel_button);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                return;
+            }
+        });
+
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         imageAdapter = new ImageAdapter(this);
         viewPager.setAdapter(imageAdapter);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
