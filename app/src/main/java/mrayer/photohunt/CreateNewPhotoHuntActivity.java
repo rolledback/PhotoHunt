@@ -37,6 +37,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Create New Photo Hunt");
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +107,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 galImages.add(picturePath);
                 imageAdapter.setGalImages((galImages));
                 imageAdapter.notifyDataSetChanged();
+                viewPager.setCurrentItem(galImages.size() - 1);
             }
         }
     }
