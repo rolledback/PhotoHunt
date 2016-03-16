@@ -15,7 +15,8 @@ UI includes the ActivityBar and then just a list
 Need to populate list from DB
 */
 
-public class AlbumGalleryActivity extends ListActivity {
+// CJ: Changed this to AppCompatActivity because ListActivity made the app not run
+public class AlbumGalleryActivity extends AppCompatActivity {
 
     private ListView view;
     private ArrayList<String> photoAlbums;

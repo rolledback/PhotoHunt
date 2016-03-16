@@ -5,25 +5,27 @@ package mrayer.photohunt;
  */
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import java.io.File;
+import java.util.ArrayList;
+
 public class ImageAdapter extends PagerAdapter {
     Context context;
-    private int[] GalImages = new int[] {
-            R.drawable.maincampus_hero,
-            R.drawable.tower_red_sky
-    };
+    private ArrayList<String> galImages = new ArrayList<String>();
 
     ImageAdapter(Context context){
         this.context=context;
     }
     @Override
     public int getCount() {
-        return GalImages.length;
+        return galImages.size();
     }
 
     @Override
@@ -36,8 +38,16 @@ public class ImageAdapter extends PagerAdapter {
         ImageView imageView = new ImageView(context);
         int padding = context.getResources().getDimensionPixelSize(R.dimen.fab_margin);
         imageView.setPadding(padding, padding, padding, padding);
-        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        imageView.setImageResource(GalImages[position]);
+        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
+        String picturePath = galImages.get(position);
+        File file = new File(picturePath);
+        Uri uri = Uri.fromFile(file);
+        imageView.setImageURI(uri);
+        int height = (int) context.getResources().getDimension(R.dimen.create_new_photo_hunt_image_size);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(context.getResources().getDisplayMetrics().widthPixels, height);
+        imageView.setLayoutParams(params);
+
         ((ViewPager) container).addView(imageView, 0);
         return imageView;
     }
@@ -45,5 +55,13 @@ public class ImageAdapter extends PagerAdapter {
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         ((ViewPager) container).removeView((ImageView) object);
+    }
+
+    public ArrayList<String> getGalImages() {
+        return galImages;
+    }
+
+    public void setGalImages(ArrayList<String> newGalImages) {
+        galImages = newGalImages;
     }
 }

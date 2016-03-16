@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="create_new_photo_hunt_image_size">300dp</dimen>
+</resources>
