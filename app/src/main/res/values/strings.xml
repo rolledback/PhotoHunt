@@ -4,7 +4,7 @@
 
     <string name="photo_hunt_type_prompt">Type of Photo Hunt</string>
     <string-array name="photo_hunt_type">
-        <item>Scavengar</item>
+        <item>Scavenger</item>
         <item>Tour</item>
     </string-array>
     <string name="title_activity_set_change_location">SetChangeLocationActivity</string>

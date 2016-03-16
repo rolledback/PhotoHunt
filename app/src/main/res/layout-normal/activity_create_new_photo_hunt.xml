@@ -57,7 +57,6 @@
                         android:id="@+id/input_author"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textEmailAddress"
                         android:hint="Author Name" />
                 </android.support.design.widget.TextInputLayout>
 
@@ -68,16 +67,15 @@
                     android:layout_height="wrap_content">
 
                     <EditText
-                        android:id="@+id/input_password"
+                        android:id="@+id/input_location"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textPassword"
                         android:hint="Location" />
                 </android.support.design.widget.TextInputLayout>
             </RelativeLayout>
 
             <Spinner
-                android:id="@+id/spinner_type_of_photo_hunt"
+                android:id="@+id/spinner_type"
                 android:layout_below="@+id/text_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

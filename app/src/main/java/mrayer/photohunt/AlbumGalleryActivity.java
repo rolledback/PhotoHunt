@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.parse.Parse;
+import com.parse.ParseObject;
+
 import java.util.ArrayList;
 
 /* Aila's TODO:
@@ -25,6 +28,10 @@ public class AlbumGalleryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_gallery);
+
+        // connect to Parse
+        Parse.enableLocalDatastore(this);
+        Parse.initialize(this, Keys.Parse_APP_ID, Keys.Parse_API_Key);
 
         Button button = (Button) findViewById(R.id.create_button);
         button.setOnClickListener(new View.OnClickListener() {

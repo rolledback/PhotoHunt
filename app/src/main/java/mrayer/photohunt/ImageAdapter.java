@@ -31,6 +31,7 @@ public class ImageAdapter extends PagerAdapter {
     ImageAdapter(Context context){
         this.context=context;
     }
+
     @Override
     public int getCount() {
         return galImages.size();
@@ -54,7 +55,7 @@ public class ImageAdapter extends PagerAdapter {
         int height = (int) context.getResources().getDimension(R.dimen.create_new_photo_hunt_image_size);
         int width = context.getResources().getDisplayMetrics().widthPixels;
 
-        Bitmap bitmap = decodeFile(file, width, height);
+        Bitmap bitmap = ImageUtils.decodeFile(file, width, height);
         imageView.setImageBitmap(bitmap);
 //        Uri uri = Uri.fromFile(file);
 
@@ -79,28 +80,5 @@ public class ImageAdapter extends PagerAdapter {
 
     public void setGalImages(ArrayList<String> newGalImages) {
         galImages = newGalImages;
-    }
-
-    // Decodes image and scales it to reduce memory consumption
-    private Bitmap decodeFile(File f, int requiredWidth, int requiredHeight) {
-        try {
-            // Decode image size
-            BitmapFactory.Options o = new BitmapFactory.Options();
-            o.inJustDecodeBounds = true;
-            BitmapFactory.decodeStream(new FileInputStream(f), null, o);
-
-            // Find the correct scale value. It should be the power of 2.
-            int scale = 1;
-            while(o.outWidth / scale / 2 >= requiredWidth &&
-                    o.outHeight / scale / 2 >= requiredHeight) {
-                scale *= 2;
-            }
-
-            // Decode with inSampleSize
-            BitmapFactory.Options o2 = new BitmapFactory.Options();
-            o2.inSampleSize = scale;
-            return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-        } catch (FileNotFoundException e) {}
-        return null;
     }
 }
