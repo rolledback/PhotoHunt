@@ -18,9 +18,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.SaveCallback;
 
@@ -61,6 +63,8 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_new_photo_hunt);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         imageAdapter = new ImageAdapter(this);
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPager.setAdapter(imageAdapter);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -103,7 +107,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 photoHunt.put("albumId", albumId);
                 photoHunt.put("numPhotos", imageAdapter.getGalImages().size());
                 photoHunt.saveInBackground(new SaveCallback() {
-
+                    @Override
                     public void done(ParseException e) {
                         if (e != null) {
                             Log.d(Constants.CreateNewPhotoHunt_Tag, e.toString());
@@ -116,7 +120,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 // create Parse File for each photo
                 for(String imagePath: imageAdapter.getGalImages()) {
                     File file = new File(imagePath);
-                    ImageUtils.getImageLocation(file);
+
                     int height = (int) getResources().getDimension(R.dimen.create_new_photo_hunt_image_size);
                     int width = getResources().getDisplayMetrics().widthPixels;
 
@@ -126,6 +130,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                     byte[] byteArray= stream.toByteArray();
 
                     final ParseFile photo = new ParseFile(file.getName(), byteArray);
+                    final LatLng location = ImageUtils.getImageLocation(file);
                     photo.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
@@ -136,6 +141,11 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                                 ParseObject photoObject = new ParseObject("Photo");
                                 photoObject.add("album_id", albumId);
                                 photoObject.add("photo", photo);
+
+                                if(location != null) {
+                                    photoObject.put("location", new ParseGeoPoint(location.latitude, location.longitude));
+                                }
+
                                 photoObject.saveInBackground();
                                 Log.d(Constants.CreateNewPhotoHunt_Tag, "Photo object is being uploaded.");
                             }
@@ -166,12 +176,21 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         viewAddLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: Send LatLng of current Photo to Aila's SetChangeLocationActivity
+                if (imageAdapter.getGalImages().size() == 0) {
+                    // no images, so we can't set any locations
+                    return;
+                }
+
+                int currentItem = viewPager.getCurrentItem();
+                File currentFile = new File(imageAdapter.getGalImages().get(currentItem));
+                Bundle args = new Bundle();
+                args.putParcelable("location", ImageUtils.getImageLocation(currentFile));
+
+                Intent addSetLocationIntent = new Intent(CreateNewPhotoHuntActivity.this, SetChangeLocationActivity.class);
+                addSetLocationIntent.putExtra("bundle", args);
+                startActivity(addSetLocationIntent);
             }
         });
-
-        viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPager.setAdapter(imageAdapter);
     }
 
     @Override

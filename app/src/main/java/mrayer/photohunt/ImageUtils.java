@@ -62,7 +62,7 @@ public class ImageUtils {
             String longitudeClock = descriptor.getGpsLongitudeDescription();
             double longitudeDecimal = convertFromClockToDecimal(longitudeClock);
 
-            return new LatLng(latitudeDecimal, latitudeDecimal);
+            return new LatLng(latitudeDecimal, longitudeDecimal);
         }
         catch (Exception e) {
             Log.d(Constants.ImageUtils_Tag, e.toString());
