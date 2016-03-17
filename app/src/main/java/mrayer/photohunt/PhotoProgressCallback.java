@@ -10,11 +10,11 @@ import com.parse.ProgressCallback;
  */
 public class PhotoProgressCallback implements ProgressCallback {
 
-    private ProgressDialog parentDialog;
+    private PhotoUploadProgressDialog parentDialog;
     private int index;
     private int numImages;
 
-    public PhotoProgressCallback(ProgressDialog parentDialog, int index, int numImages) {
+    public PhotoProgressCallback(PhotoUploadProgressDialog parentDialog, int index, int numImages) {
         this.parentDialog = parentDialog;
         this.index = index;
         this.numImages = numImages;
@@ -22,8 +22,6 @@ public class PhotoProgressCallback implements ProgressCallback {
 
     @Override
     public void done(Integer percentDone) {
-        Log.d(Constants.CreateNewPhotoHunt_Tag, Integer.toString(percentDone));
-        parentDialog.setProgress((100 / numImages * index) + (percentDone / numImages));
-        Log.d(Constants.PhotoProgressCallback, Integer.toString(parentDialog.getProgress()) + " " + Integer.toString(index));
+        parentDialog.setPhotoProgresses(percentDone, index);
     }
 }

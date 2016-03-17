@@ -58,7 +58,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     // file path - > location
     private HashMap<String, LatLng> manualLocations;
 
-    private ProgressDialog uploadDialog;
+    private PhotoUploadProgressDialog uploadDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -353,12 +353,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     }
 
     private void setupUploadDialog(int numPhotos) {
-        uploadDialog = new ProgressDialog(this);
-        uploadDialog.setMessage("Uploading...");
-        uploadDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        uploadDialog.setProgress(0);
-        uploadDialog.setMax(100);
-        uploadDialog.setCancelable(false);
-        uploadDialog.show();
+        uploadDialog = new PhotoUploadProgressDialog(this, numPhotos);
+        uploadDialog.setup();
     }
 }

@@ -1,6 +1,5 @@
 package mrayer.photohunt;
 
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -32,7 +31,7 @@ public class PhotoSaveCallback implements SaveCallback {
     @Override
     public void done(ParseException e) {
         if (e != null) {
-            Log.d(Constants.PhotoSaveCallback, e.toString());
+            Log.d(Constants.PhotoSaveCallback_Tag, e.toString());
         } else {
             ParseObject photoObject = new ParseObject("Photo");
             photoObject.add("album_id", albumId);
