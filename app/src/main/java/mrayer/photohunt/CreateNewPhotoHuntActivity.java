@@ -152,7 +152,6 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         });
 
         viewPager = (ViewPager) findViewById(R.id.view_pager);
-//        imageAdapter = new ImageAdapter(this);
         viewPager.setAdapter(imageAdapter);
     }
 
