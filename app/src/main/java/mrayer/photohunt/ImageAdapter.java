@@ -5,11 +5,7 @@ package mrayer.photohunt;
  */
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -18,11 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ImageAdapter extends PagerAdapter {
     Context context;
@@ -61,13 +53,9 @@ public class ImageAdapter extends PagerAdapter {
 
         Bitmap bitmap = ImageUtils.decodeFile(file, width, height);
         imageView.setImageBitmap(bitmap);
-//        Uri uri = Uri.fromFile(file);
-
 
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, height);
         imageView.setLayoutParams(params);
-
-//        imageView.setImageURI(uri);
 
         ((ViewPager) container).addView(imageView, 0);
         return imageView;

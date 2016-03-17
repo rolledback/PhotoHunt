@@ -43,6 +43,11 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
     private Uri mostRecentTakenPhoto;
 
+    private EditText inputNameEditText;
+    private EditText inputAuthorEditText;
+    private EditText inputLocationEditText;
+    private Spinner typeSpinner;
+
     private ViewPager viewPager;
     private Button addFromGalleryButton;
     private Button takePhotoButton;
@@ -61,6 +66,11 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Create New Photo Hunt");
+
+        inputNameEditText = (EditText) findViewById(R.id.input_name);
+        inputAuthorEditText = (EditText) findViewById(R.id.input_author);
+        inputLocationEditText = (EditText) findViewById(R.id.input_location);
+        typeSpinner = (Spinner) findViewById(R.id.spinner_type);
 
         addFromGalleryButton = (Button) findViewById(R.id.add_from_gallery_button);
         addFromGalleryButton.setOnClickListener(new View.OnClickListener() {
@@ -176,12 +186,20 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putString("name", inputNameEditText.getText().toString());
+        outState.putString("author", inputAuthorEditText.getText().toString());
+        outState.putString("location", inputLocationEditText.getText().toString());
+        outState.putInt("type_number", typeSpinner.getSelectedItemPosition());
         outState.putStringArrayList("galImages", imageAdapter.getGalImages());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        inputNameEditText.setText(savedInstanceState.getString("name"));
+        inputAuthorEditText.setText(savedInstanceState.getString("author"));
+        inputLocationEditText.setText(savedInstanceState.getString("location"));
+        typeSpinner.setSelection(savedInstanceState.getInt("type_number"));
         ArrayList<String> list = savedInstanceState.getStringArrayList("galImages");
         imageAdapter.setGalImages(list);
         imageAdapter.notifyDataSetChanged();
