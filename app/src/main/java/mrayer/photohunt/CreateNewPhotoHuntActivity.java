@@ -19,7 +19,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
@@ -28,7 +27,7 @@ import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.List;
+import java.util.HashMap;
 import java.util.UUID;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -36,9 +35,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class CreateNewPhotoHuntActivity extends AppCompatActivity {
-    private static final int RESULT_LOAD_IMAGE = 1;
-    private static final int REQUEST_IMAGE_CAPTURE = 2;
-
     private String mCurrentPhotoPath;
 
     private ImageAdapter imageAdapter;
@@ -57,6 +53,9 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private Button cancelButton;
     private Button viewAddLocationButton;
 
+    // file path - > location
+    private HashMap<String, LatLng> manualLocations;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +64,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         imageAdapter = new ImageAdapter(this);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         viewPager.setAdapter(imageAdapter);
+        manualLocations = new HashMap<String, LatLng>();
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -81,7 +81,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(i, RESULT_LOAD_IMAGE);
+                startActivityForResult(i, Constants.REQUEST_LOAD_IMAGE);
             }
         });
 
@@ -130,14 +130,16 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                     byte[] byteArray= stream.toByteArray();
 
                     final ParseFile photo = new ParseFile(file.getName(), byteArray);
-                    final LatLng location = ImageUtils.getImageLocation(file);
+                    // if user set the location, it will be in the manual locations map, otherwise, grab it from the file
+                    final LatLng location = manualLocations.containsKey(imagePath) ? manualLocations.get(imagePath) : ImageUtils.getImageLocation(file);
+                    // TODO: make sure that all files have a location, either inside or manual before allowing uploading
+                    // TODO: make sure anytime I grab location, I check the manual map and also make sure that the meta location isn't null
+
                     photo.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
                             if (e != null) {
-                                Log.d(Constants.CreateNewPhotoHunt_Tag, e.toString());
                             } else {
-                                Log.d(Constants.CreateNewPhotoHunt_Tag, "Photo file uploaded.");
                                 ParseObject photoObject = new ParseObject("Photo");
                                 photoObject.add("album_id", albumId);
                                 photoObject.add("photo", photo);
@@ -147,7 +149,6 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                                 }
 
                                 photoObject.saveInBackground();
-                                Log.d(Constants.CreateNewPhotoHunt_Tag, "Photo object is being uploaded.");
                             }
                         }
                     });
@@ -182,13 +183,24 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 }
 
                 int currentItem = viewPager.getCurrentItem();
+                String filePath = imageAdapter.getGalImages().get(currentItem);
                 File currentFile = new File(imageAdapter.getGalImages().get(currentItem));
-                Bundle args = new Bundle();
-                args.putParcelable("location", ImageUtils.getImageLocation(currentFile));
 
+                LatLng loc;
+                Bundle args = new Bundle();
                 Intent addSetLocationIntent = new Intent(CreateNewPhotoHuntActivity.this, SetChangeLocationActivity.class);
-                addSetLocationIntent.putExtra("bundle", args);
-                startActivity(addSetLocationIntent);
+                if(manualLocations.containsKey(filePath)) {
+                    // user has previously set a location for this file
+                    args.putParcelable("location", manualLocations.get(filePath));
+                    addSetLocationIntent.putExtra("bundle", args);
+                }
+                else if((loc = ImageUtils.getImageLocation(currentFile)) != null) {
+                    // able to find a location in the metadata
+                    args.putParcelable("location", loc);
+                    addSetLocationIntent.putExtra("bundle", args);
+                }
+
+                startActivityForResult(addSetLocationIntent, Constants.REQUEST_SET_ADD_LOCATION);
             }
         });
     }
@@ -228,7 +240,14 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+        if (requestCode == Constants.REQUEST_SET_ADD_LOCATION && resultCode == RESULT_OK && data != null) {
+            // user changed or set a photo's location, so add it to the mapping of manual locations
+            int currentItem = viewPager.getCurrentItem();
+            String filePath = imageAdapter.getGalImages().get(currentItem);
+            Bundle bundle = data.getParcelableExtra("bundle");
+            manualLocations.put(filePath, (LatLng) bundle.getParcelable("location"));
+        }
+        else if (requestCode == Constants.REQUEST_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
             Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
@@ -251,8 +270,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 viewPager.setCurrentItem(galImages.size() - 1);
             }
         }
-
-        else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+        else if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             restorePreferences();
             galleryAddPic();
 //            String[] filePathColumn = {MediaStore.Images.Media.DATA};
@@ -295,10 +313,9 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 mostRecentTakenPhoto = Uri.fromFile(photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                        mostRecentTakenPhoto);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mostRecentTakenPhoto);
                 savePreferences();
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                startActivityForResult(takePictureIntent, Constants.REQUEST_IMAGE_CAPTURE);
             }
         }
     }

@@ -1,5 +1,6 @@
 package mrayer.photohunt;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 /* Aila's TODO:
 Add key in when need to test
 Intent from "View/Add Location" button in Create New Photo Hunt activity that sends LatLng
+Add a cancel button (please!) -Matthew
  */
 
 public class SetChangeLocationActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -30,6 +32,7 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
     private GoogleMap mMap;
     private Marker m;
     private LatLng currentPos;
+    private LatLng originalLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,7 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
             Bundle bundle = getIntent().getParcelableExtra("bundle");
             LatLng defaultPos = bundle.getParcelable("location");
             currentPos = defaultPos;
+            originalLocation = defaultPos;
         }
         else
         {
@@ -53,11 +57,20 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-             Intent intent = new Intent(SetChangeLocationActivity.this, CreateNewPhotoHuntActivity.class);
-                Bundle latLng = new Bundle();
-                latLng.putParcelable("location", currentPos);
-                intent.putExtra("bundle", latLng);
-                startActivity(intent);
+                Intent intent = new Intent();
+                if(currentPos.equals(originalLocation)) {
+                    // if user did not change the location, we can simply treat this as a cancel
+                    setResult(Activity.RESULT_CANCELED, intent);
+                    finish();
+                }
+                else {
+                    // user moved the location, so return it
+                    Bundle latLng = new Bundle();
+                    latLng.putParcelable("location", currentPos);
+                    intent.putExtra("bundle", latLng);
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
+                }
             }
         });
 
