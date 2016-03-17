@@ -102,6 +102,7 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
                 Toast.makeText(SetChangeLocationActivity.this, "Setting currentPos to " + latLng.toString(), Toast.LENGTH_LONG).show();
                 m.setPosition(latLng);
                 currentPos = latLng;
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
             }
         });
 
@@ -121,6 +122,7 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
             {
                 Toast.makeText(SetChangeLocationActivity.this, "Setting currentPos to " + marker.getPosition(), Toast.LENGTH_LONG).show();
                 currentPos = marker.getPosition();
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
             }
         });
 
