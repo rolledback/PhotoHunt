@@ -48,6 +48,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private Button takePhotoButton;
     private Button uploadButton;
     private Button cancelButton;
+    private Button viewAddLocationButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +149,14 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dispatchTakePictureIntent();
+            }
+        });
+
+        viewAddLocationButton = (Button) findViewById(R.id.view_add_location_button);
+        viewAddLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: Send LatLng of current Photo to Aila's SetChangeLocationActivity
             }
         });
 
