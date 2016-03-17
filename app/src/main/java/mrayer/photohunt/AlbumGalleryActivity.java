@@ -41,6 +41,15 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Button locButton = (Button) findViewById(R.id.location_button);
+        locButton.setOnClickListener(new View.OnClickListener() {
+           public void onClick(View v)
+           {
+               Intent locIntent = new Intent(AlbumGalleryActivity.this, SetChangeLocationActivity.class);
+               startActivity(locIntent);
+           }
+        });
     }
 
 }

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">PhotoHunt</string>
     <string name="title_activity_create_new_photo_hunt">CreateNewPhotoHuntActivity</string>
+    <string name="google_app_id">marine-lacing-125120</string>
 
     <string name="photo_hunt_type_prompt">Type of Photo Hunt</string>
     <string-array name="photo_hunt_type">
