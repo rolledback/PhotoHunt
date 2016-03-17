@@ -176,7 +176,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         ArrayList<String> list = savedInstanceState.getStringArrayList("galImages");
         imageAdapter.setGalImages(list);
-        
+        imageAdapter.notifyDataSetChanged();
     }
 
     @Override
