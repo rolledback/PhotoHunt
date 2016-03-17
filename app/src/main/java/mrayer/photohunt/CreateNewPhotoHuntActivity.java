@@ -118,6 +118,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 });
 
                 // create Parse File for each photo
+                boolean coverBeenSet = false;
                 for(String imagePath: imageAdapter.getGalImages()) {
                     File file = new File(imagePath);
 
@@ -135,23 +136,10 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                     // TODO: make sure that all files have a location, either inside or manual before allowing uploading
                     // TODO: make sure anytime I grab location, I check the manual map and also make sure that the meta location isn't null
 
-                    photo.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e != null) {
-                            } else {
-                                ParseObject photoObject = new ParseObject("Photo");
-                                photoObject.add("album_id", albumId);
-                                photoObject.add("photo", photo);
-
-                                if(location != null) {
-                                    photoObject.put("location", new ParseGeoPoint(location.latitude, location.longitude));
-                                }
-
-                                photoObject.saveInBackground();
-                            }
-                        }
-                    });
+                    photo.saveInBackground(new PhotoSaveCallback(albumId, photo, location, !coverBeenSet));
+                    if(!coverBeenSet) {
+                        coverBeenSet = true;
+                    }
                 }
             }
         });

@@ -8,6 +8,7 @@ public class Constants {
     public static final String CreateNewPhotoHunt_Tag = "CREATE_HUNT";
     public static final String ImageAdapter_Tag = "IMAGE_ADAPTER";
     public static final String ImageUtils_Tag = "IMAGE_UTILS";
+    public static final String PHotoSaveCallback = "PHOTO_SAVE_CALLBACK";
 
     // start activity for result codes for CreateNewPhotoHuntActivity
     public static final int REQUEST_LOAD_IMAGE = 1;
