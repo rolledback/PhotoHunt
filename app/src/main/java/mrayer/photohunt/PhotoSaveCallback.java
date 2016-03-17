@@ -32,7 +32,7 @@ public class PhotoSaveCallback implements SaveCallback {
     @Override
     public void done(ParseException e) {
         if (e != null) {
-            Log.d(Constants.PHotoSaveCallback, e.toString());
+            Log.d(Constants.PhotoSaveCallback, e.toString());
         } else {
             ParseObject photoObject = new ParseObject("Photo");
             photoObject.add("album_id", albumId);

@@ -1,5 +1,6 @@
 package mrayer.photohunt;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -23,6 +24,7 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+import com.parse.ProgressCallback;
 import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
@@ -55,6 +57,8 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
     // file path - > location
     private HashMap<String, LatLng> manualLocations;
+
+    private ProgressDialog uploadDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +122,9 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 });
 
                 // create Parse File for each photo
-                boolean coverBeenSet = false;
+                int index = 0;
+                int numImages = imageAdapter.getGalImages().size();
+                setupUploadDialog(numImages);
                 for(String imagePath: imageAdapter.getGalImages()) {
                     File file = new File(imagePath);
 
@@ -136,10 +142,9 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                     // TODO: make sure that all files have a location, either inside or manual before allowing uploading
                     // TODO: make sure anytime I grab location, I check the manual map and also make sure that the meta location isn't null
 
-                    photo.saveInBackground(new PhotoSaveCallback(albumId, photo, location, !coverBeenSet));
-                    if(!coverBeenSet) {
-                        coverBeenSet = true;
-                    }
+                    photo.saveInBackground(new PhotoSaveCallback(albumId, photo, location, index == 0),
+                            new PhotoProgressCallback(uploadDialog, index, numImages));
+                    index++;
                 }
             }
         });
@@ -347,4 +352,13 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         mCurrentPhotoPath = settings.getString("mCurrentPhotoPath", "");
     }
 
+    private void setupUploadDialog(int numPhotos) {
+        uploadDialog = new ProgressDialog(this);
+        uploadDialog.setMessage("Uploading...");
+        uploadDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        uploadDialog.setProgress(0);
+        uploadDialog.setMax(100);
+        uploadDialog.setCancelable(false);
+        uploadDialog.show();
+    }
 }
