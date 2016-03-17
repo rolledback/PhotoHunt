@@ -231,9 +231,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 imageAdapter.setGalImages((galImages));
                 imageAdapter.notifyDataSetChanged();
                 viewPager.setCurrentItem(galImages.size() - 1);
-                Log.e("CREATE NEW PHOTO HUNT", "gal images = " + imageAdapter.getGalImages().toString());
             }
-            Log.e("CREATE NEW PHOTO HUNT", "AFTER THE CHECK FOR REPEAT IMAGES");
         }
     }
 
@@ -274,13 +272,11 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath =  image.getAbsolutePath();
-        Log.e("NEW PHOTO", "CURRENT PHOTO PATH = " + mCurrentPhotoPath);
         return image;
     }
 
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        Log.e("NEW PHOTO", "IN GALLERY ADD PIC, CURRENT PHOTO PATH = " + mCurrentPhotoPath);
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);

@@ -53,12 +53,6 @@ public class ImageAdapter extends PagerAdapter {
         int padding = context.getResources().getDimensionPixelSize(R.dimen.fab_margin);
         imageView.setPadding(padding, padding, padding, padding);
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-        if (galImages == null) {
-            Log.e("IMAGE ADAPTER", "LIST IS NULL!!!!!");
-        }
-        else {
-            Log.e("IMAGE ADAPTER", "LIST = " + galImages.toString());
-        }
         String picturePath = galImages.get(position);
         File file = new File(picturePath);
 
@@ -90,7 +84,6 @@ public class ImageAdapter extends PagerAdapter {
 
     public void setGalImages(ArrayList<String> newGalImages) {
         galImages = newGalImages;
-        Log.e("IMAGE ADAPTER", "IN SET GAL IMAGES, LIST = " + galImages.toString());
     }
 
 }
