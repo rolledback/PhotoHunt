@@ -4,9 +4,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifSubIFDDirectory;
+import com.drew.metadata.exif.GpsDescriptor;
+import com.drew.metadata.exif.GpsDirectory;
+import com.google.android.gms.maps.model.LatLng;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 
 /**
  * Created by Matthew on 3/16/2016.
@@ -37,5 +46,35 @@ public class ImageUtils {
             Log.d(Constants.ImageAdapter_Tag, e.toString());
         }
         return null;
+    }
+
+    public static LatLng getImageLocation(File f) {
+        try {
+            Metadata metadata = ImageMetadataReader.readMetadata(f);
+            Directory directory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
+            GpsDescriptor descriptor = new GpsDescriptor((GpsDirectory)directory);
+
+            // get the latitude and convert
+            String latitudeClock = descriptor.getGpsLatitudeDescription();
+            double latitudeDecimal = convertFromClockToDecimal(latitudeClock);
+
+            // get the longitude and convert
+            String longitudeClock = descriptor.getGpsLongitudeDescription();
+            double longitudeDecimal = convertFromClockToDecimal(longitudeClock);
+
+            return new LatLng(latitudeDecimal, latitudeDecimal);
+        }
+        catch (Exception e) {
+            Log.d(Constants.ImageUtils_Tag, e.toString());
+        }
+        return null;
+    }
+
+    private static double convertFromClockToDecimal(String coordinate) {
+        String[] parts = coordinate.split(" ");
+        double degrees = Double.parseDouble(parts[0].substring(0, parts[0].length() - 1));
+        double minutes = Double.parseDouble(parts[1].substring(0, parts[1].length() - 1));
+        double seconds = Double.parseDouble(parts[2].substring(0, parts[2].length() - 1));
+        return Math.signum(degrees) * (Math.abs(degrees) + (minutes / 60.0) + (seconds / 3600.0));
     }
 }

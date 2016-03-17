@@ -6,4 +6,5 @@ package mrayer.photohunt;
 public class Constants {
     public static final String CreateNewPhotoHunt_Tag = "CREATE_HUNT";
     public static final String ImageAdapter_Tag = "IMAGE_ADAPTER";
+    public static final String ImageUtils_Tag = "IMAGE_UTILS";
 }

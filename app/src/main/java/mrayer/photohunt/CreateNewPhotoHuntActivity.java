@@ -116,7 +116,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 // create Parse File for each photo
                 for(String imagePath: imageAdapter.getGalImages()) {
                     File file = new File(imagePath);
-
+                    ImageUtils.getImageLocation(file);
                     int height = (int) getResources().getDimension(R.dimen.create_new_photo_hunt_image_size);
                     int width = getResources().getDisplayMetrics().widthPixels;
 
