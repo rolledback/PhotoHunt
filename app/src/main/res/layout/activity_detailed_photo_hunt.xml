@@ -63,6 +63,7 @@
             android:text="Author: " />
 
         <TextView
+            android:id="@+id/detailed_author"
             android:layout_width="0dp"
             android:layout_height="@dimen/detailed_photo_hunt_text_height"
             android:layout_weight="3"
@@ -86,6 +87,7 @@
             android:text="Location: " />
 
         <TextView
+            android:id="@+id/detailed_location"
             android:layout_width="0dp"
             android:layout_height="@dimen/detailed_photo_hunt_text_height"
             android:layout_weight="3"
@@ -109,6 +111,7 @@
             android:text="Album Size: " />
 
         <TextView
+            android:id="@+id/detailed_album_size"
             android:layout_width="0dp"
             android:layout_height="@dimen/detailed_photo_hunt_text_height"
             android:layout_weight="3"
@@ -132,6 +135,7 @@
             android:text="Type: " />
 
         <TextView
+            android:id="@+id/detailed_type"
             android:layout_width="0dp"
             android:layout_height="@dimen/detailed_photo_hunt_text_height"
             android:layout_weight="3"
@@ -147,14 +151,14 @@
         android:layout_weight="1">
 
       <Button
-          android:id="@+id/add_from_gallery_button"
+          android:id="@+id/detailed_view_photos_button"
           android:layout_width="0dp"
           android:layout_height="match_parent"
           android:text="View Photos"
           android:layout_weight="1"/>
 
       <Button
-          android:id="@+id/take_photo_button"
+          android:id="@+id/detailed_start_photo_hunt_button"
           android:layout_width="0dp"
           android:layout_height="match_parent"
           android:text="Start Photo Hunt"
