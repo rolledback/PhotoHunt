@@ -22,9 +22,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /* Aila's TODO:
-Add key in when need to test
 Intent from "View/Add Location" button in Create New Photo Hunt activity that sends LatLng
-Add a cancel button (please!) -Matthew
+Find a good way to get default location, instead of using -1, -1 lol
+Investigate zooming in when you first open the activity
  */
 
 public class SetChangeLocationActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -84,8 +84,7 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * This is where we can add markers or lines, add listeners or move the camera.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.

@@ -29,4 +29,6 @@ dependencies {
     compile 'com.drewnoakes:metadata-extractor:2.8.1'
     compile 'com.google.android.gms:play-services-maps:8.4.0'
     compile 'com.google.android.gms:play-services-location:8.4.0'
+    compile 'com.parse:parseui-login-android:0.0.1'
+    compile 'com.parse:parseui-widget-android:0.0.1'
 }

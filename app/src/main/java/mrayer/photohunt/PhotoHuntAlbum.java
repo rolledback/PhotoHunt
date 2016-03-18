@@ -7,6 +7,7 @@ import com.parse.ParseObject;
 /**
  * Created by Matthew on 3/17/2016.
  */
+
 @ParseClassName("PhotoHuntAlbum")
 public class PhotoHuntAlbum extends ParseObject {
 

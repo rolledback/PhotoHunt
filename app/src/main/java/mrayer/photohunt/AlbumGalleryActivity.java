@@ -1,28 +1,30 @@
 package mrayer.photohunt;
 
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.parse.Parse;
 import com.parse.ParseObject;
+import com.parse.ParseQueryAdapter;
 
 import java.util.ArrayList;
 
 /* Aila's TODO:
-UI includes the ActivityBar and then just a list
-Need to populate list from DB
+Set onClickListener to open the AlbumDetailsScreen for selected PhotoAlbum
 */
 
-// CJ: Changed this to AppCompatActivity because ListActivity made the app not run
 public class AlbumGalleryActivity extends AppCompatActivity {
 
-    private ListView view;
-    private ArrayList<String> photoAlbums;
+    private CustomAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,24 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         Parse.enableLocalDatastore(this);
         ParseObject.registerSubclass(PhotoHuntAlbum.class);
         Parse.initialize(this, Keys.Parse_APP_ID, Keys.Parse_API_Key);
+
+        // Set up the adapter to get the data from Parse
+        adapter = new CustomAdapter(this);
+
+        // Get the list view
+        ListView list = (ListView) findViewById(R.id.list);
+
+        // Default view is all PhotoHuntAlbums
+        list.setAdapter(adapter);
+
+        // Set listener
+        // Need to start an Intent for the AlbumDetailsScreen for the selected album
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getApplicationContext(), "You selected item: " + position, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         Button createButton = (Button) findViewById(R.id.create_button);
         createButton.setOnClickListener(new View.OnClickListener() {
@@ -60,4 +80,5 @@ public class AlbumGalleryActivity extends AppCompatActivity {
             }
         });
     }
+
 }
