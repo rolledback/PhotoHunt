@@ -11,6 +11,7 @@ public class Constants {
     public static final String PhotoSaveCallback_Tag = "PHOTO_SAVE_CALLBACK";
     public static final String PhotoProgressCallback_Tag = "PHOTO_PROGRESS_CALLBACK";
     public static final String PhotoUploadProgressDialog_Tag = "PHOTO_PROGRESS_DIALOG";
+    public static final String AlbumGallery_Tag = "ALBUM_GALLERY";
 
     // start activity for result codes for CreateNewPhotoHuntActivity
     public static final int REQUEST_LOAD_IMAGE = 1;

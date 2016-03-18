@@ -1,6 +1,5 @@
 package mrayer.photohunt;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -20,12 +19,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
-import com.parse.ProgressCallback;
-import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,6 +30,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+// TODO: make sure that all files have a location, either inside or manual before allowing uploading
+// TODO: make sure anytime I grab location, I check the manual map and also make sure that the meta location isn't null
 
 public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private String mCurrentPhotoPath;
@@ -93,42 +91,19 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // grab fields
-                String photoHuntName = ((EditText) findViewById(R.id.input_name)).getText().toString();
-                String photoHuntAuthor = ((EditText) findViewById(R.id.input_author)).getText().toString();
-                String photoHuntLocation = ((EditText) findViewById(R.id.input_location)).getText().toString();
-                String photoHuntType = ((Spinner) findViewById(R.id.spinner_type)).getSelectedItem().toString();
-
-                final String albumId = UUID.randomUUID().toString();
-
-                // create Parse Object for the album
-                ParseObject photoHunt = new ParseObject("PhotoHuntAlbum");
-                photoHunt.put("name", photoHuntName);
-                photoHunt.put("author", photoHuntAuthor);
-                photoHunt.put("location", photoHuntLocation);
-                photoHunt.put("type", photoHuntType);
-                photoHunt.put("albumId", albumId);
-                photoHunt.put("numPhotos", imageAdapter.getGalImages().size());
-                photoHunt.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e != null) {
-                            Log.d(Constants.CreateNewPhotoHunt_Tag, e.toString());
-                        } else {
-                            Log.d(Constants.CreateNewPhotoHunt_Tag, "Photo hunt saved.");
-                        }
-                    }
-                });
-
-                // create Parse File for each photo
                 int index = 0;
                 int numImages = imageAdapter.getGalImages().size();
                 setupUploadDialog(numImages);
+
+                // create Parse Object for the album
+                String albumId = UUID.randomUUID().toString();
+                ParseObject photoHunt = createPhotoHunt(albumId);
+
+                // upload all of the shit
                 for(String imagePath: imageAdapter.getGalImages()) {
                     File file = new File(imagePath);
 
-                    int height = (int) getResources().getDimension(R.dimen.create_new_photo_hunt_image_size);
+                    int height = (int)getResources().getDimension(R.dimen.create_new_photo_hunt_image_size);
                     int width = getResources().getDisplayMetrics().widthPixels;
 
                     Bitmap bitmap = ImageUtils.decodeFile(file, width, height);
@@ -136,14 +111,17 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                     byte[] byteArray= stream.toByteArray();
 
-                    final ParseFile photo = new ParseFile(file.getName(), byteArray);
-                    // if user set the location, it will be in the manual locations map, otherwise, grab it from the file
-                    final LatLng location = manualLocations.containsKey(imagePath) ? manualLocations.get(imagePath) : ImageUtils.getImageLocation(file);
-                    // TODO: make sure that all files have a location, either inside or manual before allowing uploading
-                    // TODO: make sure anytime I grab location, I check the manual map and also make sure that the meta location isn't null
+                    ParseFile photo = new ParseFile(file.getName(), byteArray);
+                    LatLng location = manualLocations.containsKey(imagePath) ? manualLocations.get(imagePath) : ImageUtils.getImageLocation(file);
 
-                    photo.saveInBackground(new PhotoSaveCallback(albumId, photo, location, index == 0),
-                            new PhotoProgressCallback(uploadDialog, index, numImages));
+                    if(index > 0) {
+                        // non-cover photo
+                        photo.saveInBackground(new PhotoSaveCallback(albumId, photo, location), new PhotoProgressCallback(uploadDialog, index, numImages));
+                    }
+                    else {
+                        // cover photo
+                        photo.saveInBackground(new PhotoSaveCallback(albumId, photo, location, photoHunt), new PhotoProgressCallback(uploadDialog, index, numImages));
+                    }
                     index++;
                 }
             }
@@ -355,5 +333,22 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private void setupUploadDialog(int numPhotos) {
         uploadDialog = new PhotoUploadProgressDialog(this, numPhotos);
         uploadDialog.setup();
+    }
+
+    private ParseObject createPhotoHunt(String albumId) {
+        String photoHuntName = ((EditText) findViewById(R.id.input_name)).getText().toString();
+        String photoHuntAuthor = ((EditText) findViewById(R.id.input_author)).getText().toString();
+        String photoHuntLocation = ((EditText) findViewById(R.id.input_location)).getText().toString();
+        String photoHuntType = ((Spinner) findViewById(R.id.spinner_type)).getSelectedItem().toString();
+
+        ParseObject photoHunt = new ParseObject("PhotoHuntAlbum");
+        photoHunt.put("name", photoHuntName);
+        photoHunt.put("author", photoHuntAuthor);
+        photoHunt.put("location", photoHuntLocation);
+        photoHunt.put("type", photoHuntType);
+        photoHunt.put("albumId", albumId);
+        photoHunt.put("numPhotos", imageAdapter.getGalImages().size());
+
+        return photoHunt;
     }
 }

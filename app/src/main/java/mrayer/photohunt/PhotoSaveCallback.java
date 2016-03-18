@@ -9,6 +9,8 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.SaveCallback;
 
+import mrayer.photohunt.Constants;
+
 /**
  * Created by Matthew on 3/17/2016.
  * Custom Parse callback for the uploading of photos. Makes it easier
@@ -19,13 +21,22 @@ public class PhotoSaveCallback implements SaveCallback {
     private String albumId;
     private ParseFile photo;
     private LatLng location;
-    private boolean isCover;
+    private ParseObject album;
 
-    public PhotoSaveCallback(String albumId, ParseFile photo, LatLng location, boolean isCover) {
+    // standard callback constructor
+    public PhotoSaveCallback(String albumId, ParseFile photo, LatLng location) {
         this.albumId = albumId;
         this.photo = photo;
         this.location = location;
-        this.isCover = isCover;
+        this.album = null;
+    }
+
+    // callback constructor for a cover photo
+    public PhotoSaveCallback(String albumId, ParseFile photo, LatLng location, ParseObject album) {
+        this.albumId = albumId;
+        this.photo = photo;
+        this.location = location;
+        this.album = album;
     }
 
     @Override
@@ -34,15 +45,17 @@ public class PhotoSaveCallback implements SaveCallback {
             Log.d(Constants.PhotoSaveCallback_Tag, e.toString());
         } else {
             ParseObject photoObject = new ParseObject("Photo");
-            photoObject.add("album_id", albumId);
-            photoObject.add("photo", photo);
-            photoObject.add("is_cover", isCover);
-
+            photoObject.put("albumId", albumId);
+            photoObject.put("photo", photo);
             if(location != null) {
                 photoObject.put("location", new ParseGeoPoint(location.latitude, location.longitude));
             }
-
             photoObject.saveInBackground();
+
+            if(album != null) {
+                album.put("coverPhoto", photo);
+                album.saveInBackground();
+            }
         }
     }
 }

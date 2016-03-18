@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.parse.Parse;
-import com.parse.ParseObject;
 
 import java.util.ArrayList;
 
@@ -51,5 +50,4 @@ public class AlbumGalleryActivity extends AppCompatActivity {
            }
         });
     }
-
 }

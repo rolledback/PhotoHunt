@@ -6,6 +6,8 @@ import android.util.Log;
 
 import java.util.Arrays;
 
+import mrayer.photohunt.Constants;
+
 /**
  * Created by Matthew on 3/17/2016.
  * Wrapper for a ProgressDialog. Enables us to combine the progress of multiple
