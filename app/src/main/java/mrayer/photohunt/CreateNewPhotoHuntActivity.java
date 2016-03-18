@@ -62,7 +62,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_new_photo_hunt);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.create_new_photo_hunt_toolbar);
         imageAdapter = new ImageAdapter(this);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         viewPager.setAdapter(imageAdapter);
