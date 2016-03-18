@@ -34,8 +34,8 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         ParseObject.registerSubclass(PhotoHuntAlbum.class);
         Parse.initialize(this, Keys.Parse_APP_ID, Keys.Parse_API_Key);
 
-        Button button = (Button) findViewById(R.id.create_button);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button createButton = (Button) findViewById(R.id.create_button);
+        createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AlbumGalleryActivity.this, CreateNewPhotoHuntActivity.class);
@@ -49,6 +49,15 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 Intent locIntent = new Intent(AlbumGalleryActivity.this, SetChangeLocationActivity.class);
                 startActivity(locIntent);
            }
+        });
+
+        Button detailButton = (Button) findViewById(R.id.detail_button);
+        detailButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AlbumGalleryActivity.this, DetailedPhotoHuntActivity.class);
+                startActivity(intent);
+            }
         });
     }
 }

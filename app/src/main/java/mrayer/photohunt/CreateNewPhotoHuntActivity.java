@@ -322,7 +322,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         editor.putString("mCurrentPhotoPath", mCurrentPhotoPath);
 
         // Commit the edits!
-        editor.commit();
+        editor.apply();
     }
 
     private void restorePreferences() {

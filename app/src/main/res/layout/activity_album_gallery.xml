@@ -17,11 +17,19 @@
 
     <Button
         android:id="@+id/create_button"
+        android:text="Create New Photo Hunt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/location_button"
+        android:text="Location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/detail_button"
+        android:text="Detailed Photo Hunt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 </LinearLayout>

@@ -15,6 +15,9 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detailed_photo_hunt);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detailed_photo_hunt_toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Detailed Photo Hunt");
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
