@@ -21,7 +21,7 @@ public class PhotoSaveCallback implements SaveCallback {
     private String albumId;
     private ParseFile photo;
     private LatLng location;
-    private ParseObject album;
+    private PhotoHuntAlbum album;
 
     // standard callback constructor
     public PhotoSaveCallback(String albumId, ParseFile photo, LatLng location) {
@@ -32,7 +32,7 @@ public class PhotoSaveCallback implements SaveCallback {
     }
 
     // callback constructor for a cover photo
-    public PhotoSaveCallback(String albumId, ParseFile photo, LatLng location, ParseObject album) {
+    public PhotoSaveCallback(String albumId, ParseFile photo, LatLng location, PhotoHuntAlbum album) {
         this.albumId = albumId;
         this.photo = photo;
         this.location = location;
@@ -53,7 +53,7 @@ public class PhotoSaveCallback implements SaveCallback {
             photoObject.saveInBackground();
 
             if(album != null) {
-                album.put("coverPhoto", photo);
+                album.setCoverPhoto(photo);
                 album.saveInBackground();
             }
         }

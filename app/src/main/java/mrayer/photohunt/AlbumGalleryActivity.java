@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.parse.Parse;
+import com.parse.ParseObject;
 
 import java.util.ArrayList;
 
@@ -28,8 +29,9 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_gallery);
 
-        // connect to Parse
+        // connect to Parse and register our custom classes
         Parse.enableLocalDatastore(this);
+        ParseObject.registerSubclass(PhotoHuntAlbum.class);
         Parse.initialize(this, Keys.Parse_APP_ID, Keys.Parse_API_Key);
 
         Button button = (Button) findViewById(R.id.create_button);
@@ -43,10 +45,9 @@ public class AlbumGalleryActivity extends AppCompatActivity {
 
         Button locButton = (Button) findViewById(R.id.location_button);
         locButton.setOnClickListener(new View.OnClickListener() {
-           public void onClick(View v)
-           {
-               Intent locIntent = new Intent(AlbumGalleryActivity.this, SetChangeLocationActivity.class);
-               startActivity(locIntent);
+            public void onClick(View v) {
+                Intent locIntent = new Intent(AlbumGalleryActivity.this, SetChangeLocationActivity.class);
+                startActivity(locIntent);
            }
         });
     }

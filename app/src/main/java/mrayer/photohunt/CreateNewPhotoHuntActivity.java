@@ -97,7 +97,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
                 // create Parse Object for the album
                 String albumId = UUID.randomUUID().toString();
-                ParseObject photoHunt = createPhotoHunt(albumId);
+                PhotoHuntAlbum photoHunt = createPhotoHunt(albumId);
 
                 // upload all of the shit
                 for(String imagePath: imageAdapter.getGalImages()) {
@@ -335,19 +335,19 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         uploadDialog.setup();
     }
 
-    private ParseObject createPhotoHunt(String albumId) {
+    private PhotoHuntAlbum createPhotoHunt(String albumId) {
         String photoHuntName = ((EditText) findViewById(R.id.input_name)).getText().toString();
         String photoHuntAuthor = ((EditText) findViewById(R.id.input_author)).getText().toString();
         String photoHuntLocation = ((EditText) findViewById(R.id.input_location)).getText().toString();
         String photoHuntType = ((Spinner) findViewById(R.id.spinner_type)).getSelectedItem().toString();
 
-        ParseObject photoHunt = new ParseObject("PhotoHuntAlbum");
-        photoHunt.put("name", photoHuntName);
-        photoHunt.put("author", photoHuntAuthor);
-        photoHunt.put("location", photoHuntLocation);
-        photoHunt.put("type", photoHuntType);
-        photoHunt.put("albumId", albumId);
-        photoHunt.put("numPhotos", imageAdapter.getGalImages().size());
+        PhotoHuntAlbum photoHunt = new PhotoHuntAlbum();
+        photoHunt.setName(photoHuntName);
+        photoHunt.setAuthor(photoHuntAuthor);
+        photoHunt.setLocation(photoHuntLocation);
+        photoHunt.setType(photoHuntType);
+        photoHunt.setAlbumId(albumId);
+        photoHunt.setNumPhotos(imageAdapter.getGalImages().size());
 
         return photoHunt;
     }
