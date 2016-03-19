@@ -19,6 +19,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseFile;
@@ -98,6 +99,11 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // if one or more of the EditTexts aren't filled out, don't upload and send error message
+                if (!checkFields()) {
+                    Toast.makeText(getApplicationContext(), "Required fields are not filled out.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 int index = 0;
                 int numImages = imageAdapter.getGalImages().size();
                 setupUploadDialog(numImages);
@@ -251,19 +257,6 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         else if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             restorePreferences();
             galleryAddPic();
-//            String[] filePathColumn = {MediaStore.Images.Media.DATA};
-//
-//            Cursor cursor = getContentResolver().query(mostRecentTakenPhoto,
-//                    filePathColumn, null, null, null);
-//            cursor.moveToFirst();
-//
-//            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-//
-//            // String picturePath contains the path of selected Image
-//            String picturePath = cursor.getString(columnIndex);
-//            cursor.close();
-
-
             ArrayList<String> galImages = imageAdapter.getGalImages();
 
             // check if galImages already has images
@@ -274,6 +267,15 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 viewPager.setCurrentItem(galImages.size() - 1);
             }
         }
+    }
+
+    private boolean checkFields() {
+        if (inputNameEditText.getText().length() == 0 || inputAuthorEditText.getText().length() == 0
+                || inputLocationEditText.getText().length() == 0 || imageAdapter.getGalImages().size() == 0) {
+            return false;
+        }
+
+        return true;
     }
 
     private void dispatchTakePictureIntent() {
