@@ -1,22 +1,17 @@
 package mrayer.photohunt;
 
-import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.parse.Parse;
 import com.parse.ParseObject;
-import com.parse.ParseQueryAdapter;
-
-import java.util.ArrayList;
 
 /* Aila's TODO:
 Set onClickListener to open the AlbumDetailsScreen for selected PhotoAlbum
@@ -30,6 +25,8 @@ public class AlbumGalleryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_gallery);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
 
         // connect to Parse and register our custom classes
         Parse.enableLocalDatastore(this);
@@ -50,9 +47,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(), "You selected item: " + position, Toast.LENGTH_SHORT).show();
                 PhotoHuntAlbum selectedAlbum = adapter.getItem(position);
-
                 ParseProxyObject ppo = new ParseProxyObject(selectedAlbum);
                 Intent detailsIntent = new Intent(AlbumGalleryActivity.this, DetailedPhotoHuntActivity.class);
                 detailsIntent.putExtra("albumProxy", ppo);
@@ -60,31 +55,35 @@ public class AlbumGalleryActivity extends AppCompatActivity {
             }
         });
 
-        Button createButton = (Button) findViewById(R.id.create_button);
-        createButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        /**
+         * May the souls of the buttons that were one initialized here rest in peace.
+         * May they find true usefulness and be clicked many times in button heaven.
+         * In Novak's name we pray.
+         *
+         * Amen.
+         **/
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.album_gallery_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_create_photo_hunt:
                 Intent intent = new Intent(AlbumGalleryActivity.this, CreateNewPhotoHuntActivity.class);
                 startActivity(intent);
-            }
-        });
+                return true;
 
-        Button locButton = (Button) findViewById(R.id.location_button);
-        locButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+            case R.id.action_test_set_add_location:
                 Intent locIntent = new Intent(AlbumGalleryActivity.this, SetChangeLocationActivity.class);
                 startActivity(locIntent);
-           }
-        });
-
-        Button detailButton = (Button) findViewById(R.id.detail_button);
-        detailButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AlbumGalleryActivity.this, DetailedPhotoHuntActivity.class);
-                startActivity(intent);
-            }
-        });
+                return true;
+        }
+        return true;
     }
 
 }
