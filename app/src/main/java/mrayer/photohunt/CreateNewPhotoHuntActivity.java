@@ -119,13 +119,13 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                     int height = (int)getResources().getDimension(R.dimen.create_new_photo_hunt_image_size);
                     int width = getResources().getDisplayMetrics().widthPixels;
 
-                    Bitmap bitmap = ImageUtils.decodeFile(file, width, height);
+                    Bitmap bitmap = Utils.decodeFile(file, width, height);
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                     byte[] byteArray= stream.toByteArray();
 
                     ParseFile photo = new ParseFile(file.getName(), byteArray);
-                    LatLng location = manualLocations.containsKey(imagePath) ? manualLocations.get(imagePath) : ImageUtils.getImageLocation(file);
+                    LatLng location = manualLocations.containsKey(imagePath) ? manualLocations.get(imagePath) : Utils.getImageLocation(file);
 
                     if(index > 0) {
                         // non-cover photo
@@ -178,7 +178,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                     args.putParcelable("location", manualLocations.get(filePath));
                     addSetLocationIntent.putExtra("bundle", args);
                 }
-                else if((loc = ImageUtils.getImageLocation(currentFile)) != null) {
+                else if((loc = Utils.getImageLocation(currentFile)) != null) {
                     // able to find a location in the metadata
                     args.putParcelable("location", loc);
                     addSetLocationIntent.putExtra("bundle", args);

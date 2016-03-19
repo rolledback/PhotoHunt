@@ -10,5 +10,6 @@
     </string-array>
     <string name="title_activity_set_change_location">SetChangeLocationActivity</string>
     <string name="title_activity_detailed_photo_hunt">DetailedPhotoHuntActivity</string>
+    <string name="title_activity_album">AlbumActivity</string>
 
 </resources>

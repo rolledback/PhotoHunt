@@ -39,7 +39,7 @@
             android:configChanges="orientation"
             android:label="@string/title_activity_create_new_photo_hunt"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -56,10 +56,14 @@
             android:name=".SetChangeLocationActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_set_change_location"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".DetailedPhotoHuntActivity"
             android:label="@string/title_activity_detailed_photo_hunt"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AlbumActivity"
+            android:label="@string/title_activity_album"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

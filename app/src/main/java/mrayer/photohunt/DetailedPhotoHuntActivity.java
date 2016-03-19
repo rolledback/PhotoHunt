@@ -75,7 +75,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
         startPhotoHuntButton = (Button) findViewById(R.id.detailed_start_photo_hunt_button);
 
         Intent intent = getIntent();
-        ParseProxyObject ppo = (ParseProxyObject)intent.getSerializableExtra("albumProxy");
+        ParseProxyObject ppo = (ParseProxyObject) intent.getSerializableExtra("albumProxy");
 
         nameView.setText(ppo.getString("name"));
         authorView.setText(ppo.getString("author"));

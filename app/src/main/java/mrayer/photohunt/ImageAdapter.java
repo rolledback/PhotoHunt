@@ -51,7 +51,7 @@ public class ImageAdapter extends PagerAdapter {
         int height = (int) context.getResources().getDimension(R.dimen.create_new_photo_hunt_image_size);
         int width = context.getResources().getDisplayMetrics().widthPixels;
 
-        Bitmap bitmap = ImageUtils.decodeFile(file, width, height);
+        Bitmap bitmap = Utils.decodeFile(file, width, height);
         imageView.setImageBitmap(bitmap);
 
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, height);

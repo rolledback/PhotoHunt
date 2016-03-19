@@ -1,8 +1,12 @@
 package mrayer.photohunt;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
@@ -20,7 +24,7 @@ import java.util.Arrays;
 /**
  * Created by Matthew on 3/16/2016.
  */
-public class ImageUtils {
+public class Utils {
 
     // Decodes image and scales it to reduce memory consumption
     public static Bitmap decodeFile(File f, int requiredWidth, int requiredHeight) {
@@ -77,4 +81,25 @@ public class ImageUtils {
         double seconds = Double.parseDouble(parts[2].substring(0, parts[2].length() - 1));
         return Math.signum(degrees) * (Math.abs(degrees) + (minutes / 60.0) + (seconds / 3600.0));
     }
+
+    /*
+     * getting screen width
+     */
+    public static int getScreenWidth(Context context) {
+        int columnWidth;
+        WindowManager wm = (WindowManager) context
+                .getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+
+        final Point point = new Point();
+        try {
+            display.getSize(point);
+        } catch (java.lang.NoSuchMethodError ignore) { // Older device
+            point.x = display.getWidth();
+            point.y = display.getHeight();
+        }
+        columnWidth = point.x;
+        return columnWidth;
+    }
+
 }

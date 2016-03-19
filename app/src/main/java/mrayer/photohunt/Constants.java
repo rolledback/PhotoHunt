@@ -17,4 +17,10 @@ public class Constants {
     public static final int REQUEST_LOAD_IMAGE = 1;
     public static final int REQUEST_IMAGE_CAPTURE = 2;
     public static final int REQUEST_SET_ADD_LOCATION = 3;
+
+    // Number of columns of Album Grid View
+    public static final int NUM_OF_COLUMNS = 3;
+
+    // Gridview image padding
+    public static final int GRID_PADDING = 8; // in dp
 }
