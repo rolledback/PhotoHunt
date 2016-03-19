@@ -1,6 +1,9 @@
 package mrayer.photohunt;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,16 +15,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import org.w3c.dom.Text;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 public class DetailedPhotoHuntActivity extends AppCompatActivity {
@@ -31,10 +43,10 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
     private TextView albumSizeView;
     private TextView typeView;
 
+    private ImageView imageView;
+
     private Button viewPhotosButton;
     private Button startPhotoHuntButton;
-
-    private String currentAlbumId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,23 +69,23 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
         albumSizeView = (TextView) findViewById(R.id.detailed_album_size);
         typeView = (TextView) findViewById(R.id.detailed_type);
 
+        imageView = (ImageView) findViewById(R.id.detailed_cover_photo);
+
         viewPhotosButton = (Button) findViewById(R.id.detailed_view_photos_button);
         startPhotoHuntButton = (Button) findViewById(R.id.detailed_start_photo_hunt_button);
 
         Intent intent = getIntent();
-        // CAUTION, THIS INTENT KEY MAY CHANGE DEPENDING ON THE INTENT PASSED IN FROM ALBUM GALLERY
-        currentAlbumId = intent.getStringExtra("albumId");
+        ParseProxyObject ppo = (ParseProxyObject)intent.getSerializableExtra("albumProxy");
 
-        // TODO: using the currentAlbumId, get the photo hunt album information to fill in everything else
-        // Dummy photo hunt for now
-        PhotoHuntAlbum currentPhotoHunt = new PhotoHuntAlbum();
+        nameView.setText(ppo.getString("name"));
+        authorView.setText(ppo.getString("author"));
+        locationView.setText(ppo.getString("location"));
+        albumSizeView.setText(Integer.toString(ppo.getInt("albumSize")));
+        typeView.setText(ppo.getString("type"));
 
-        nameView.setText(currentPhotoHunt.getName());
-        authorView.setText(currentPhotoHunt.getAuthor());
-        locationView.setText(currentPhotoHunt.getLocation());
-        String albumSize = "" + currentPhotoHunt.getNumPhotos();
-        albumSizeView.setText(albumSize);
-        typeView.setText(currentPhotoHunt.getType());
+        // download image from url
+        String coverPhotoUrl = ppo.getString("coverPhoto");
+        new DownloadImageTask().execute(coverPhotoUrl);
     }
 
     @Override
@@ -83,6 +95,40 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        protected Bitmap doInBackground(String... params) {
+            Bitmap returnImage = null;
+            URL url = null;
+            HttpURLConnection urlConnection = null;
+
+            try {
+                url = new URL(params[0]);
+                urlConnection = (HttpURLConnection) url.openConnection();
+
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                returnImage = BitmapFactory.decodeStream(in); //note, this is not a return statement…the variable
+            }
+            catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            finally {
+                urlConnection.disconnect();
+                return returnImage;
+            }
+        }
+        protected void onPostExecute(Bitmap result) {
+            if(result != null) {
+                imageView.setImageBitmap(result);
+            }
+        }
     }
 
 }

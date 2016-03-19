@@ -51,6 +51,12 @@ public class AlbumGalleryActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(getApplicationContext(), "You selected item: " + position, Toast.LENGTH_SHORT).show();
+                PhotoHuntAlbum selectedAlbum = adapter.getItem(position);
+
+                ParseProxyObject ppo = new ParseProxyObject(selectedAlbum);
+                Intent detailsIntent = new Intent(AlbumGalleryActivity.this, DetailedPhotoHuntActivity.class);
+                detailsIntent.putExtra("albumProxy", ppo);
+                startActivity(detailsIntent);
             }
         });
 
