@@ -15,10 +15,6 @@ import android.widget.ListView;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
-/* Aila's TODO:
-Set onClickListener to open the AlbumDetailsScreen for selected PhotoAlbum
-*/
-
 public class AlbumGalleryActivity extends AppCompatActivity {
 
     private CustomAdapter adapter;
@@ -50,7 +46,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         list.setAdapter(adapter);
 
         // Set listener
-        // Need to start an Intent for the AlbumDetailsScreen for the selected album
+        // Start an Intent for the AlbumDetailsScreen for the selected album
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
