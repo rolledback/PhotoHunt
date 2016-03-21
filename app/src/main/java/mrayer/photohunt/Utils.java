@@ -4,9 +4,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
@@ -16,10 +18,15 @@ import com.drew.metadata.exif.GpsDescriptor;
 import com.drew.metadata.exif.GpsDirectory;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 
 /**
@@ -101,6 +108,48 @@ public class Utils {
         }
         columnWidth = point.x;
         return columnWidth;
+    }
+
+    static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+
+        private ImageView imageView;
+
+        public DownloadImageTask(ImageView imageView) {
+            super();
+            this.imageView = imageView;
+        }
+
+        protected Bitmap doInBackground(String... params) {
+            Bitmap returnImage = null;
+            URL url = null;
+            HttpURLConnection urlConnection = null;
+
+            try {
+                url = new URL(params[0]);
+                urlConnection = (HttpURLConnection) url.openConnection();
+
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                returnImage = BitmapFactory.decodeStream(in); //note, this is not a return statement…the variable
+            }
+            catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            finally {
+                urlConnection.disconnect();
+                return returnImage;
+            }
+        }
+        protected void onPostExecute(Bitmap result) {
+            if(result != null) {
+                imageView.setImageBitmap(result);
+            }
+        }
     }
 
 }

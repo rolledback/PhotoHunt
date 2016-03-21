@@ -1,40 +1,15 @@
 package mrayer.photohunt;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.Parse;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-
-import org.w3c.dom.Text;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
 
 public class DetailedPhotoHuntActivity extends AppCompatActivity {
     private TextView nameView;
@@ -85,7 +60,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
 
         // download image from url
         String coverPhotoUrl = ppo.getString("coverPhoto");
-        new DownloadImageTask().execute(coverPhotoUrl);
+        new Utils.DownloadImageTask(imageView).execute(coverPhotoUrl);
     }
 
     @Override
@@ -96,39 +71,4 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        protected Bitmap doInBackground(String... params) {
-            Bitmap returnImage = null;
-            URL url = null;
-            HttpURLConnection urlConnection = null;
-
-            try {
-                url = new URL(params[0]);
-                urlConnection = (HttpURLConnection) url.openConnection();
-
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                returnImage = BitmapFactory.decodeStream(in); //note, this is not a return statement…the variable
-            }
-            catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-            catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-            finally {
-                urlConnection.disconnect();
-                return returnImage;
-            }
-        }
-        protected void onPostExecute(Bitmap result) {
-            if(result != null) {
-                imageView.setImageBitmap(result);
-            }
-        }
-    }
-
 }
