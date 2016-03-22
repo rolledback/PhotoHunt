@@ -1,32 +1,30 @@
 package mrayer.photohunt;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 
 public class GridViewImageAdapter extends BaseAdapter {
 
-    private Activity activity;
+    private Context context;
     private ArrayList<String> filePaths = new ArrayList<String>();
     private int imageWidth;
+    private LayoutInflater inflater;
+    ImageLoader imageLoader;
 
-    public GridViewImageAdapter(Activity activity, ArrayList<String> filePaths,
+    public GridViewImageAdapter(Context context, ArrayList<String> filePaths,
                                 int imageWidth) {
-        this.activity = activity;
+        this.context = context;
         this.filePaths = filePaths;
         this.imageWidth = imageWidth;
+
+        inflater = LayoutInflater.from(context);
+        imageLoader = new ImageLoader(context);
     }
 
     @Override
@@ -44,50 +42,72 @@ public class GridViewImageAdapter extends BaseAdapter {
         return position;
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ImageView imageView;
-        if (convertView == null) {
-            imageView = new ImageView(activity);
-        } else {
-            imageView = (ImageView) convertView;
-        }
-
-        // get screen dimensions
-        // TODO: figure out how to get pictures as files from Parse from Matt
-//        Bitmap image = Utils.decodeFile(NEEDS TO BE A FILE, imageWidth,
-//                imageWidth);
-
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imageView.setLayoutParams(new GridView.LayoutParams(imageWidth,
-                imageWidth));
-//        imageView.setImageBitmap(image);
-
-        // image view click listener
-        imageView.setOnClickListener(new OnImageClickListener(position));
-
-        return imageView;
+    public class ViewHolder {
+        ImageView photo;
     }
 
-    class OnImageClickListener implements OnClickListener {
-
-        int postion;
-
-        // constructor
-        public OnImageClickListener(int position) {
-            this.postion = position;
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        final ViewHolder holder;
+        if (convertView == null) {
+            holder = new ViewHolder();
+            convertView = inflater.inflate(R.layout.album_gridview_photo, null);
+            // Locate the ImageView in gridview_item.xml
+            holder.photo = (ImageView) convertView.findViewById(R.id.album_photo);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
+        // Load image into GridView
+        imageLoader.DisplayImage(filePaths.get(position),
+                holder.photo);
 
-        @Override
-        public void onClick(View v) {
-            // on selecting grid view image
-            // launch full screen activity
-            // TODO: IMPLEMENT THIS CLICK
-//            Intent i = new Intent(activity, FullScreenViewActivity.class);
-//            i.putExtra("position", postion);
-//            activity.startActivity(i);
-        }
+        return convertView;
 
+
+
+//
+//
+//        ParseImageView imageView;
+//        if (convertView == null) {
+//            imageView = new ParseImageView(activity);
+//        } else {
+//            imageView = (ParseImageView) convertView;
+//        }
+//
+//        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//        imageView.setLayoutParams(new GridView.LayoutParams(imageWidth,
+//                imageWidth));
+//
+//        // get screen dimensions
+//
+//        ParseFile file = filePaths.get(position);
+//        imageView.setParseFile(file);
+//        imageView.loadInBackground(new GetDataCallback() {
+//            @Override
+//            public void done(byte[] data, ParseException e) {
+//                // nothing to do
+//            }
+//        });
+////        try {
+////            byte[] bitmapdata = file.getData();
+////            Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+////            imageView.setImageBitmap(bitmap);
+////        }
+////        catch (ParseException e) {
+////            Log.e("GridViewImageAdapter", "Parse Exception in getting data from Parsefile");
+////        }
+//
+//        // TODO: figure out how to get pictures as files from Parse from Matt
+////        Bitmap image = Utils.decodeFile(filePaths.get(position), imageWidth,
+////                imageWidth);
+//
+//
+////        imageView.setImageBitmap(image);
+//
+//        Log.e("IN ADAPTER", "IMAGE = " + imageView.toString());
+//
+//        return imageView;
     }
 
 }

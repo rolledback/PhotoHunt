@@ -25,7 +25,7 @@
         android:id="@+id/album_gridview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_marginTop="?attr/actionBarSize"
         android:drawSelectorOnTop="true"
         android:gravity="center"
         android:numColumns="auto_fit"
