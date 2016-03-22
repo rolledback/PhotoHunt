@@ -19,9 +19,11 @@ import com.drew.metadata.exif.GpsDirectory;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -108,6 +110,39 @@ public class Utils {
         }
         columnWidth = point.x;
         return columnWidth;
+    }
+
+    public static byte[] compressImage(Bitmap bitmap, Bitmap.CompressFormat format) {
+        int MAX_IMAGE_SIZE = 1000 * 1024;
+        int streamLength = MAX_IMAGE_SIZE;
+        int compressQuality = 105;
+
+        ByteArrayOutputStream bmpStream = new ByteArrayOutputStream();
+        while (streamLength >= MAX_IMAGE_SIZE && compressQuality > 5) {
+            try {
+                bmpStream.flush();//to avoid out of memory error
+                bmpStream.reset();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            compressQuality -= 5;
+            bitmap.compress(format, compressQuality, bmpStream);
+            byte[] bmpPicByteArray = bmpStream.toByteArray();
+            streamLength = bmpPicByteArray.length;
+        }
+
+        return bmpStream.toByteArray();
+    }
+
+    public static Bitmap.CompressFormat determineCompresionFormat(String fileName) {
+        fileName = fileName.toLowerCase();
+        if(fileName.endsWith(".png")) {
+            return Bitmap.CompressFormat.PNG;
+        }
+        else if(fileName.endsWith(".jpeg") || fileName.endsWith(".jpg")) {
+            return Bitmap.CompressFormat.JPEG;
+        }
+        return null;
     }
 
     static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
