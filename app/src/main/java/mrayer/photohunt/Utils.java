@@ -79,7 +79,7 @@ public class Utils {
             return new LatLng(latitudeDecimal, longitudeDecimal);
         }
         catch (Exception e) {
-            Log.d(Constants.ImageUtils_Tag, e.toString());
+            Log.d(Constants.Utils_Tag, e.toString());
         }
         return null;
     }
@@ -113,12 +113,11 @@ public class Utils {
     }
 
     public static byte[] compressImage(Bitmap bitmap, Bitmap.CompressFormat format) {
-        int MAX_IMAGE_SIZE = 1000 * 1024;
-        int streamLength = MAX_IMAGE_SIZE;
+        int streamLength = Constants.MAX_IMAGE_SIZE;
         int compressQuality = 105;
 
         ByteArrayOutputStream bmpStream = new ByteArrayOutputStream();
-        while (streamLength >= MAX_IMAGE_SIZE && compressQuality > 5) {
+        while (streamLength >= Constants.MAX_IMAGE_SIZE && compressQuality > 5) {
             try {
                 bmpStream.flush();//to avoid out of memory error
                 bmpStream.reset();

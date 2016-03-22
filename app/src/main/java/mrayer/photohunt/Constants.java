@@ -7,11 +7,12 @@ public class Constants {
     // log tags
     public static final String CreateNewPhotoHunt_Tag = "CREATE_HUNT";
     public static final String ImageAdapter_Tag = "IMAGE_ADAPTER";
-    public static final String ImageUtils_Tag = "IMAGE_UTILS";
+    public static final String Utils_Tag = "UTILS";
     public static final String PhotoSaveCallback_Tag = "PHOTO_SAVE_CALLBACK";
     public static final String PhotoProgressCallback_Tag = "PHOTO_PROGRESS_CALLBACK";
     public static final String PhotoUploadProgressDialog_Tag = "PHOTO_PROGRESS_DIALOG";
     public static final String AlbumGallery_Tag = "ALBUM_GALLERY";
+    public static final String SetChangeLocation_Tag = "SET_CHANGE_LOCATION";
 
     // start activity for result codes for CreateNewPhotoHuntActivity
     public static final int REQUEST_LOAD_IMAGE = 1;
@@ -23,4 +24,7 @@ public class Constants {
 
     // Gridview image padding
     public static final int GRID_PADDING = 8; // in dp
+
+    // Max uploadable image size
+    public static final int MAX_IMAGE_SIZE = 1000 * 1024;
 }

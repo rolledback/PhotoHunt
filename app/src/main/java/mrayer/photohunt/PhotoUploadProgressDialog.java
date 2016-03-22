@@ -24,7 +24,6 @@ public class PhotoUploadProgressDialog {
     }
 
     public void setPhotoProgresses(int percentage, int photo) {
-        Log.d(Constants.PhotoUploadProgressDialog_Tag, "Updating progress.");
         progresses[photo] = percentage;
         int totalProgress = 0;
         for(int i = 0; i < progresses.length; i++) {

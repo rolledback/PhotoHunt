@@ -31,7 +31,6 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
     private Marker m;
     private LatLng currentPos;
     private LatLng originalLocation;
-    private String TAG = "SetChangeLocation Activity: ";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +100,7 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
             if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             {
-                Log.d(TAG, "Do not have correct permissions");
+                Log.d(Constants.SetChangeLocation_Tag, "Do not have correct permissions");
             }
             else
             {

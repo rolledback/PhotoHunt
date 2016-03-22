@@ -123,11 +123,16 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
                     Bitmap.CompressFormat compressFormat = Utils.determineCompresionFormat(file.getName());
+
+                    byte[] byteArray;
                     if(compressFormat != null) {
                         bitmap.compress(compressFormat, 100, stream);
-                        Utils.compressImage(bitmap, compressFormat);
+                        byteArray = Utils.compressImage(bitmap, compressFormat);
                     }
-                    byte[] byteArray = stream.toByteArray();
+                    else {
+                        // I def feel like we should only accept jpg or png
+                        byteArray = stream.toByteArray();
+                    }
 
                     ParseFile photo = new ParseFile(file.getName(), byteArray);
                     LatLng location = manualLocations.containsKey(imagePath) ? manualLocations.get(imagePath) : Utils.getImageLocation(file);
