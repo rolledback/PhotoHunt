@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -104,49 +105,14 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Required fields are not filled out.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                int index = 0;
-                int numImages = imageAdapter.getGalImages().size();
-                setupUploadDialog(numImages);
+
+                setupUploadDialog(imageAdapter.getGalImages().size());
 
                 // create Parse Object for the album
                 String albumId = UUID.randomUUID().toString();
                 PhotoHuntAlbum photoHunt = createPhotoHunt(albumId);
 
-                // upload all of the shit
-                for(String imagePath: imageAdapter.getGalImages()) {
-                    File file = new File(imagePath);
-
-                    int height = (int)getResources().getDimension(R.dimen.create_new_photo_hunt_image_size);
-                    int width = getResources().getDisplayMetrics().widthPixels;
-
-                    Bitmap bitmap = Utils.decodeFile(file, width, height);
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-                    Bitmap.CompressFormat compressFormat = Utils.determineCompresionFormat(file.getName());
-
-                    byte[] byteArray;
-                    if(compressFormat != null) {
-                        bitmap.compress(compressFormat, 100, stream);
-                        byteArray = Utils.compressImage(bitmap, compressFormat);
-                    }
-                    else {
-                        // I def feel like we should only accept jpg or png
-                        byteArray = stream.toByteArray();
-                    }
-
-                    ParseFile photo = new ParseFile(file.getName(), byteArray);
-                    LatLng location = manualLocations.containsKey(imagePath) ? manualLocations.get(imagePath) : Utils.getImageLocation(file);
-
-                    if(index > 0) {
-                        // non-cover photo
-                        photo.saveInBackground(new PhotoSaveCallback(albumId, photo, location), new PhotoProgressCallback(uploadDialog, index, numImages));
-                    }
-                    else {
-                        // cover photo
-                        photo.saveInBackground(new PhotoSaveCallback(albumId, photo, location, photoHunt), new PhotoProgressCallback(uploadDialog, index, numImages));
-                    }
-                    index++;
-                }
+                new UploadAlbumTask(photoHunt, imageAdapter.getGalImages()).execute();
             }
         });
 
@@ -369,5 +335,59 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         photoHunt.setNumPhotos(imageAdapter.getGalImages().size());
 
         return photoHunt;
+    }
+
+    private class UploadAlbumTask extends AsyncTask<Void, Void, Void> {
+
+        private PhotoHuntAlbum albumToUpload;
+        private ArrayList<String> photos;
+
+        public UploadAlbumTask(PhotoHuntAlbum albumToUpload, ArrayList<String> photos) {
+            this.albumToUpload = albumToUpload;
+            this.photos = photos;
+        }
+
+        @Override protected Void doInBackground(Void... params) {
+            int index = 0;
+            int numImages = photos.size();
+
+            // upload all of the shit
+            for(String imagePath: photos) {
+                File file = new File(imagePath);
+
+                int height = (int)getResources().getDimension(R.dimen.create_new_photo_hunt_image_size);
+                int width = getResources().getDisplayMetrics().widthPixels;
+
+                Bitmap bitmap = Utils.decodeFile(file, width, height);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+                Bitmap.CompressFormat compressFormat = Utils.determineCompresionFormat(file.getName());
+
+                byte[] byteArray;
+                if(compressFormat != null) {
+                    bitmap.compress(compressFormat, 100, stream);
+                    byteArray = Utils.compressImage(bitmap, compressFormat);
+                }
+                else {
+                    // I def feel like we should only accept jpg or png
+                    byteArray = stream.toByteArray();
+                }
+
+                ParseFile photo = new ParseFile(file.getName(), byteArray);
+                LatLng location = manualLocations.containsKey(imagePath) ? manualLocations.get(imagePath) : Utils.getImageLocation(file);
+
+                if(index > 0) {
+                    // non-cover photo
+                    photo.saveInBackground(new PhotoSaveCallback(albumToUpload.getAlbumId(), photo, location), new PhotoProgressCallback(uploadDialog, index, numImages));
+                }
+                else {
+                    // cover photo
+                    photo.saveInBackground(new PhotoSaveCallback(albumToUpload.getAlbumId(), photo, location, albumToUpload), new PhotoProgressCallback(uploadDialog, index, numImages));
+                }
+                index++;
+            }
+
+            return null;
+        }
     }
 }
