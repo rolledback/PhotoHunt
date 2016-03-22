@@ -25,12 +25,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-/* Aila's TODO:
-Intent from "View/Add Location" button in Create New Photo Hunt activity that sends LatLng
-Find a good way to get default location, instead of using -1, -1 lol
-Investigate zooming in when you first open the activity
- */
-
 public class SetChangeLocationActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -98,7 +92,7 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Set a mark at the user's current location
+        // Set a mark at the user's current location if no location from photo
         if(currentPos.latitude == -1 && currentPos.longitude == -1)
         {
             LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -112,13 +106,22 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
             else
             {
                 Location location = service.getLastKnownLocation(provider);
-                LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
-                currentPos = userLocation;
+                // Cannot retrieve the last known location
+                if(location != null)
+                {
+                    LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
+                    currentPos = userLocation;
+                }
+                // Set the default to GDC, because -1, -1 is in Africa or something
+                else
+                {
+                    currentPos = new LatLng(30.286315, -97.736669);
+                }
             }
         }
 
         m = mMap.addMarker(new MarkerOptions().position(currentPos).draggable(true));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 16));
 
         // Clicking on the map will set the current position to that
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
