@@ -308,7 +308,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
+                ".png",         /* suffix */
                 storageDir      /* directory */
         );
 
