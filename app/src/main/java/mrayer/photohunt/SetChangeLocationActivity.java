@@ -1,13 +1,17 @@
 package mrayer.photohunt;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -21,18 +25,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-/* Aila's TODO:
-Intent from "View/Add Location" button in Create New Photo Hunt activity that sends LatLng
-Find a good way to get default location, instead of using -1, -1 lol
-Investigate zooming in when you first open the activity
- */
-
 public class SetChangeLocationActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private Marker m;
     private LatLng currentPos;
     private LatLng originalLocation;
+    private String TAG = "SetChangeLocation Activity: ";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,19 +92,36 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-//        // Set a mark at the user's current location
-//        if(currentPos.latitude == -1 && currentPos.longitude == -1)
-//        {
-//            LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
-//            Criteria criteria = new Criteria();
-//            String provider = service.getBestProvider(criteria, false);
-//            Location location = service.getLastLocation(provider);
-//            LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
-//            currentPos = userLocation;
-//        }
+        // Set a mark at the user's current location if no location from photo
+        if(currentPos.latitude == -1 && currentPos.longitude == -1)
+        {
+            LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+            String provider = service.getBestProvider(criteria, false);
+            if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            {
+                Log.d(TAG, "Do not have correct permissions");
+            }
+            else
+            {
+                Location location = service.getLastKnownLocation(provider);
+                // Cannot retrieve the last known location
+                if(location != null)
+                {
+                    LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
+                    currentPos = userLocation;
+                }
+                // Set the default to GDC, because -1, -1 is in Africa or something
+                else
+                {
+                    currentPos = new LatLng(30.286315, -97.736669);
+                }
+            }
+        }
 
         m = mMap.addMarker(new MarkerOptions().position(currentPos).draggable(true));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 16));
 
         // Clicking on the map will set the current position to that
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {

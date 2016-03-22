@@ -30,7 +30,6 @@ public class AlbumActivity extends AppCompatActivity {
         // Initilizing Grid View
         InitilizeGridLayout();
 
-        // loading all image paths from SD card
         // TODO: get images from Parse for current album
 //        imagePaths = Utils.getFilePaths();
 
