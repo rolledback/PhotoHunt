@@ -20,7 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.LogInCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 
@@ -44,6 +46,9 @@ public class LoginActivity extends AppCompatActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
+
+//        Parse.enableLocalDatastore(this);
+//        Parse.initialize(this, Keys.Parse_APP_ID, Keys.Parse_API_Key);
 
         usernameText = (EditText) findViewById(R.id.login_username);
         passwordText = (EditText) findViewById(R.id.login_password);
@@ -123,6 +128,8 @@ public class LoginActivity extends AppCompatActivity {
 
                 // TODO: Implement successful signup logic here
                 // By default we just finish the Activity and log them in automatically
+                Intent intent = new Intent(LoginActivity.this, AlbumGalleryActivity.class);
+                startActivity(intent);
                 this.finish();
             }
         }
@@ -136,6 +143,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         loginButton.setEnabled(true);
+        Intent intent = new Intent(LoginActivity.this, AlbumGalleryActivity.class);
+        startActivity(intent);
         finish();
     }
 

@@ -32,9 +32,9 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         }
 
         // connect to Parse and register our custom classes
-        Parse.enableLocalDatastore(this);
+//        Parse.enableLocalDatastore(this);
         ParseObject.registerSubclass(PhotoHuntAlbum.class);
-        Parse.initialize(this, Keys.Parse_APP_ID, Keys.Parse_API_Key);
+//        Parse.initialize(this, Keys.Parse_APP_ID, Keys.Parse_API_Key);
 
         // Set up the adapter to get the data from Parse
         adapter = new CustomAdapter(this);
