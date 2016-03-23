@@ -54,6 +54,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 ParseProxyObject ppo = new ParseProxyObject(selectedAlbum);
                 Intent detailsIntent = new Intent(AlbumGalleryActivity.this, DetailedPhotoHuntActivity.class);
                 detailsIntent.putExtra("albumProxy", ppo);
+                detailsIntent.putExtra("albumId", selectedAlbum.getAlbumId());
                 startActivity(detailsIntent);
             }
         });
@@ -84,6 +85,11 @@ public class AlbumGalleryActivity extends AppCompatActivity {
             case R.id.action_test_set_add_location:
                 Intent locIntent = new Intent(AlbumGalleryActivity.this, SetChangeLocationActivity.class);
                 startActivity(locIntent);
+                return true;
+
+            case R.id.action_test_album:
+                Intent albumIntent = new Intent(AlbumGalleryActivity.this, AlbumActivity.class);
+                startActivity(albumIntent);
                 return true;
         }
         return true;

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,6 +24,8 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
     private Button viewPhotosButton;
     private Button startPhotoHuntButton;
 
+    private String albumId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +41,8 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Detailed Photo Hunt");
 
+        albumId = getIntent().getStringExtra("albumId");
+
         nameView = (TextView) findViewById(R.id.detailed_name);
         authorView = (TextView) findViewById(R.id.detailed_author);
         locationView = (TextView) findViewById(R.id.detailed_location);
@@ -47,6 +52,14 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
         imageView = (ImageView) findViewById(R.id.detailed_cover_photo);
 
         viewPhotosButton = (Button) findViewById(R.id.detailed_view_photos_button);
+        viewPhotosButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DetailedPhotoHuntActivity.this, AlbumActivity.class);
+                intent.putExtra("albumId", albumId);
+                startActivity(intent);
+            }
+        });
         startPhotoHuntButton = (Button) findViewById(R.id.detailed_start_photo_hunt_button);
 
         Intent intent = getIntent();

@@ -14,4 +14,9 @@
         android:title="Test Set/Add Location"
         app:showAsAction="ifRoom"/>
 
+    <item
+        android:id="@+id/action_test_album"
+        android:icon="@drawable/ic_gallery"
+        android:title="Test Albums"
+        app:showAsAction="ifRoom"/>
 </menu>
