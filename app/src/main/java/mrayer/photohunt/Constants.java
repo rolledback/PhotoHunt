@@ -27,4 +27,7 @@ public class Constants {
 
     // Max uploadable image size
     public static final int MAX_IMAGE_SIZE = 1000 * 1024;
+
+    // Cache directory name
+    public static final String CACHE_NAME = "PhotoHunt";
 }

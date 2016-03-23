@@ -13,15 +13,15 @@ public class FileCache {
 
     public FileCache(Context context) {
         // Find the dir to save cached images
-        if (android.os.Environment.getExternalStorageState().equals(
-                android.os.Environment.MEDIA_MOUNTED))
-            cacheDir = new File(
-                    android.os.Environment.getExternalStorageDirectory(),
-                    "PhotoHunt");
-        else
+        if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+            cacheDir = new File(android.os.Environment.getExternalStorageDirectory(), Constants.CACHE_NAME);
+        }
+        else {
             cacheDir = context.getCacheDir();
-        if (!cacheDir.exists())
+        }
+        if (!cacheDir.exists()) {
             cacheDir.mkdirs();
+        }
     }
 
     public File getFile(String url) {
@@ -33,10 +33,12 @@ public class FileCache {
 
     public void clear() {
         File[] files = cacheDir.listFiles();
-        if (files == null)
+        if (files == null) {
             return;
-        for (File f : files)
+        }
+        for (File f : files) {
             f.delete();
+        }
     }
 
 }

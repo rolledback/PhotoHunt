@@ -29,8 +29,7 @@ public class AlbumImageLoader {
 
     MemoryCache memoryCache = new MemoryCache();
     FileCache fileCache;
-    private Map<ImageView, String> imageViews = Collections
-            .synchronizedMap(new WeakHashMap<ImageView, String>());
+    private Map<ImageView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
     ExecutorService executorService;
     // Handler to display images in UI thread
     Handler handler = new Handler();
@@ -45,8 +44,9 @@ public class AlbumImageLoader {
     public void DisplayImage(String url, ImageView imageView) {
         imageViews.put(imageView, url);
         Bitmap bitmap = memoryCache.get(url);
-        if (bitmap != null)
+        if (bitmap != null) {
             imageView.setImageBitmap(bitmap);
+        }
         else {
             queuePhoto(url, imageView);
             imageView.setImageResource(stub_id);
@@ -62,15 +62,15 @@ public class AlbumImageLoader {
         File f = fileCache.getFile(url);
 
         Bitmap b = Utils.decodeFile(f, 100, 100);
-        if (b != null)
+        if (b != null) {
             return b;
+        }
 
-        // Download Images from the Internet
+        // Download Images from the Internet, we may want to consider changing this to use Parse code
         try {
             Bitmap bitmap = null;
             URL imageUrl = new URL(url);
-            HttpURLConnection conn = (HttpURLConnection) imageUrl
-                    .openConnection();
+            HttpURLConnection conn = (HttpURLConnection) imageUrl.openConnection();
             conn.setConnectTimeout(30000);
             conn.setReadTimeout(30000);
             conn.setInstanceFollowRedirects(true);
@@ -81,10 +81,12 @@ public class AlbumImageLoader {
             conn.disconnect();
             bitmap = Utils.decodeFile(f, 100, 100);
             return bitmap;
-        } catch (Throwable ex) {
+        }
+        catch (Throwable ex) {
             ex.printStackTrace();
-            if (ex instanceof OutOfMemoryError)
+            if (ex instanceof OutOfMemoryError) {
                 memoryCache.clear();
+            }
             return null;
         }
     }
@@ -110,15 +112,18 @@ public class AlbumImageLoader {
         @Override
         public void run() {
             try {
-                if (imageViewReused(photoToLoad))
+                if (imageViewReused(photoToLoad)) {
                     return;
+                }
                 Bitmap bmp = getBitmap(photoToLoad.url);
                 memoryCache.put(photoToLoad.url, bmp);
-                if (imageViewReused(photoToLoad))
+                if (imageViewReused(photoToLoad)) {
                     return;
+                }
                 BitmapDisplayer bd = new BitmapDisplayer(bmp, photoToLoad);
                 handler.post(bd);
-            } catch (Throwable th) {
+            }
+            catch (Throwable th) {
                 th.printStackTrace();
             }
         }
@@ -126,8 +131,9 @@ public class AlbumImageLoader {
 
     boolean imageViewReused(PhotoToLoad photoToLoad) {
         String tag = imageViews.get(photoToLoad.imageView);
-        if (tag == null || !tag.equals(photoToLoad.url))
+        if (tag == null || !tag.equals(photoToLoad.url)) {
             return true;
+        }
         return false;
     }
 
@@ -142,12 +148,15 @@ public class AlbumImageLoader {
         }
 
         public void run() {
-            if (imageViewReused(photoToLoad))
+            if (imageViewReused(photoToLoad)) {
                 return;
-            if (bitmap != null)
+            }
+            if (bitmap != null) {
                 photoToLoad.imageView.setImageBitmap(bitmap);
-            else
+            }
+            else {
                 photoToLoad.imageView.setImageResource(stub_id);
+            }
         }
     }
 

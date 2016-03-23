@@ -42,8 +42,7 @@ public class AlbumActivity extends AppCompatActivity {
         imagePaths = new ArrayList<String>();
 
         // Gridview adapter
-        adapter = new GridViewImageAdapter(AlbumActivity.this, imagePaths,
-                columnWidth);
+        adapter = new GridViewImageAdapter(AlbumActivity.this, imagePaths, columnWidth);
 
         // setting grid view adapter
         gridView.setAdapter(adapter);
@@ -53,16 +52,14 @@ public class AlbumActivity extends AppCompatActivity {
 
     private void initializeGridView() {
         Resources r = getResources();
-        float padding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                Constants.GRID_PADDING, r.getDisplayMetrics());
+        float padding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Constants.GRID_PADDING, r.getDisplayMetrics());
 
         columnWidth = (int) ((Utils.getScreenWidth(getApplicationContext()) - ((Constants.NUM_OF_COLUMNS + 1) * padding)) / Constants.NUM_OF_COLUMNS);
 
         gridView.setNumColumns(Constants.NUM_OF_COLUMNS);
         gridView.setColumnWidth(columnWidth);
         gridView.setStretchMode(GridView.NO_STRETCH);
-        gridView.setPadding((int) padding, (int) padding, (int) padding,
-                (int) padding);
+        gridView.setPadding((int) padding, (int) padding, (int) padding, (int) padding);
         gridView.setHorizontalSpacing((int) padding);
         gridView.setVerticalSpacing((int) padding);
     }
@@ -76,13 +73,13 @@ public class AlbumActivity extends AppCompatActivity {
                     for (ParseObject po : photoList) {
                         ParseFile image = po.getParseFile("photo");
                         imagePaths.add(image.getUrl());
+                        adapter.notifyDataSetChanged();
                     }
                 } else {
                     Log.e(Constants.AlbumGallery_Tag, "Error: " + e.getMessage());
                 }
             }
         });
-        adapter.notifyDataSetChanged();
     }
 
 }

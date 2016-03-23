@@ -17,8 +17,7 @@ public class GridViewImageAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     AlbumImageLoader imageLoader;
 
-    public GridViewImageAdapter(Context context, ArrayList<String> filePaths,
-                                int imageWidth) {
+    public GridViewImageAdapter(Context context, ArrayList<String> filePaths, int imageWidth) {
         this.context = context;
         this.filePaths = filePaths;
         this.imageWidth = imageWidth;
@@ -55,12 +54,12 @@ public class GridViewImageAdapter extends BaseAdapter {
             // Locate the ImageView in gridview_item.xml
             holder.photo = (ImageView) convertView.findViewById(R.id.album_photo);
             convertView.setTag(holder);
-        } else {
+        }
+        else {
             holder = (ViewHolder) convertView.getTag();
         }
         // Load image into GridView
-        imageLoader.DisplayImage(filePaths.get(position),
-                holder.photo);
+        imageLoader.DisplayImage(filePaths.get(position), holder.photo);
 
         return convertView;
     }
