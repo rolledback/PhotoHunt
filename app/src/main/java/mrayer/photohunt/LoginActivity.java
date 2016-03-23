@@ -47,8 +47,17 @@ public class LoginActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
 
-//        Parse.enableLocalDatastore(this);
-//        Parse.initialize(this, Keys.Parse_APP_ID, Keys.Parse_API_Key);
+        // If user is already logged onto their account, it skips the login screen and sends them to the Galley page
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
+            Intent intent = new Intent(LoginActivity.this, AlbumGalleryActivity.class);
+            startActivity(intent);
+            finish();
+        }
+            // do stuff with the user
+//        } else {
+//            // show the signup or login screen
+//        }
 
         usernameText = (EditText) findViewById(R.id.login_username);
         passwordText = (EditText) findViewById(R.id.login_password);

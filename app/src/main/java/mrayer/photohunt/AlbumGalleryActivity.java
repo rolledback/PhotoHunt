@@ -14,6 +14,7 @@ import android.widget.ListView;
 
 import com.parse.Parse;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 public class AlbumGalleryActivity extends AppCompatActivity {
 
@@ -99,6 +100,12 @@ public class AlbumGalleryActivity extends AppCompatActivity {
             case R.id.action_test_sign_up:
                 Intent signUpIntent = new Intent(AlbumGalleryActivity.this, SignUpActivity.class);
                 startActivity(signUpIntent);
+                return true;
+            case R.id.action_test_logout:
+                Intent logoutIntent = new Intent(AlbumGalleryActivity.this, LoginActivity.class);
+                startActivity(logoutIntent);
+                ParseUser.logOut();
+                ParseUser currentUser = ParseUser.getCurrentUser(); // this will now be null
                 return true;
         }
         return true;

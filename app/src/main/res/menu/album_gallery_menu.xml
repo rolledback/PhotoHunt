@@ -23,12 +23,18 @@
     <item
         android:id="@+id/action_test_login"
         android:icon="@drawable/ic_login"
-        android:title="Test Albums"
+        android:title="Test Login"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_test_sign_up"
         android:icon="@drawable/ic_sign_up"
-        android:title="Test Albums"
+        android:title="Test Sign Up"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_test_logout"
+        android:icon="@drawable/ic_logout"
+        android:title="Test Logout"
         app:showAsAction="ifRoom"/>
 </menu>
