@@ -73,8 +73,8 @@ public class AlbumActivity extends AppCompatActivity {
                     for (ParseObject po : photoList) {
                         ParseFile image = po.getParseFile("photo");
                         imagePaths.add(image.getUrl());
-                        adapter.notifyDataSetChanged();
                     }
+                    adapter.notifyDataSetChanged();
                 } else {
                     Log.e(Constants.AlbumGallery_Tag, "Error: " + e.getMessage());
                 }
