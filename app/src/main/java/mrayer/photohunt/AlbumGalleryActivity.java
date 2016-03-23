@@ -91,6 +91,15 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 Intent albumIntent = new Intent(AlbumGalleryActivity.this, AlbumActivity.class);
                 startActivity(albumIntent);
                 return true;
+
+            case R.id.action_test_login:
+                Intent loginIntent = new Intent(AlbumGalleryActivity.this, LoginActivity.class);
+                startActivity(loginIntent);
+                return true;
+            case R.id.action_test_sign_up:
+                Intent signUpIntent = new Intent(AlbumGalleryActivity.this, SignUpActivity.class);
+                startActivity(signUpIntent);
+                return true;
         }
         return true;
     }

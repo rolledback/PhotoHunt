@@ -9,18 +9,20 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.parse.ParseImageView;
+
 public class GridViewImageAdapter extends BaseAdapter {
 
     private Context context;
     private ArrayList<String> filePaths = new ArrayList<String>();
     private int imageWidth;
     private LayoutInflater inflater;
-    AlbumImageLoader imageLoader;
+    private AlbumImageLoader imageLoader;
 
-    public GridViewImageAdapter(Context context, ArrayList<String> filePaths, int imageWidth) {
-        this.context = context;
+    public GridViewImageAdapter(Context c, ArrayList<String> filePaths, int iW) {
+        this.context = c;
         this.filePaths = filePaths;
-        this.imageWidth = imageWidth;
+        this.imageWidth = iW;
 
         inflater = LayoutInflater.from(context);
         imageLoader = new AlbumImageLoader(context);
@@ -42,7 +44,7 @@ public class GridViewImageAdapter extends BaseAdapter {
     }
 
     public class ViewHolder {
-        ImageView photo;
+        ParseImageView photo;
     }
 
     @Override
@@ -52,7 +54,7 @@ public class GridViewImageAdapter extends BaseAdapter {
             holder = new ViewHolder();
             convertView = inflater.inflate(R.layout.album_gridview_photo, null);
             // Locate the ImageView in gridview_item.xml
-            holder.photo = (ImageView) convertView.findViewById(R.id.album_photo);
+            holder.photo = (ParseImageView) convertView.findViewById(R.id.album_photo);
             convertView.setTag(holder);
         }
         else {
@@ -62,6 +64,10 @@ public class GridViewImageAdapter extends BaseAdapter {
         imageLoader.DisplayImage(filePaths.get(position), holder.photo);
 
         return convertView;
+    }
+
+    public void clearCache() {
+        imageLoader.clearCache();
     }
 
 }

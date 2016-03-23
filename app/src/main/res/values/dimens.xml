@@ -6,4 +6,6 @@
     <dimen name="create_new_photo_hunt_image_size">200dp</dimen>
     <dimen name="detailed_photo_hunt_text_height">30dp</dimen>
     <dimen name="detailed_photo_hunt_text_margins">10dp</dimen>
+    <dimen name="album_photo_width">100dp</dimen>
+    <dimen name="album_photo_height">100dp</dimen>
 </resources>

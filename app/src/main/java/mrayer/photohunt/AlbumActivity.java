@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.MenuItem;
 import android.widget.GridView;
 
 import com.parse.FindCallback;
@@ -31,6 +32,9 @@ public class AlbumActivity extends AppCompatActivity {
         setContentView(R.layout.activity_album);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("View Photos");
 
         albumId = getIntent().getStringExtra("albumId");
 
@@ -48,6 +52,15 @@ public class AlbumActivity extends AppCompatActivity {
         gridView.setAdapter(adapter);
 
         getPhotos();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void initializeGridView() {

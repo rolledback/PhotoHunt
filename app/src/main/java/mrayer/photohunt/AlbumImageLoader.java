@@ -5,10 +5,7 @@ package mrayer.photohunt;
  * Code retrieved from this tutorial: http://www.androidbegin.com/tutorial/android-parse-com-gridview-tutorial/
  */
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -22,19 +19,21 @@ import java.util.concurrent.Executors;
 import android.os.Handler;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
 public class AlbumImageLoader {
 
-    MemoryCache memoryCache = new MemoryCache();
-    FileCache fileCache;
-    private Map<ImageView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
-    ExecutorService executorService;
+    private MemoryCache memoryCache = new MemoryCache();
+    private FileCache fileCache;
+    private Map<ImageView, String> imageViews = Collections
+            .synchronizedMap(new WeakHashMap<ImageView, String>());
+    private ExecutorService executorService;
     // Handler to display images in UI thread
-    Handler handler = new Handler();
+    private Handler handler = new Handler();
+    private Context context;
 
     public AlbumImageLoader(Context context) {
+        this.context = context;
         fileCache = new FileCache(context);
         executorService = Executors.newFixedThreadPool(5);
     }
@@ -61,6 +60,8 @@ public class AlbumImageLoader {
     private Bitmap getBitmap(String url) {
         File f = fileCache.getFile(url);
 
+//        int imageWidth = (int) context.getResources().getDimensionPixelSize(R.dimen.album_photo_width);
+//        int imageHeight = (int) context.getResources().getDimensionPixelSize(R.dimen.album_photo_height);
         Bitmap b = Utils.decodeFile(f, 100, 100);
         if (b != null) {
             return b;
