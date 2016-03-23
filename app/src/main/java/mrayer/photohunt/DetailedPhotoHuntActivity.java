@@ -55,7 +55,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
         nameView.setText(ppo.getString("name"));
         authorView.setText(ppo.getString("author"));
         locationView.setText(ppo.getString("location"));
-        albumSizeView.setText(Integer.toString(ppo.getInt("albumSize")));
+        albumSizeView.setText(Integer.toString(ppo.getInt("numPhotos")));
         typeView.setText(ppo.getString("type"));
 
         // download image from url

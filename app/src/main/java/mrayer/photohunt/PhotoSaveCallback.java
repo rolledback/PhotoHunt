@@ -22,20 +22,23 @@ public class PhotoSaveCallback implements SaveCallback {
     private ParseFile photo;
     private LatLng location;
     private PhotoHuntAlbum album;
+    private int index;
 
     // standard callback constructor
-    public PhotoSaveCallback(String albumId, ParseFile photo, LatLng location) {
+    public PhotoSaveCallback(String albumId, ParseFile photo, LatLng location, int index) {
         this.albumId = albumId;
         this.photo = photo;
         this.location = location;
+        this.index = index;
         this.album = null;
     }
 
     // callback constructor for a cover photo
-    public PhotoSaveCallback(String albumId, ParseFile photo, LatLng location, PhotoHuntAlbum album) {
+    public PhotoSaveCallback(String albumId, ParseFile photo, LatLng location, int index, PhotoHuntAlbum album) {
         this.albumId = albumId;
         this.photo = photo;
         this.location = location;
+        this.index = index;
         this.album = album;
     }
 
@@ -47,6 +50,7 @@ public class PhotoSaveCallback implements SaveCallback {
             ParseObject photoObject = new ParseObject("Photo");
             photoObject.put("albumId", albumId);
             photoObject.put("photo", photo);
+            photoObject.put("index", index);
             if(location != null) {
                 photoObject.put("location", new ParseGeoPoint(location.latitude, location.longitude));
             }
