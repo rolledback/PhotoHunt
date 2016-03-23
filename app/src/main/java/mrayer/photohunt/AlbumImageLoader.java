@@ -25,7 +25,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
-public class ImageLoader {
+public class AlbumImageLoader {
 
     MemoryCache memoryCache = new MemoryCache();
     FileCache fileCache;
@@ -35,7 +35,7 @@ public class ImageLoader {
     // Handler to display images in UI thread
     Handler handler = new Handler();
 
-    public ImageLoader(Context context) {
+    public AlbumImageLoader(Context context) {
         fileCache = new FileCache(context);
         executorService = Executors.newFixedThreadPool(5);
     }

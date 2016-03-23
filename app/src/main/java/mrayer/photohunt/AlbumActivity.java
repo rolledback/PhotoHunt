@@ -23,8 +23,6 @@ public class AlbumActivity extends AppCompatActivity {
     private GridView gridView;
     private int columnWidth;
 
-    private PhotoHuntAlbum currentPhotoHunt;
-
     private String albumId;
 
     @Override
@@ -36,15 +34,11 @@ public class AlbumActivity extends AppCompatActivity {
 
         albumId = getIntent().getStringExtra("albumId");
 
-
-
         gridView = (GridView) findViewById(R.id.album_gridview);
 
         // Initilizing Grid View
         initializeGridView();
 
-        // TODO: get images from Parse for current album
-//        imagePaths = Utils.getFilePaths();
         imagePaths = new ArrayList<String>();
 
         // Gridview adapter
@@ -79,14 +73,12 @@ public class AlbumActivity extends AppCompatActivity {
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> photoList, ParseException e) {
                 if (e == null) {
-                    Log.d("score", "Retrieved " + photoList.size() + " scores");
                     for (ParseObject po : photoList) {
                         ParseFile image = po.getParseFile("photo");
                         imagePaths.add(image.getUrl());
-                        Log.d("image", "image = " + image.toString());
                     }
                 } else {
-                    Log.e("score", "Error: " + e.getMessage());
+                    Log.e(Constants.AlbumGallery_Tag, "Error: " + e.getMessage());
                 }
             }
         });
