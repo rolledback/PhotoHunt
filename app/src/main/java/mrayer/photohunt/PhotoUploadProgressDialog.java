@@ -2,6 +2,7 @@ package mrayer.photohunt;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.Log;
 
 import java.util.Arrays;
@@ -45,5 +46,21 @@ public class PhotoUploadProgressDialog {
         dialog.setMax(100);
         dialog.setCancelable(false);
         dialog.show();
+    }
+
+    public boolean isShowing() {
+        return dialog.isShowing();
+    }
+
+    public boolean isCancelable() {
+        return (dialog.getProgress() == 100);
+    }
+
+    public void dismiss() {
+        dialog.dismiss();
+    }
+
+    public void setOnCancelListener(DialogInterface.OnCancelListener listener) {
+        dialog.setOnCancelListener(listener);
     }
 }

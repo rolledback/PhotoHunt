@@ -1,5 +1,6 @@
 package mrayer.photohunt;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -299,7 +300,6 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 || inputLocationEditText.getText().length() == 0) {
             return false;
         }
-
         return true;
     }
 
@@ -367,6 +367,11 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private void setupUploadDialog(int numPhotos) {
         uploadDialog = new PhotoUploadProgressDialog(this, numPhotos);
         uploadDialog.setup();
+        uploadDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+                finish(); //If you want to finish the activity.
+            }
+        });
     }
 
     private PhotoHuntAlbum createPhotoHunt(String albumId) {
