@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -50,6 +51,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private EditText inputNameEditText;
     private EditText inputAuthorEditText;
     private EditText inputLocationEditText;
+    private EditText inputDescriptionEditText;
     private Spinner typeSpinner;
 
     private ViewPager viewPager;
@@ -84,6 +86,21 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         inputNameEditText = (EditText) findViewById(R.id.input_name);
         inputAuthorEditText = (EditText) findViewById(R.id.input_author);
         inputLocationEditText = (EditText) findViewById(R.id.input_location);
+        inputDescriptionEditText = (EditText) findViewById(R.id.input_description);
+        inputDescriptionEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (v.getId() == R.id.input_description) {
+                    v.getParent().requestDisallowInterceptTouchEvent(true);
+                    switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                        case MotionEvent.ACTION_UP:
+                            v.getParent().requestDisallowInterceptTouchEvent(false);
+                            break;
+                    }
+                }
+                return false;
+            }
+        });
         typeSpinner = (Spinner) findViewById(R.id.spinner_type);
 
         addFromGalleryButton = (Button) findViewById(R.id.add_from_gallery_button);
@@ -198,6 +215,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         outState.putString("author", inputAuthorEditText.getText().toString());
         outState.putString("location", inputLocationEditText.getText().toString());
         outState.putInt("type_number", typeSpinner.getSelectedItemPosition());
+        outState.putString("description", inputDescriptionEditText.getText().toString());
         outState.putStringArrayList("galImages", imageAdapter.getGalImages());
     }
 
@@ -207,6 +225,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         inputNameEditText.setText(savedInstanceState.getString("name"));
         inputAuthorEditText.setText(savedInstanceState.getString("author"));
         inputLocationEditText.setText(savedInstanceState.getString("location"));
+        inputDescriptionEditText.setText(savedInstanceState.getString("description"));
         typeSpinner.setSelection(savedInstanceState.getInt("type_number"));
         ArrayList<String> list = savedInstanceState.getStringArrayList("galImages");
         imageAdapter.setGalImages(list);
@@ -354,6 +373,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         String photoHuntName = ((EditText) findViewById(R.id.input_name)).getText().toString();
         String photoHuntAuthor = ((EditText) findViewById(R.id.input_author)).getText().toString();
         String photoHuntLocation = ((EditText) findViewById(R.id.input_location)).getText().toString();
+        String photoHuntDescription = ((EditText) findViewById(R.id.input_description)).getText().toString();
         String photoHuntType = ((Spinner) findViewById(R.id.spinner_type)).getSelectedItem().toString();
 
         PhotoHuntAlbum photoHunt = new PhotoHuntAlbum();
@@ -362,6 +382,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         photoHunt.setLocation(photoHuntLocation);
         photoHunt.setType(photoHuntType);
         photoHunt.setAlbumId(albumId);
+        photoHunt.setDescription(photoHuntDescription);
         photoHunt.setNumPhotos(imageAdapter.getGalImages().size());
 
         return photoHunt;

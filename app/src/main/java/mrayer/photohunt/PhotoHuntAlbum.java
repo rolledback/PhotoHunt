@@ -39,6 +39,14 @@ public class PhotoHuntAlbum extends ParseObject {
         put("location", location);
     }
 
+    public String getDescription() {
+        return getString("description");
+    }
+
+    public void setDescription(String description) {
+        put("description", description);
+    }
+
     public String getType() {
         return getString("type");
     }
