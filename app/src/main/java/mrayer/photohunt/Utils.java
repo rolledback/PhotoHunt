@@ -203,4 +203,9 @@ public class Utils {
         }
         catch(Exception ex){}
     }
+
+    public static boolean validImage(String file) {
+        file = file.toLowerCase();
+        return file.endsWith(".jpg") || file.endsWith(".jpeg") || file.endsWith(".png");
+    }
 }

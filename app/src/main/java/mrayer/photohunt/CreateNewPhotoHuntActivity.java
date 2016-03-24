@@ -14,12 +14,14 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -99,19 +101,19 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!checkFields()) {
                     // if one or more of the EditTexts aren't filled out, don't upload and send error message
-                    Toast.makeText(getApplicationContext(), "Required fields are not filled out.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Required fields are not filled out.", Toast.LENGTH_LONG).show();
                     return;
                 }
                 else if (imageAdapter.getGalImages().size() == 0) {
                     // no images to upload
-                    Toast.makeText(getApplicationContext(), "No photos to upload.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "No photos to upload.", Toast.LENGTH_LONG).show();
                     return;
                 }
                 else {
                     for(String imagePath: imageAdapter.getGalImages()) {
                         if(imageAdapter.getManualLocation(imagePath) == null && imageAdapter.getMetaLocation(imagePath) == null) {
                             // all photos must have a location
-                            Toast.makeText(getApplicationContext(), "Please ensure all photos have locations.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Please ensure all photos have locations.", Toast.LENGTH_LONG).show();
                             return;
                         }
                     }
@@ -151,6 +153,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (imageAdapter.getGalImages().size() == 0) {
                     // no images, so we can't set any locations
+                    Toast.makeText(getApplicationContext(), "No images have been added.", Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -235,6 +238,12 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
 
+            // make sure it is valid
+            if(!Utils.validImage(picturePath)) {
+                makeAndShowInvalidImageToast();
+                return;
+            }
+
             ArrayList<String> galImages = imageAdapter.getGalImages();
 
             // check if galImages already has images
@@ -249,6 +258,12 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             restorePreferences();
             galleryAddPic();
             ArrayList<String> galImages = imageAdapter.getGalImages();
+
+            // make sure it is valid
+            if(!Utils.validImage(mCurrentPhotoPath)) {
+                makeAndShowInvalidImageToast();
+                return;
+            }
 
             // check if galImages already has images
             if (!galImages.contains(mCurrentPhotoPath)) {
@@ -350,6 +365,13 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         photoHunt.setNumPhotos(imageAdapter.getGalImages().size());
 
         return photoHunt;
+    }
+
+    private void makeAndShowInvalidImageToast() {
+        Toast toast = Toast.makeText(this, "Invalid image type.\nAccepted types are .png, and .jpg/.jpeg.", Toast.LENGTH_LONG);
+        TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+        if( v != null) v.setGravity(Gravity.CENTER);
+        toast.show();
     }
 
     private class UploadAlbumTask extends AsyncTask<Void, Void, Void> {
