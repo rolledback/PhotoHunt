@@ -19,6 +19,7 @@ import com.parse.ParseUser;
 public class AlbumGalleryActivity extends AppCompatActivity {
 
     private CustomAdapter adapter;
+    private ListView list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +42,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         adapter = new CustomAdapter(this);
 
         // Get the list view
-        ListView list = (ListView) findViewById(R.id.list);
+        list = (ListView) findViewById(R.id.list);
 
         // Default view is all PhotoHuntAlbums
         list.setAdapter(adapter);
@@ -69,6 +70,12 @@ public class AlbumGalleryActivity extends AppCompatActivity {
          **/
     }
 
+    // Refresh list
+    private void refreshList() {
+        adapter.loadObjects();
+        list.setAdapter(adapter);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.album_gallery_menu, menu);
@@ -78,6 +85,10 @@ public class AlbumGalleryActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_refresh_list:
+                refreshList();
+                return true;
+
             case R.id.action_create_photo_hunt:
                 Intent intent = new Intent(AlbumGalleryActivity.this, CreateNewPhotoHuntActivity.class);
                 startActivity(intent);
