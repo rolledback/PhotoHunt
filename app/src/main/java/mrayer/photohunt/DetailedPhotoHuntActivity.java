@@ -18,6 +18,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
     private TextView locationView;
     private TextView albumSizeView;
     private TextView typeView;
+    private TextView descriptionView;
 
     private ImageView imageView;
 
@@ -47,6 +48,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
         authorView = (TextView) findViewById(R.id.detailed_author);
         locationView = (TextView) findViewById(R.id.detailed_location);
         albumSizeView = (TextView) findViewById(R.id.detailed_album_size);
+        descriptionView = (TextView) findViewById(R.id.detailed_description);
         typeView = (TextView) findViewById(R.id.detailed_type);
 
         imageView = (ImageView) findViewById(R.id.detailed_cover_photo);
@@ -69,6 +71,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
         authorView.setText(ppo.getString("author"));
         locationView.setText(ppo.getString("location"));
         albumSizeView.setText(Integer.toString(ppo.getInt("numPhotos")));
+        descriptionView.setText(ppo.getString("description"));
         typeView.setText(ppo.getString("type"));
 
         // download image from url
