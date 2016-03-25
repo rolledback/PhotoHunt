@@ -32,4 +32,8 @@ public class Constants {
 
     // Cache directory name
     public static final String CACHE_NAME = "PhotoHunt";
+
+    // Thumbnail dimensions
+    public static final int THUMBNAIL_WIDTH = 500;
+    public static final int THUMBNAIL_HEIGHT = 500;
 }

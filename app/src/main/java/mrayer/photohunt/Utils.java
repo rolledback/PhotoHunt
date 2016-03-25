@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Display;
@@ -143,6 +144,11 @@ public class Utils {
             return Bitmap.CompressFormat.JPEG;
         }
         return null;
+    }
+
+    public static Bitmap createThumbnail(Bitmap bitmap) {
+        Bitmap resized = ThumbnailUtils.extractThumbnail(bitmap, Constants.THUMBNAIL_WIDTH, Constants.THUMBNAIL_HEIGHT);
+        return resized;
     }
 
     static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {

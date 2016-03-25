@@ -17,7 +17,7 @@ import com.parse.ParseUser;
 
 public class AlbumGalleryActivity extends AppCompatActivity {
 
-    private AlbumGalleryAdapter adapter;
+    private AlbumGalleryListAdapter adapter;
     private ListView list;
 
     @Override
@@ -33,7 +33,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         }
 
         // Set up the adapter to get the data from Parse
-        adapter = new AlbumGalleryAdapter(this);
+        adapter = new AlbumGalleryListAdapter(this);
 
         // Get the list view
         list = (ListView) findViewById(R.id.list);

@@ -424,17 +424,19 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
                 Bitmap bitmap = Utils.decodeFile(file, width, height);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
                 Bitmap.CompressFormat compressFormat = Utils.determineCompresionFormat(file.getName());
 
                 byte[] byteArray;
                 if(compressFormat != null) {
                     bitmap.compress(compressFormat, 100, stream);
+                    if(index == 0) {
+                        bitmap = Utils.createThumbnail(bitmap);
+                    }
                     byteArray = Utils.compressImage(bitmap, compressFormat);
                 }
                 else {
-                    // I def feel like we should only accept jpg or png
-                    byteArray = stream.toByteArray();
+                    Log.w(Constants.CreateNewPhotoHunt_Tag, "Unable to find a compression format for photo: " + imagePath);
+                    continue;
                 }
 
                 ParseFile photo = new ParseFile(file.getName(), byteArray);
