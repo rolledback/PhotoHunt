@@ -19,6 +19,7 @@ import java.util.concurrent.Executors;
 import android.os.Handler;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.widget.ImageView;
 
 public class AlbumImageLoader {
@@ -59,9 +60,10 @@ public class AlbumImageLoader {
     private Bitmap getBitmap(String url) {
         File f = fileCache.getFile(url);
 
-//        int imageWidth = (int) context.getResources().getDimensionPixelSize(R.dimen.album_photo_width);
-//        int imageHeight = (int) context.getResources().getDimensionPixelSize(R.dimen.album_photo_height);
-        Bitmap b = Utils.decodeFile(f, 100, 100);
+        int imageWidth = (int) context.getResources().getDimensionPixelSize(R.dimen.album_photo_width);
+        int imageHeight = (int) context.getResources().getDimensionPixelSize(R.dimen.album_photo_height);
+        Log.e("IN IMAGE LOADER", "WIDTH = " + imageWidth + " HEIGHT = " + imageHeight);
+        Bitmap b = Utils.decodeFile(f, imageWidth, imageHeight);
         if (b != null) {
             return b;
         }
