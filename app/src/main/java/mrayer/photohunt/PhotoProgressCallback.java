@@ -12,12 +12,10 @@ public class PhotoProgressCallback implements ProgressCallback {
 
     private PhotoUploadProgressDialog parentDialog;
     private int index;
-    private int numImages;
 
-    public PhotoProgressCallback(PhotoUploadProgressDialog parentDialog, int index, int numImages) {
+    public PhotoProgressCallback(PhotoUploadProgressDialog parentDialog, int index) {
         this.parentDialog = parentDialog;
         this.index = index;
-        this.numImages = numImages;
     }
 
     @Override

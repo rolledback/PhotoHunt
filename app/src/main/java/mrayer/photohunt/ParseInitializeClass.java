@@ -15,5 +15,6 @@ public class ParseInitializeClass extends Application {
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, Keys.Parse_APP_ID, Keys.Parse_API_Key);
         ParseObject.registerSubclass(PhotoHuntAlbum.class);
+        ParseObject.registerSubclass(Photo.class);
     }
 }

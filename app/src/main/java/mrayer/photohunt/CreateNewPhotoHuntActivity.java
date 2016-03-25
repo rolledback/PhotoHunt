@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.Parse;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
@@ -363,7 +364,8 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     }
 
     private void setupUploadDialog(int numPhotos) {
-        uploadDialog = new PhotoUploadProgressDialog(this, numPhotos);
+        // multiply numPhoto by two to account for thumbnails
+        uploadDialog = new PhotoUploadProgressDialog(this, numPhotos * 2);
         uploadDialog.setup();
         uploadDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             public void onCancel(DialogInterface dialog) {
@@ -413,6 +415,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
         @Override protected Void doInBackground(Void... params) {
             int index = 0;
+            int numPhoto = 0;
             int numImages = photos.size();
 
             // upload all of the shit
@@ -422,45 +425,48 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 int height = (int)getResources().getDimension(R.dimen.create_new_photo_hunt_image_size);
                 int width = getResources().getDisplayMetrics().widthPixels;
 
-                Bitmap bitmap = Utils.decodeFile(file, width, height);
+                Bitmap thumbBitmap;
+                byte[] fullByteArray, thumbByteArray;
+                Bitmap fullBitmap = Utils.decodeFile(file, width, height);
+
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 Bitmap.CompressFormat compressFormat = Utils.determineCompresionFormat(file.getName());
 
-                byte[] byteArray;
                 if(compressFormat != null) {
-                    bitmap.compress(compressFormat, 100, stream);
-                    if(index == 0) {
-                        bitmap = Utils.createThumbnail(bitmap);
-                    }
-                    byteArray = Utils.compressImage(bitmap, compressFormat);
+                    fullBitmap.compress(compressFormat, 100, stream);
+                    thumbBitmap = Utils.createThumbnail(fullBitmap);
+
+                    fullByteArray = Utils.compressImage(fullBitmap, compressFormat);
+                    thumbByteArray = Utils.compressImage(thumbBitmap, compressFormat);
                 }
                 else {
                     Log.w(Constants.CreateNewPhotoHunt_Tag, "Unable to find a compression format for photo: " + imagePath);
                     continue;
                 }
 
-                ParseFile photo = new ParseFile(file.getName(), byteArray);
-                LatLng location;
+                int lastDot = file.getName().lastIndexOf('.');
+                String thumbnailFileName = file.getName().substring(0, lastDot) + "_thumbnail" + file.getName().substring(lastDot);
 
-                LatLng manualLocation = createNewPhotoHuntImageAdapter.getManualLocation(imagePath);
-                LatLng metaLocation = createNewPhotoHuntImageAdapter.getMetaLocation(imagePath);
+                ParseFile fullPhoto = new ParseFile(file.getName(), fullByteArray);
+                ParseFile thumbPhoto = new ParseFile(thumbnailFileName, thumbByteArray);
 
-                if(manualLocation != null) {
-                    location = manualLocation;
-                }
-                else {
-                    location = metaLocation;
-                }
+                Photo photoObject = new Photo();
+                photoObject.setAlbumId(albumToUpload.getAlbumId());
+                photoObject.setLocation(createNewPhotoHuntImageAdapter.getLocation(imagePath));
+                photoObject.setIndex(index);
 
                 if(index > 0) {
                     // non-cover photo
-                    photo.saveInBackground(new PhotoSaveCallback(albumToUpload.getAlbumId(), photo, location, index), new PhotoProgressCallback(uploadDialog, index, numImages));
+                    fullPhoto.saveInBackground(new PhotoSaveCallback(fullPhoto, thumbPhoto, photoObject,  numPhoto + 1, uploadDialog),
+                            new PhotoProgressCallback(uploadDialog, numPhoto));
                 }
                 else {
                     // cover photo
-                    photo.saveInBackground(new PhotoSaveCallback(albumToUpload.getAlbumId(), photo, location, index, albumToUpload), new PhotoProgressCallback(uploadDialog, index, numImages));
+                    fullPhoto.saveInBackground(new PhotoSaveCallback(fullPhoto, thumbPhoto, photoObject, albumToUpload, numPhoto + 1, uploadDialog),
+                            new PhotoProgressCallback(uploadDialog, numPhoto));
                 }
                 index++;
+                numPhoto += 2;
             }
 
             return null;
