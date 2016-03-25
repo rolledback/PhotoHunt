@@ -31,6 +31,14 @@ public class PhotoHuntAlbum extends ParseObject {
         put("author", author);
     }
 
+    public String getAuthorId() {
+        return getString("authorId");
+    }
+
+    public void setAuthorId(String authorId) {
+        put("authorId", authorId);
+    }
+
     public String getLocation() {
         return getString("location");
     }

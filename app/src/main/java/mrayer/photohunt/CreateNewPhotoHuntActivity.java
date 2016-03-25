@@ -28,11 +28,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseFile;
-import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.HashMap;
 import java.util.UUID;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -50,7 +49,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private Uri mostRecentTakenPhoto;
 
     private EditText inputNameEditText;
-    private EditText inputAuthorEditText;
+//    private EditText inputAuthorEditText;
     private EditText inputLocationEditText;
     private EditText inputDescriptionEditText;
     private Spinner typeSpinner;
@@ -85,7 +84,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Create New Photo Hunt");
 
         inputNameEditText = (EditText) findViewById(R.id.input_name);
-        inputAuthorEditText = (EditText) findViewById(R.id.input_author);
+//        inputAuthorEditText = (EditText) findViewById(R.id.input_author);
         inputLocationEditText = (EditText) findViewById(R.id.input_location);
         inputDescriptionEditText = (EditText) findViewById(R.id.input_description);
         inputDescriptionEditText.setOnTouchListener(new View.OnTouchListener() {
@@ -213,7 +212,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("name", inputNameEditText.getText().toString());
-        outState.putString("author", inputAuthorEditText.getText().toString());
+//        outState.putString("author", inputAuthorEditText.getText().toString());
         outState.putString("location", inputLocationEditText.getText().toString());
         outState.putInt("type_number", typeSpinner.getSelectedItemPosition());
         outState.putString("description", inputDescriptionEditText.getText().toString());
@@ -224,7 +223,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         inputNameEditText.setText(savedInstanceState.getString("name"));
-        inputAuthorEditText.setText(savedInstanceState.getString("author"));
+//        inputAuthorEditText.setText(savedInstanceState.getString("author"));
         inputLocationEditText.setText(savedInstanceState.getString("location"));
         inputDescriptionEditText.setText(savedInstanceState.getString("description"));
         typeSpinner.setSelection(savedInstanceState.getInt("type_number"));
@@ -296,8 +295,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     }
 
     private boolean checkFields() {
-        if (inputNameEditText.getText().length() == 0 || inputAuthorEditText.getText().length() == 0
-                || inputLocationEditText.getText().length() == 0) {
+        if (inputNameEditText.getText().length() == 0 || inputLocationEditText.getText().length() == 0) {
             return false;
         }
         return true;
@@ -376,13 +374,16 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
     private PhotoHuntAlbum createPhotoHunt(String albumId) {
         String photoHuntName = ((EditText) findViewById(R.id.input_name)).getText().toString();
-        String photoHuntAuthor = ((EditText) findViewById(R.id.input_author)).getText().toString();
+        String photoHuntAuthorId = ParseUser.getCurrentUser().getObjectId();
+        String photoHuntAuthor = ParseUser.getCurrentUser().getString("username");
+//        String photoHuntAuthor = ((EditText) findViewById(R.id.input_author)).getText().toString();
         String photoHuntLocation = ((EditText) findViewById(R.id.input_location)).getText().toString();
         String photoHuntDescription = ((EditText) findViewById(R.id.input_description)).getText().toString();
         String photoHuntType = ((Spinner) findViewById(R.id.spinner_type)).getSelectedItem().toString();
 
         PhotoHuntAlbum photoHunt = new PhotoHuntAlbum();
         photoHunt.setName(photoHuntName);
+        photoHunt.setAuthorId(photoHuntAuthorId);
         photoHunt.setAuthor(photoHuntAuthor);
         photoHunt.setLocation(photoHuntLocation);
         photoHunt.setType(photoHuntType);
