@@ -13,6 +13,8 @@ public class Constants {
     public static final String PhotoUploadProgressDialog_Tag = "PHOTO_PROGRESS_DIALOG";
     public static final String AlbumGallery_Tag = "ALBUM_GALLERY";
     public static final String SetChangeLocation_Tag = "SET_CHANGE_LOCATION";
+    public static final String FileCache_Tag = "FILE_CACHE";
+    public static final String MemoryCacheTag = "MEMORY_CACHE";
 
     // start activity for result codes for CreateNewPhotoHuntActivity
     public static final int REQUEST_LOAD_IMAGE = 1;

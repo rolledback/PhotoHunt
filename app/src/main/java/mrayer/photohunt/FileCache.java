@@ -28,7 +28,6 @@ public class FileCache {
         String filename = String.valueOf(url.hashCode());
         // String filename = URLEncoder.encode(url);
         return new File(cacheDir, filename);
-
     }
 
     public void clear() {

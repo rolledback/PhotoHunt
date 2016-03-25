@@ -25,8 +25,7 @@ public class AlbumImageLoader {
 
     private MemoryCache memoryCache = new MemoryCache();
     private FileCache fileCache;
-    private Map<ImageView, String> imageViews = Collections
-            .synchronizedMap(new WeakHashMap<ImageView, String>());
+    private Map<ImageView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
     private ExecutorService executorService;
     // Handler to display images in UI thread
     private Handler handler = new Handler();
