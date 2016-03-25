@@ -39,6 +39,7 @@ public class AlbumGalleryListAdapter extends BaseAdapter {
         query.findInBackground(new FindCallback<PhotoHuntAlbum>() {
             public void done(List<PhotoHuntAlbum> objects, ParseException e) {
                 if (e == null) {
+                    albums.clear();
                     albums.addAll(objects);
                     notifyDataSetChanged();
                 }
