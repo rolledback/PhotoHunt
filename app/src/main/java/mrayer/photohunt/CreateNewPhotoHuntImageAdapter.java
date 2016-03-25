@@ -21,7 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ImageAdapter extends PagerAdapter {
+public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
     Context context;
     private ArrayList<String> galImages = new ArrayList<String>();
 
@@ -31,13 +31,13 @@ public class ImageAdapter extends PagerAdapter {
     // file path -> meta location
     private HashMap<String, LatLng> metaLocations;
 
-    ImageAdapter(Context context){
+    CreateNewPhotoHuntImageAdapter(Context context){
         this.context=context;
         manualLocations = new HashMap<String, LatLng>();
         metaLocations = new HashMap<String, LatLng>();
     }
 
-    ImageAdapter(Context context, ArrayList<String> list) {
+    CreateNewPhotoHuntImageAdapter(Context context, ArrayList<String> list) {
         this.context = context;
         galImages = list;
         manualLocations = new HashMap<String, LatLng>();

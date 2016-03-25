@@ -44,7 +44,7 @@ import java.util.Date;
 public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private String mCurrentPhotoPath;
 
-    private ImageAdapter imageAdapter;
+    private CreateNewPhotoHuntImageAdapter createNewPhotoHuntImageAdapter;
 
     private Uri mostRecentTakenPhoto;
 
@@ -74,9 +74,9 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
 
-        imageAdapter = new ImageAdapter(this);
+        createNewPhotoHuntImageAdapter = new CreateNewPhotoHuntImageAdapter(this);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPager.setAdapter(imageAdapter);
+        viewPager.setAdapter(createNewPhotoHuntImageAdapter);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -121,14 +121,14 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Required fields are not filled out.", Toast.LENGTH_LONG).show();
                     return;
                 }
-                else if (imageAdapter.getGalImages().size() == 0) {
+                else if (createNewPhotoHuntImageAdapter.getGalImages().size() == 0) {
                     // no images to upload
                     Toast.makeText(getApplicationContext(), "No photos to upload.", Toast.LENGTH_LONG).show();
                     return;
                 }
                 else {
-                    for(String imagePath: imageAdapter.getGalImages()) {
-                        if(imageAdapter.getManualLocation(imagePath) == null && imageAdapter.getMetaLocation(imagePath) == null) {
+                    for(String imagePath: createNewPhotoHuntImageAdapter.getGalImages()) {
+                        if(createNewPhotoHuntImageAdapter.getManualLocation(imagePath) == null && createNewPhotoHuntImageAdapter.getMetaLocation(imagePath) == null) {
                             // all photos must have a location
                             Toast.makeText(getApplicationContext(), "Please ensure all photos have locations.", Toast.LENGTH_LONG).show();
                             return;
@@ -136,13 +136,13 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                     }
                 }
 
-                setupUploadDialog(imageAdapter.getGalImages().size());
+                setupUploadDialog(createNewPhotoHuntImageAdapter.getGalImages().size());
 
                 // create Parse Object for the album
                 String albumId = UUID.randomUUID().toString();
                 PhotoHuntAlbum photoHunt = createPhotoHunt(albumId);
 
-                new UploadAlbumTask(photoHunt, imageAdapter.getGalImages()).execute();
+                new UploadAlbumTask(photoHunt, createNewPhotoHuntImageAdapter.getGalImages()).execute();
             }
         });
 
@@ -168,20 +168,20 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         viewAddLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (imageAdapter.getGalImages().size() == 0) {
+                if (createNewPhotoHuntImageAdapter.getGalImages().size() == 0) {
                     // no images, so we can't set any locations
                     Toast.makeText(getApplicationContext(), "No images have been added.", Toast.LENGTH_LONG).show();
                     return;
                 }
 
                 int currentItem = viewPager.getCurrentItem();
-                String filePath = imageAdapter.getGalImages().get(currentItem);
+                String filePath = createNewPhotoHuntImageAdapter.getGalImages().get(currentItem);
 
                 Bundle args = new Bundle();
                 Intent addSetLocationIntent = new Intent(CreateNewPhotoHuntActivity.this, SetChangeLocationActivity.class);
 
-                LatLng manualLocation = imageAdapter.getManualLocation(filePath);
-                LatLng metaLocation = imageAdapter.getMetaLocation(filePath);
+                LatLng manualLocation = createNewPhotoHuntImageAdapter.getManualLocation(filePath);
+                LatLng metaLocation = createNewPhotoHuntImageAdapter.getMetaLocation(filePath);
 
                 if(manualLocation != null) {
                     // user has previously set a location for this file
@@ -216,7 +216,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         outState.putString("location", inputLocationEditText.getText().toString());
         outState.putInt("type_number", typeSpinner.getSelectedItemPosition());
         outState.putString("description", inputDescriptionEditText.getText().toString());
-        outState.putStringArrayList("galImages", imageAdapter.getGalImages());
+        outState.putStringArrayList("galImages", createNewPhotoHuntImageAdapter.getGalImages());
     }
 
     @Override
@@ -228,8 +228,8 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         inputDescriptionEditText.setText(savedInstanceState.getString("description"));
         typeSpinner.setSelection(savedInstanceState.getInt("type_number"));
         ArrayList<String> list = savedInstanceState.getStringArrayList("galImages");
-        imageAdapter.setGalImages(list);
-        imageAdapter.notifyDataSetChanged();
+        createNewPhotoHuntImageAdapter.setGalImages(list);
+        createNewPhotoHuntImageAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -239,9 +239,9 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         if (requestCode == Constants.REQUEST_SET_ADD_LOCATION && resultCode == RESULT_OK && data != null) {
             // user changed or set a photo's location, so add it to the mapping of manual locations
             int currentItem = viewPager.getCurrentItem();
-            String filePath = imageAdapter.getGalImages().get(currentItem);
+            String filePath = createNewPhotoHuntImageAdapter.getGalImages().get(currentItem);
             Bundle bundle = data.getParcelableExtra("bundle");
-            imageAdapter.addManualLocation(filePath, (LatLng) bundle.getParcelable("location"));
+            createNewPhotoHuntImageAdapter.addManualLocation(filePath, (LatLng) bundle.getParcelable("location"));
             viewAddLocationButton.setText("View/Set Location");
         }
         else if (requestCode == Constants.REQUEST_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
@@ -263,20 +263,20 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 return;
             }
 
-            ArrayList<String> galImages = imageAdapter.getGalImages();
+            ArrayList<String> galImages = createNewPhotoHuntImageAdapter.getGalImages();
 
             // check if galImages already has images
             if (!galImages.contains(picturePath)) {
                 galImages.add(picturePath);
-                imageAdapter.setGalImages((galImages));
-                imageAdapter.notifyDataSetChanged();
+                createNewPhotoHuntImageAdapter.setGalImages((galImages));
+                createNewPhotoHuntImageAdapter.notifyDataSetChanged();
                 viewPager.setCurrentItem(galImages.size() - 1);
             }
         }
         else if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             restorePreferences();
             galleryAddPic();
-            ArrayList<String> galImages = imageAdapter.getGalImages();
+            ArrayList<String> galImages = createNewPhotoHuntImageAdapter.getGalImages();
 
             // make sure it is valid
             if(!Utils.validImage(mCurrentPhotoPath)) {
@@ -287,8 +287,8 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             // check if galImages already has images
             if (!galImages.contains(mCurrentPhotoPath)) {
                 galImages.add(mCurrentPhotoPath);
-                imageAdapter.setGalImages((galImages));
-                imageAdapter.notifyDataSetChanged();
+                createNewPhotoHuntImageAdapter.setGalImages((galImages));
+                createNewPhotoHuntImageAdapter.notifyDataSetChanged();
                 viewPager.setCurrentItem(galImages.size() - 1);
             }
         }
@@ -389,7 +389,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         photoHunt.setType(photoHuntType);
         photoHunt.setAlbumId(albumId);
         photoHunt.setDescription(photoHuntDescription);
-        photoHunt.setNumPhotos(imageAdapter.getGalImages().size());
+        photoHunt.setNumPhotos(createNewPhotoHuntImageAdapter.getGalImages().size());
 
         return photoHunt;
     }
@@ -440,8 +440,8 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 ParseFile photo = new ParseFile(file.getName(), byteArray);
                 LatLng location;
 
-                LatLng manualLocation = imageAdapter.getManualLocation(imagePath);
-                LatLng metaLocation = imageAdapter.getMetaLocation(imagePath);
+                LatLng manualLocation = createNewPhotoHuntImageAdapter.getManualLocation(imagePath);
+                LatLng metaLocation = createNewPhotoHuntImageAdapter.getMetaLocation(imagePath);
 
                 if(manualLocation != null) {
                     location = manualLocation;
@@ -475,10 +475,10 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            if( imageAdapter.getGalImages().size() == 0) {return;}
-            String filePath = imageAdapter.getGalImages().get(position);
+            if( createNewPhotoHuntImageAdapter.getGalImages().size() == 0) {return;}
+            String filePath = createNewPhotoHuntImageAdapter.getGalImages().get(position);
 
-            if(imageAdapter.getMetaLocation(filePath) != null || imageAdapter.getManualLocation(filePath) != null) {
+            if(createNewPhotoHuntImageAdapter.getMetaLocation(filePath) != null || createNewPhotoHuntImageAdapter.getManualLocation(filePath) != null) {
                 toUpdate.setText("View/Set Location");
             }
             else {

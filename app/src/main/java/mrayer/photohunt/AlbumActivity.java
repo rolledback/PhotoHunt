@@ -20,7 +20,7 @@ import java.util.List;
 
 public class AlbumActivity extends AppCompatActivity {
     private ArrayList<String> imagePaths = new ArrayList<String>();
-    private GridViewImageAdapter adapter;
+    private AlbumImageAdapter adapter;
     private GridView gridView;
     private int columnWidth;
 
@@ -46,7 +46,7 @@ public class AlbumActivity extends AppCompatActivity {
         imagePaths = new ArrayList<String>();
 
         // Gridview adapter
-        adapter = new GridViewImageAdapter(AlbumActivity.this, imagePaths, columnWidth);
+        adapter = new AlbumImageAdapter(AlbumActivity.this, imagePaths, columnWidth);
 
         // setting grid view adapter
         gridView.setAdapter(adapter);

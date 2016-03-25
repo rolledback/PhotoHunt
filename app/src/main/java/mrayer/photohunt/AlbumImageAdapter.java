@@ -11,7 +11,7 @@ import android.widget.ImageView;
 
 import com.parse.ParseImageView;
 
-public class GridViewImageAdapter extends BaseAdapter {
+public class AlbumImageAdapter extends BaseAdapter {
 
     private Context context;
     private ArrayList<String> filePaths = new ArrayList<String>();
@@ -19,7 +19,7 @@ public class GridViewImageAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private AlbumImageLoader imageLoader;
 
-    public GridViewImageAdapter(Context c, ArrayList<String> filePaths, int iW) {
+    public AlbumImageAdapter(Context c, ArrayList<String> filePaths, int iW) {
         this.context = c;
         this.filePaths = filePaths;
         this.imageWidth = iW;

@@ -15,9 +15,9 @@ import com.parse.ParseQueryAdapter;
 /**
  * Created by ailae on 3/18/16.
  */
-public class CustomAdapter extends ParseQueryAdapter<PhotoHuntAlbum> {
+public class AlbumGalleryAdapter extends ParseQueryAdapter<PhotoHuntAlbum> {
 
-    public CustomAdapter(Context context) {
+    public AlbumGalleryAdapter(Context context) {
         super(context, new ParseQueryAdapter.QueryFactory<PhotoHuntAlbum>() {
             public ParseQuery<PhotoHuntAlbum> create() {
                 // Just get everything
