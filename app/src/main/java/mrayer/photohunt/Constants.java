@@ -21,6 +21,9 @@ public class Constants {
     public static final int REQUEST_IMAGE_CAPTURE = 2;
     public static final int REQUEST_SET_ADD_LOCATION = 3;
 
+    // start activity for result codes for AlbumGalleryActivity
+    public static final int REQUEST_CREATE_NEW_PHOTO_HUNT = 1;
+
     // Number of columns of Album Grid View
     public static final int NUM_OF_COLUMNS = 3;
 

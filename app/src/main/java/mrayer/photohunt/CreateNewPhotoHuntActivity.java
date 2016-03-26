@@ -1,5 +1,6 @@
 package mrayer.photohunt;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -196,6 +197,9 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 startActivityForResult(addSetLocationIntent, Constants.REQUEST_SET_ADD_LOCATION);
             }
         });
+
+        // this only changes if the uplaod dialog was cancelled after upload complete
+        setResult(Activity.RESULT_CANCELED);
     }
 
     @Override
@@ -365,6 +369,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         uploadDialog.setup();
         uploadDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             public void onCancel(DialogInterface dialog) {
+                setResult(Activity.RESULT_OK);
                 finish(); //If you want to finish the activity.
             }
         });
@@ -374,7 +379,6 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         String photoHuntName = ((EditText) findViewById(R.id.input_name)).getText().toString();
         String photoHuntAuthorId = ParseUser.getCurrentUser().getObjectId();
         String photoHuntAuthor = ParseUser.getCurrentUser().getString("username");
-//        String photoHuntAuthor = ((EditText) findViewById(R.id.input_author)).getText().toString();
         String photoHuntLocation = ((EditText) findViewById(R.id.input_location)).getText().toString();
         String photoHuntDescription = ((EditText) findViewById(R.id.input_description)).getText().toString();
         String photoHuntType = ((Spinner) findViewById(R.id.spinner_type)).getSelectedItem().toString();

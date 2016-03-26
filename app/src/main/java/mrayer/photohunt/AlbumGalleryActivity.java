@@ -82,38 +82,45 @@ public class AlbumGalleryActivity extends AppCompatActivity {
             case R.id.action_refresh_list:
                 refreshList();
                 return true;
-
             case R.id.action_create_photo_hunt:
                 Intent intent = new Intent(AlbumGalleryActivity.this, CreateNewPhotoHuntActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, Constants.REQUEST_CREATE_NEW_PHOTO_HUNT);
                 return true;
-
-            case R.id.action_test_set_add_location:
-                Intent locIntent = new Intent(AlbumGalleryActivity.this, SetChangeLocationActivity.class);
-                startActivity(locIntent);
-                return true;
-
-            case R.id.action_test_album:
-                Intent albumIntent = new Intent(AlbumGalleryActivity.this, AlbumActivity.class);
-                startActivity(albumIntent);
-                return true;
-
-            case R.id.action_test_login:
-                Intent loginIntent = new Intent(AlbumGalleryActivity.this, LoginActivity.class);
-                startActivity(loginIntent);
-                return true;
-            case R.id.action_test_sign_up:
-                Intent signUpIntent = new Intent(AlbumGalleryActivity.this, SignUpActivity.class);
-                startActivity(signUpIntent);
-                return true;
-            case R.id.action_test_logout:
+            case R.id.action_logout:
                 Intent logoutIntent = new Intent(AlbumGalleryActivity.this, LoginActivity.class);
                 startActivity(logoutIntent);
                 ParseUser.logOut();
                 ParseUser currentUser = ParseUser.getCurrentUser(); // this will now be null
                 return true;
+
+            // uncomment corresponding test items in album_gallery_menu.xml to access these
+//            case R.id.action_test_set_add_location:
+//                Intent locIntent = new Intent(AlbumGalleryActivity.this, SetChangeLocationActivity.class);
+//                startActivity(locIntent);
+//                return true;
+//            case R.id.action_test_album:
+//                Intent albumIntent = new Intent(AlbumGalleryActivity.this, AlbumActivity.class);
+//                startActivity(albumIntent);
+//                return true;
+//            case R.id.action_test_login:
+//                Intent loginIntent = new Intent(AlbumGalleryActivity.this, LoginActivity.class);
+//                startActivity(loginIntent);
+//                return true;
+//            case R.id.action_test_sign_up:
+//                Intent signUpIntent = new Intent(AlbumGalleryActivity.this, SignUpActivity.class);
+//                startActivity(signUpIntent);
+//                return true;
         }
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Constants.REQUEST_CREATE_NEW_PHOTO_HUNT && resultCode == RESULT_OK ) {
+            refreshList();
+        }
     }
 
 }
