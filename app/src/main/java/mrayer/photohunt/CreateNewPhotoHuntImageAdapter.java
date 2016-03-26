@@ -117,4 +117,16 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
         return metaLocations.put(filePath, loc);
     }
 
+    public LatLng getLocation(String filePath) {
+        if(manualLocations.containsKey(filePath)) {
+            return manualLocations.get(filePath);
+        }
+        else if(metaLocations.containsKey(filePath)){
+            return metaLocations.get(filePath);
+        }
+        else {
+            return null;
+        }
+    }
+
 }

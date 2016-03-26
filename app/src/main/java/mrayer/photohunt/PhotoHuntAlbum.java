@@ -86,4 +86,12 @@ public class PhotoHuntAlbum extends ParseObject {
     public void setCoverPhoto(ParseFile file) {
         put("coverPhoto", file);
     }
+
+    public ParseFile getCoverPhotoThumbnail() {
+        return getParseFile("coverPhotoThumbnail");
+    }
+
+    public void setCoverPhotoThumbnail(ParseFile file) {
+        put("coverPhotoThumbnail", file);
+    }
 }

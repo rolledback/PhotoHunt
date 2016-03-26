@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.Parse;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
@@ -49,7 +50,6 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private Uri mostRecentTakenPhoto;
 
     private EditText inputNameEditText;
-//    private EditText inputAuthorEditText;
     private EditText inputLocationEditText;
     private EditText inputDescriptionEditText;
     private Spinner typeSpinner;
@@ -84,7 +84,6 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Create New Photo Hunt");
 
         inputNameEditText = (EditText) findViewById(R.id.input_name);
-//        inputAuthorEditText = (EditText) findViewById(R.id.input_author);
         inputLocationEditText = (EditText) findViewById(R.id.input_location);
         inputDescriptionEditText = (EditText) findViewById(R.id.input_description);
         inputDescriptionEditText.setOnTouchListener(new View.OnTouchListener() {
@@ -212,7 +211,6 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("name", inputNameEditText.getText().toString());
-//        outState.putString("author", inputAuthorEditText.getText().toString());
         outState.putString("location", inputLocationEditText.getText().toString());
         outState.putInt("type_number", typeSpinner.getSelectedItemPosition());
         outState.putString("description", inputDescriptionEditText.getText().toString());
@@ -223,7 +221,6 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         inputNameEditText.setText(savedInstanceState.getString("name"));
-//        inputAuthorEditText.setText(savedInstanceState.getString("author"));
         inputLocationEditText.setText(savedInstanceState.getString("location"));
         inputDescriptionEditText.setText(savedInstanceState.getString("description"));
         typeSpinner.setSelection(savedInstanceState.getInt("type_number"));
@@ -311,7 +308,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 photoFile = createImageFile();
             } catch (IOException ex) {
                 // Error occurred while creating the File
-                Log.e("CREATE PHOTO HUNT", "ERROR OCCURED WHILE CREATING FILE FOR NEW PICTURE");
+                Log.e(Constants.CreateNewPhotoHunt_Tag, "ERROR OCCURED WHILE CREATING FILE FOR NEW PICTURE");
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
@@ -363,7 +360,8 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     }
 
     private void setupUploadDialog(int numPhotos) {
-        uploadDialog = new PhotoUploadProgressDialog(this, numPhotos);
+        // multiply numPhoto by two to account for thumbnails
+        uploadDialog = new PhotoUploadProgressDialog(this, numPhotos * 2);
         uploadDialog.setup();
         uploadDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             public void onCancel(DialogInterface dialog) {
@@ -413,6 +411,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
         @Override protected Void doInBackground(Void... params) {
             int index = 0;
+            int numPhoto = 0;
             int numImages = photos.size();
 
             // upload all of the shit
@@ -422,43 +421,48 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 int height = (int)getResources().getDimension(R.dimen.create_new_photo_hunt_image_size);
                 int width = getResources().getDisplayMetrics().widthPixels;
 
-                Bitmap bitmap = Utils.decodeFile(file, width, height);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                Bitmap thumbBitmap;
+                byte[] fullByteArray, thumbByteArray;
+                Bitmap fullBitmap = Utils.decodeFile(file, width, height);
 
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 Bitmap.CompressFormat compressFormat = Utils.determineCompresionFormat(file.getName());
 
-                byte[] byteArray;
                 if(compressFormat != null) {
-                    bitmap.compress(compressFormat, 100, stream);
-                    byteArray = Utils.compressImage(bitmap, compressFormat);
+                    fullBitmap.compress(compressFormat, 100, stream);
+                    thumbBitmap = Utils.createThumbnail(fullBitmap);
+
+                    fullByteArray = Utils.compressImage(fullBitmap, compressFormat);
+                    thumbByteArray = Utils.compressImage(thumbBitmap, compressFormat);
                 }
                 else {
-                    // I def feel like we should only accept jpg or png
-                    byteArray = stream.toByteArray();
+                    Log.w(Constants.CreateNewPhotoHunt_Tag, "Unable to find a compression format for photo: " + imagePath);
+                    continue;
                 }
 
-                ParseFile photo = new ParseFile(file.getName(), byteArray);
-                LatLng location;
+                int lastDot = file.getName().lastIndexOf('.');
+                String thumbnailFileName = file.getName().substring(0, lastDot) + "_thumbnail" + file.getName().substring(lastDot);
 
-                LatLng manualLocation = createNewPhotoHuntImageAdapter.getManualLocation(imagePath);
-                LatLng metaLocation = createNewPhotoHuntImageAdapter.getMetaLocation(imagePath);
+                ParseFile fullPhoto = new ParseFile(file.getName(), fullByteArray);
+                ParseFile thumbPhoto = new ParseFile(thumbnailFileName, thumbByteArray);
 
-                if(manualLocation != null) {
-                    location = manualLocation;
-                }
-                else {
-                    location = metaLocation;
-                }
+                Photo photoObject = new Photo();
+                photoObject.setAlbumId(albumToUpload.getAlbumId());
+                photoObject.setLocation(createNewPhotoHuntImageAdapter.getLocation(imagePath));
+                photoObject.setIndex(index);
 
                 if(index > 0) {
                     // non-cover photo
-                    photo.saveInBackground(new PhotoSaveCallback(albumToUpload.getAlbumId(), photo, location, index), new PhotoProgressCallback(uploadDialog, index, numImages));
+                    fullPhoto.saveInBackground(new PhotoSaveCallback(fullPhoto, thumbPhoto, photoObject,  numPhoto + 1, uploadDialog),
+                            new PhotoProgressCallback(uploadDialog, numPhoto));
                 }
                 else {
                     // cover photo
-                    photo.saveInBackground(new PhotoSaveCallback(albumToUpload.getAlbumId(), photo, location, index, albumToUpload), new PhotoProgressCallback(uploadDialog, index, numImages));
+                    fullPhoto.saveInBackground(new PhotoSaveCallback(fullPhoto, thumbPhoto, photoObject, albumToUpload, numPhoto + 1, uploadDialog),
+                            new PhotoProgressCallback(uploadDialog, numPhoto));
                 }
                 index++;
+                numPhoto += 2;
             }
 
             return null;

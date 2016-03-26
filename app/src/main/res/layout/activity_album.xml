@@ -17,6 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
@@ -24,14 +25,15 @@
     <GridView
         android:id="@+id/album_gridview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:drawSelectorOnTop="true"
-        android:gravity="center"
+        android:layout_height="match_parent"
+        android:columnWidth="90dp"
         android:numColumns="auto_fit"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="10dp"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="5dp"
+        android:gravity="center"
+        android:clickable="true"
         android:focusable="true"
-        android:clickable="true"/>
+        android:layout_marginTop="?attr/actionBarSize"/>
 
 </android.support.design.widget.CoordinatorLayout>

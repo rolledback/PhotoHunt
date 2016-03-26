@@ -48,21 +48,6 @@
                         android:hint="Name of Photo Hunt" />
                 </android.support.design.widget.TextInputLayout>
 
-                <!--<android.support.design.widget.TextInputLayout-->
-                    <!--android:id="@+id/input_layout_author"-->
-                    <!--android:layout_below="@+id/input_layout_name"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content">-->
-
-                    <!--<EditText-->
-                        <!--android:id="@+id/input_author"-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:singleLine="true"-->
-                        <!--android:inputType="textCapWords"-->
-                        <!--android:hint="Author Name" />-->
-                <!--</android.support.design.widget.TextInputLayout>-->
-
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/input_layout_location"
                     android:layout_below="@+id/input_layout_name"
