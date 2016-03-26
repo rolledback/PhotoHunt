@@ -2,6 +2,7 @@ package mrayer.photohunt;
 
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,7 +21,7 @@ import java.util.List;
 
 public class AlbumActivity extends AppCompatActivity {
     private ArrayList<String> imagePaths = new ArrayList<String>();
-    private AlbumImageAdapter adapter;
+    private AlbumGridAdapter adapter;
     private GridView gridView;
     private int columnWidth;
 
@@ -37,21 +38,17 @@ public class AlbumActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("View Photos");
 
         albumId = getIntent().getStringExtra("albumId");
-
         gridView = (GridView) findViewById(R.id.album_gridview);
 
         // Initilizing Grid View
         initializeGridView();
 
-        imagePaths = new ArrayList<String>();
 
         // Gridview adapter
-        adapter = new AlbumImageAdapter(AlbumActivity.this, imagePaths, columnWidth);
+        adapter = new AlbumGridAdapter(AlbumActivity.this, albumId, columnWidth);
 
         // setting grid view adapter
         gridView.setAdapter(adapter);
-
-        getPhotos();
     }
 
     @Override
@@ -75,24 +72,6 @@ public class AlbumActivity extends AppCompatActivity {
         gridView.setPadding((int) padding, (int) padding, (int) padding, (int) padding);
         gridView.setHorizontalSpacing((int) padding);
         gridView.setVerticalSpacing((int) padding);
-    }
-
-    private void getPhotos() {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Photo");
-        query.whereEqualTo("albumId", albumId);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> photoList, ParseException e) {
-                if (e == null) {
-                    for (ParseObject po : photoList) {
-                        ParseFile image = po.getParseFile("photo");
-                        imagePaths.add(image.getUrl());
-                    }
-                    adapter.notifyDataSetChanged();
-                } else {
-                    Log.e(Constants.AlbumGallery_Tag, "Error: " + e.getMessage());
-                }
-            }
-        });
     }
 
 }

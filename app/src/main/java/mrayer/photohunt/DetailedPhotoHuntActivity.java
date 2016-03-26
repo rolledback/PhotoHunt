@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 public class DetailedPhotoHuntActivity extends AppCompatActivity {
     private TextView nameView;
     private TextView authorView;
@@ -76,7 +78,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
 
         // download image from url
         String coverPhotoUrl = ppo.getString("coverPhoto");
-        new Utils.DownloadImageTask(imageView).execute(coverPhotoUrl);
+        Picasso.with(this).load(coverPhotoUrl).into(imageView);
     }
 
     @Override

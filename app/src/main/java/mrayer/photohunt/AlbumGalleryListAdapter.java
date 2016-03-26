@@ -24,12 +24,10 @@ import java.util.List;
 public class AlbumGalleryListAdapter extends BaseAdapter {
     private final Context context;
     private List<PhotoHuntAlbum> albums;
-    private List<String> urls;
 
     public AlbumGalleryListAdapter(Context context) {
         this.context = context;
         albums = new ArrayList<PhotoHuntAlbum>();
-        urls = new ArrayList<String>();
         loadObjects();
     }
 
@@ -66,7 +64,7 @@ public class AlbumGalleryListAdapter extends BaseAdapter {
 
         PhotoHuntAlbum currAlbum = getItem(position);
         if(currAlbum != null) {
-            String url = currAlbum.getParseFile("coverPhoto").getUrl();
+            String url = currAlbum.getCoverPhotoThumbnail().getUrl();
             holder.name.setText(currAlbum.getName());
 
             // Trigger the download of the URL asynchronously into the image view.
