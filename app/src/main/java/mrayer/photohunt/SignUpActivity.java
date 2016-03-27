@@ -20,7 +20,6 @@ import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
 public class SignUpActivity extends AppCompatActivity {
-    private static final String TAG = "SignupActivity";
 
     private EditText usernameText;
     private EditText passwordText;
@@ -54,10 +53,10 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void signup() {
-        Log.d(TAG, "Signup");
+        Log.d(Constants.SignUpTag, "Signup");
 
         if (!validate()) {
-            onSignupFailed();
+            onSignupFailed(null);
             return;
         }
 
@@ -77,26 +76,18 @@ public class SignUpActivity extends AppCompatActivity {
 
         user.signUpInBackground(new SignUpCallback() {
             public void done(ParseException e) {
+                progressDialog.dismiss();
                 if (e == null) {
                     // Hooray! Let them use the app now.
-                } else {
-                    e.printStackTrace();
+                    onSignupSuccess();
+                }
+                else {
+                    Log.d(Constants.SignUpTag, e.toString());
+                    onSignupFailed(e.getMessage());
                 }
             }
         });
-
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onSignupSuccess or onSignupFailed
-                        // depending on success
-                        onSignupSuccess();
-                        // onSignupFailed();
-                        progressDialog.dismiss();
-                    }
-                }, 3000);
     }
-
 
     public void onSignupSuccess() {
         signupButton.setEnabled(true);
@@ -104,8 +95,10 @@ public class SignUpActivity extends AppCompatActivity {
         finish();
     }
 
-    public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+    public void onSignupFailed(String s) {
+        if(s != null) {
+            Toast.makeText(getBaseContext(), "Signup failed: " + s + ".", Toast.LENGTH_LONG).show();
+        }
 
         signupButton.setEnabled(true);
     }
@@ -119,14 +112,16 @@ public class SignUpActivity extends AppCompatActivity {
         if (name.isEmpty() || name.length() < 3) {
             usernameText.setError("at least 3 characters");
             valid = false;
-        } else {
+        }
+        else {
             usernameText.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
             passwordText.setError("between 4 and 10 alphanumeric characters");
             valid = false;
-        } else {
+        }
+        else {
             passwordText.setError(null);
         }
 
