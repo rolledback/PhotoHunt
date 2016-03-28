@@ -15,7 +15,7 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <ListView
-        android:id="@+id/list"
+        android:id="@+id/album_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

@@ -11,19 +11,20 @@ import android.widget.TextView;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Matthew on 3/25/2016.
+ * Created by Matthew on 3/28/2016.
  */
-public class AlbumGalleryListAdapter extends BaseAdapter {
+public class AccountListAdapter extends BaseAdapter {
     private final Context context;
     private List<PhotoHuntAlbum> albums;
 
-    public AlbumGalleryListAdapter(Context context) {
+    public AccountListAdapter(Context context) {
         this.context = context;
         albums = new ArrayList<PhotoHuntAlbum>();
         loadObjects();
@@ -32,6 +33,7 @@ public class AlbumGalleryListAdapter extends BaseAdapter {
     public void loadObjects() {
         ParseQuery<PhotoHuntAlbum> query = ParseQuery.getQuery("PhotoHuntAlbum");
         query.orderByAscending("name");
+        query.whereEqualTo("authorId", ParseUser.getCurrentUser().getObjectId());
         query.findInBackground(new FindCallback<PhotoHuntAlbum>() {
             public void done(List<PhotoHuntAlbum> objects, ParseException e) {
                 if (e == null) {

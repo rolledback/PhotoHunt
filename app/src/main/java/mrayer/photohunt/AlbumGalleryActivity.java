@@ -36,7 +36,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         adapter = new AlbumGalleryListAdapter(this);
 
         // Get the list view
-        list = (ListView) findViewById(R.id.list);
+        list = (ListView) findViewById(R.id.album_list);
 
         // Default view is all PhotoHuntAlbums
         list.setAdapter(adapter);
@@ -91,6 +91,10 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 startActivity(logoutIntent);
                 ParseUser.logOut();
                 ParseUser currentUser = ParseUser.getCurrentUser(); // this will now be null
+                return true;
+            case R.id.action_my_account:
+                Intent accountIntent = new Intent(AlbumGalleryActivity.this, AccountActivity.class);
+                startActivity(accountIntent);
                 return true;
 
             // uncomment corresponding test items in album_gallery_menu.xml to access these

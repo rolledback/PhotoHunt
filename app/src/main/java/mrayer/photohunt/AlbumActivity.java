@@ -43,7 +43,6 @@ public class AlbumActivity extends AppCompatActivity {
         // Initilizing Grid View
         initializeGridView();
 
-
         // Gridview adapter
         adapter = new AlbumGridAdapter(AlbumActivity.this, albumId, columnWidth);
 

@@ -16,6 +16,7 @@ public class Constants {
     public static final String FileCache_Tag = "FILE_CACHE";
     public static final String MemoryCacheTag = "MEMORY_CACHE";
     public static final String SignUpTag = "SIGN_UP";
+    public static final String AccountTag ="ACCOUNT";
 
     // start activity for result codes for CreateNewPhotoHuntActivity
     public static final int REQUEST_LOAD_IMAGE = 1;
