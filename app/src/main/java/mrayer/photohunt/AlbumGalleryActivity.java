@@ -12,12 +12,11 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 public class AlbumGalleryActivity extends AppCompatActivity {
 
-    private AlbumGalleryListAdapter adapter;
+    private AlbumListAdapter adapter;
     private ListView list;
 
     @Override
@@ -33,7 +32,8 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         }
 
         // Set up the adapter to get the data from Parse
-        adapter = new AlbumGalleryListAdapter(this);
+        adapter = new AlbumListAdapter(this);
+        adapter.loadAllAlbums();
 
         // Get the list view
         list = (ListView) findViewById(R.id.album_list);
@@ -66,7 +66,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
 
     // Refresh list
     private void refreshList() {
-        adapter.loadObjects();
+        adapter.loadAllAlbums();
         list.setAdapter(adapter);
     }
 

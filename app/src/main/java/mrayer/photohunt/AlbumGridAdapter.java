@@ -1,6 +1,7 @@
 package mrayer.photohunt;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -43,6 +44,9 @@ public class AlbumGridAdapter extends BaseAdapter {
                     photos.addAll(objects);
                     notifyDataSetChanged();
                 }
+                else {
+                    Log.d(Constants.AlbumGridAdapter_Tag, e.toString());
+                }
             }
         });
     }
@@ -54,7 +58,8 @@ public class AlbumGridAdapter extends BaseAdapter {
             imageView = new ImageView(context);
             imageView.setLayoutParams(new GridView.LayoutParams(width, width));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        } else {
+        }
+        else {
             imageView = (ImageView) view;
         }
 

@@ -73,7 +73,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         signupLink.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 // Start the Signup activity
@@ -108,7 +107,8 @@ public class LoginActivity extends AppCompatActivity {
                 if (user != null) {
                     loginSuccessful = true;
                     // Hooray! The user is logged in.
-                } else {
+                }
+                else {
                     e.printStackTrace();
                     loginSuccessful = false;
                     onLoginFailed();
@@ -116,17 +116,18 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onLoginSuccess or onLoginFailed
-                        if (loginSuccessful)
-                            onLoginSuccess();
-                        else
-                            onLoginFailed();
-                        progressDialog.dismiss();
-                    }
-                }, 3000);
+        new android.os.Handler().postDelayed(new Runnable() {
+            public void run() {
+                // On complete call either onLoginSuccess or onLoginFailed
+                if (loginSuccessful) {
+                    onLoginSuccess();
+                }
+                else {
+                    onLoginFailed();
+                }
+                progressDialog.dismiss();
+            }
+        }, 3000);
     }
 
 
@@ -172,14 +173,16 @@ public class LoginActivity extends AppCompatActivity {
         if (username.isEmpty()) {
             usernameText.setError("enter a valid username");
             valid = false;
-        } else {
+        }
+        else {
             usernameText.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
             passwordText.setError("between 4 and 10 alphanumeric characters");
             valid = false;
-        } else {
+        }
+        else {
             passwordText.setError(null);
         }
 

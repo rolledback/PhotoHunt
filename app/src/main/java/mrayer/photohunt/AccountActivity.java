@@ -22,7 +22,7 @@ public class AccountActivity extends AppCompatActivity {
     private TextView accountCreatedDate;
     private TextView numPhotoHunts;
 
-    private AccountListAdapter adapter;
+    private AlbumListAdapter adapter;
     private ListView list;
 
     @Override
@@ -47,7 +47,8 @@ public class AccountActivity extends AppCompatActivity {
         setTextFields();
 
         // Set up the adapter to get the data from Parse
-        adapter = new AccountListAdapter(this);
+        adapter = new AlbumListAdapter(this);
+        adapter.loadCurrentUserAlbums();
 
         // Get the list view
         list = (ListView) findViewById(R.id.my_album_list);
