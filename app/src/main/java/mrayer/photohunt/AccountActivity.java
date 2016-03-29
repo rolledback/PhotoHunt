@@ -1,14 +1,19 @@
 package mrayer.photohunt;
 
+import android.app.AlertDialog;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.parse.ParseUser;
 
 public class AccountActivity extends AppCompatActivity {
 
@@ -18,6 +23,9 @@ public class AccountActivity extends AppCompatActivity {
 
     private AlbumListAdapter adapter;
     private ListView list;
+
+    private AlertDialog.Builder dialogBuilder;
+    private LayoutInflater inflater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +41,9 @@ public class AccountActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("My Account");
+
+        dialogBuilder = new AlertDialog.Builder(this);
+        inflater = this.getLayoutInflater();
 
         username = (TextView) findViewById(R.id.text_username);
         accountCreatedDate = (TextView) findViewById(R.id.text_user_since);
@@ -53,7 +64,19 @@ public class AccountActivity extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // need to create the custom alert dialog here
+                View dialogView = inflater.inflate(R.layout.album_management_dialog, null);
+                dialogBuilder.setView(dialogView);
+
+                ListView managementList =  (ListView) dialogView.findViewById(R.id.management_options_list);
+                managementList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Toast.makeText(getApplicationContext(), "Action not implemented.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                AlertDialog alertDialog = dialogBuilder.create();
+                alertDialog.show();
             }
         });
     }

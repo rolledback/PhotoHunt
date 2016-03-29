@@ -6,23 +6,21 @@
         android:icon="@drawable/ic_add_circle_black_24dp"
         android:title="Create Photo Hunt"
         app:showAsAction="ifRoom"/>
-
     <item
         android:id="@+id/action_refresh_list"
         android:icon="@drawable/ic_cached_black_24dp"
         android:title="Refresh Album Gallery"
         app:showAsAction="always"/>
-
+    <item
+        android:id="@+id/action_my_account"
+        android:icon="@drawable/ic_account_circle_black_24dp"
+        android:title="My Account"
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/action_logout"
         android:icon="@drawable/ic_logout"
         android:title="Logout"
         app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/action_my_account"
-        android:icon="@drawable/ic_logout"
-        android:title="My Account"
-        app:showAsAction="never"/>
 
     <!--<item-->
     <!--android:id="@+id/action_test_set_add_location"-->
