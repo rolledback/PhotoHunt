@@ -33,4 +33,11 @@
     <string name="prompt_email">Email</string>
     <string name="error_invalid_email">This email address is invalid</string>
 
+    <string name="title_activity_account">AccountActivity</string>
+
+    <string-array name="account_management_dialog_options">
+        <item>Edit Photo Hunt</item>
+        <item>Delete Photo Hunt</item>
+    </string-array>
+
 </resources>

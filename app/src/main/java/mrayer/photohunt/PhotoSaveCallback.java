@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 /**
@@ -63,6 +64,16 @@ public class PhotoSaveCallback implements SaveCallback {
                             album.setCoverPhoto(fullPhoto);
                             album.setCoverPhotoThumbnail(thumbnailPhoto);
                             album.saveInBackground();
+
+                            // update number of albums for the user
+                            ParseUser curr = ParseUser.getCurrentUser();
+                            if(curr.has("numAlbums")) {
+                                curr.put("numAlbums", curr.getInt("numAlbums") + 1);
+                            }
+                            else {
+                                curr.put("numAlbums", 1);
+                            }
+                            curr.saveInBackground();
                         }
                     }
                 }
