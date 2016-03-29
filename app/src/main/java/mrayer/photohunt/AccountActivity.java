@@ -4,17 +4,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.parse.CountCallback;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 public class AccountActivity extends AppCompatActivity {
 
@@ -55,6 +49,13 @@ public class AccountActivity extends AppCompatActivity {
 
         // Default view is all PhotoHuntAlbums
         list.setAdapter(adapter);
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // need to create the custom alert dialog here
+            }
+        });
     }
 
     private void setTextFields() {
