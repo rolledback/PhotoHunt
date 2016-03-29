@@ -3,17 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_create_photo_hunt"
-        android:icon="@drawable/ic_add_circle_black_24dp"
+        android:icon="@drawable/ic_add_circle_outline_white_24dp"
         android:title="Create Photo Hunt"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/action_refresh_list"
-        android:icon="@drawable/ic_cached_black_24dp"
+        android:icon="@drawable/ic_cached_white_24dp"
         android:title="Refresh Album Gallery"
         app:showAsAction="always"/>
     <item
         android:id="@+id/action_my_account"
-        android:icon="@drawable/ic_account_circle_black_24dp"
+        android:icon="@drawable/ic_account_circle_white_24dp"
         android:title="My Account"
         app:showAsAction="ifRoom"/>
     <item
