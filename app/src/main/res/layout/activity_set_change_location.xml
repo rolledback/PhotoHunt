@@ -21,17 +21,10 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:layout_marginTop="?attr/actionBarSize">
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Set Location"
-            android:id="@+id/setLocation"/>
 
         <fragment
             xmlns:android="http://schemas.android.com/apk/res/android"
@@ -43,7 +36,14 @@
             android:layout_height="match_parent"
             tools:context="mrayer.photohunt.SetChangeLocationActivity" />
 
-    </LinearLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set Location"
+        android:layout_gravity="bottom"
+        android:id="@+id/setLocation"/>
+
+    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>
 

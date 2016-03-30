@@ -55,8 +55,7 @@ public class ViewPhotoLocationActivity extends AppCompatActivity implements OnMa
         currentPos  = bundle.getParcelable("location");
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().
-                findFragmentById(R.id.view_photo_location_map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.view_photo_location_map);
         mapFragment.getMapAsync(this);
     }
 
@@ -73,7 +72,7 @@ public class ViewPhotoLocationActivity extends AppCompatActivity implements OnMa
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        m = mMap.addMarker(new MarkerOptions().position(currentPos).draggable(true));
+        m = mMap.addMarker(new MarkerOptions().position(currentPos).draggable(false));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 16));
 
     }

@@ -72,7 +72,7 @@ public class AccountActivity extends AppCompatActivity {
                 managementList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Toast.makeText(getApplicationContext(), "Action not implemented.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Action not currently implemented.", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -84,7 +84,12 @@ public class AccountActivity extends AppCompatActivity {
 
     private void setTextFields() {
         username.setText(ParseUser.getCurrentUser().getUsername());
-        numPhotoHunts.setText("Number of Photo Hunts: " + ParseUser.getCurrentUser().get("numAlbums"));
+        if(ParseUser.getCurrentUser().has("numAlbums")) {
+            numPhotoHunts.setText("Number of Photo Hunts: " + ParseUser.getCurrentUser().get("numAlbums"));
+        }
+        else {
+            numPhotoHunts.setText("Number of Photo Hunts: " + 0);
+        }
 
         // need to work on parsing this into human readable date
         accountCreatedDate.setText("User Since: " + parseOutJoinDate(ParseUser.getCurrentUser().getCreatedAt().toString()));

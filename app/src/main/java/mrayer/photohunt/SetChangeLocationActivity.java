@@ -54,15 +54,13 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
         getSupportActionBar().setTitle("Set Photo Location");
 
         // Obtain the current location IF there is one from the Bundle
-        if(!(getIntent().getParcelableExtra("bundle") == null))
-        {
+        if(!(getIntent().getParcelableExtra("bundle") == null)) {
             Bundle bundle = getIntent().getParcelableExtra("bundle");
             LatLng defaultPos = bundle.getParcelable("location");
             currentPos = defaultPos;
             originalLocation = defaultPos;
         }
-        else
-        {
+        else {
             currentPos = new LatLng(-1, -1);
         }
 
@@ -89,8 +87,7 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
         });
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
@@ -142,7 +139,6 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                Toast.makeText(SetChangeLocationActivity.this, "Setting currentPos to " + latLng.toString(), Toast.LENGTH_LONG).show();
                 m.setPosition(latLng);
                 currentPos = latLng;
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
@@ -162,7 +158,6 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
-                Toast.makeText(SetChangeLocationActivity.this, "Setting currentPos to " + marker.getPosition(), Toast.LENGTH_LONG).show();
                 currentPos = marker.getPosition();
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
             }

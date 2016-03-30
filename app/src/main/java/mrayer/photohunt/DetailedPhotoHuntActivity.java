@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -67,7 +68,14 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         startPhotoHuntButton = (Button) findViewById(R.id.detailed_start_photo_hunt_button);
+        startPhotoHuntButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "Action not currently implemented.", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         Intent intent = getIntent();
         ParseProxyObject ppo = (ParseProxyObject) intent.getSerializableExtra("albumProxy");
