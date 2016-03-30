@@ -7,12 +7,16 @@ import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -36,6 +40,18 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_change_location);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.set_location_toolbar);
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+        }
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Set Photo Location");
 
         // Obtain the current location IF there is one from the Bundle
         if(!(getIntent().getParcelableExtra("bundle") == null))
@@ -145,8 +161,7 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
             }
 
             @Override
-            public void onMarkerDragEnd(Marker marker)
-            {
+            public void onMarkerDragEnd(Marker marker) {
                 Toast.makeText(SetChangeLocationActivity.this, "Setting currentPos to " + marker.getPosition(), Toast.LENGTH_LONG).show();
                 currentPos = marker.getPosition();
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
@@ -155,4 +170,12 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }

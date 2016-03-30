@@ -1,6 +1,7 @@
 package mrayer.photohunt;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,13 +23,15 @@ import java.util.List;
 public class AlbumGridAdapter extends BaseAdapter {
     private final Context context;
     private final String albumId;
+    private final String type;
     private List<Photo> photos;
     private int width;
 
-    public AlbumGridAdapter(Context context, String albumId, int width) {
+    public AlbumGridAdapter(Context context, String albumId, int width, String type) {
         this.context = context;
         this.albumId = albumId;
         this.width = width;
+        this.type = type;
         photos = new ArrayList<Photo>();
         loadObjects();
     }
@@ -68,13 +71,24 @@ public class AlbumGridAdapter extends BaseAdapter {
             return view;
         }
 
-        Photo currPhoto = getItem(position);
+        final Photo currPhoto = getItem(position);
         if(currPhoto != null) {
             String url = currPhoto.getThumbnail().getUrl();
 
             // Trigger the download of the URL asynchronously into the image view.
             Picasso.with(context).load(url).into(imageView);
         }
+
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ViewPhotoActivity.class);
+                intent.putExtra("photo url", currPhoto.getPhoto().getUrl());
+                intent.putExtra("type", type);
+                intent.putExtra("photo id", currPhoto.getObjectId());
+                context.startActivity(intent);
+            }
+        });
 
         return imageView;
     }

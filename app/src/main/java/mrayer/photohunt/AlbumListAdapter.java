@@ -33,7 +33,7 @@ public class AlbumListAdapter extends BaseAdapter {
 
     public void loadAllAlbums() {
         ParseQuery<PhotoHuntAlbum> query = ParseQuery.getQuery("PhotoHuntAlbum");
-        query.orderByAscending("name");
+        query.orderByDescending("createdAt");
         query.findInBackground(new FindCallback<PhotoHuntAlbum>() {
             public void done(List<PhotoHuntAlbum> objects, ParseException e) {
                 if (e == null) {

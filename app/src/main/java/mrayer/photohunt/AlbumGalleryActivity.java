@@ -51,6 +51,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 Intent detailsIntent = new Intent(AlbumGalleryActivity.this, DetailedPhotoHuntActivity.class);
                 detailsIntent.putExtra("albumProxy", ppo);
                 detailsIntent.putExtra("albumId", selectedAlbum.getAlbumId());
+                detailsIntent.putExtra("type", selectedAlbum.getType());
                 startActivity(detailsIntent);
             }
         });

@@ -20,12 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AlbumActivity extends AppCompatActivity {
-    private ArrayList<String> imagePaths = new ArrayList<String>();
     private AlbumGridAdapter adapter;
     private GridView gridView;
     private int columnWidth;
 
     private String albumId;
+
+    private String type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,13 +39,14 @@ public class AlbumActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("View Photos");
 
         albumId = getIntent().getStringExtra("albumId");
+        type = getIntent().getStringExtra("type");
         gridView = (GridView) findViewById(R.id.album_gridview);
 
         // Initilizing Grid View
         initializeGridView();
 
         // Gridview adapter
-        adapter = new AlbumGridAdapter(AlbumActivity.this, albumId, columnWidth);
+        adapter = new AlbumGridAdapter(AlbumActivity.this, albumId, columnWidth, type);
 
         // setting grid view adapter
         gridView.setAdapter(adapter);

@@ -39,5 +39,7 @@
         <item>Edit Photo Hunt</item>
         <item>Delete Photo Hunt</item>
     </string-array>
+    <string name="title_activity_view_photo">ViewPhotoActivity</string>
+    <string name="title_activity_view_photo_location">ViewPhotoLocationActivity</string>
 
 </resources>

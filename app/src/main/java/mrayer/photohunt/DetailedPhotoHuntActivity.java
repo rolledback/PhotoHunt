@@ -28,6 +28,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
     private Button startPhotoHuntButton;
 
     private String albumId;
+    private String type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Detailed Photo Hunt");
 
         albumId = getIntent().getStringExtra("albumId");
+        type = getIntent().getStringExtra("type");
 
         nameView = (TextView) findViewById(R.id.detailed_name);
         authorView = (TextView) findViewById(R.id.detailed_author);
@@ -61,6 +63,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(DetailedPhotoHuntActivity.this, AlbumActivity.class);
                 intent.putExtra("albumId", albumId);
+                intent.putExtra("type", type);
                 startActivity(intent);
             }
         });

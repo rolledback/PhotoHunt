@@ -33,8 +33,7 @@
         <activity
             android:name=".AlbumGalleryActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".CreateNewPhotoHuntActivity"
             android:configChanges="orientation"
@@ -83,7 +82,15 @@
         <activity
             android:name=".AccountActivity"
             android:label="@string/title_activity_account"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ViewPhotoActivity"
+            android:label="@string/title_activity_view_photo"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".ViewPhotoLocationActivity"
+            android:label="@string/title_activity_view_photo_location"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 
 </manifest>
