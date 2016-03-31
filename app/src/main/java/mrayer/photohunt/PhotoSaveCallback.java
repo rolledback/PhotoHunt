@@ -44,7 +44,7 @@ public class PhotoSaveCallback implements SaveCallback {
     @Override
     public void done(ParseException e) {
         if (e != null) {
-            Log.d(Constants.PhotoSaveCallback_Tag, e.toString());
+            Log.d(Constants.PhotoSaveCallbackTag, e.toString());
         }
         else {
             // save the thumbnail next
@@ -52,7 +52,7 @@ public class PhotoSaveCallback implements SaveCallback {
                 @Override
                 public void done(ParseException e) {
                     if (e != null) {
-                        Log.d(Constants.PhotoSaveCallback_Tag, e.toString());
+                        Log.d(Constants.PhotoSaveCallbackTag, e.toString());
                     }
                     else {
                         // both photo have been saved, ok to save the photo object

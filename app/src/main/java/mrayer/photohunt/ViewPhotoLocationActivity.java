@@ -71,7 +71,9 @@ public class ViewPhotoLocationActivity extends AppCompatActivity implements OnMa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        if(currentPos!=null)
+        Log.d("test", currentPos.toString());
+        else Log.d("test", "wat");
         m = mMap.addMarker(new MarkerOptions().position(currentPos).draggable(false));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 16));
 

@@ -53,24 +53,15 @@ public class ViewPhotoActivity extends AppCompatActivity {
         type = getIntent().getStringExtra("type");
         photo_id = getIntent().getStringExtra("photo id");
 
+        viewLocationButton.setClickable(false);
         if (type.equals("Scavenger")) {
             viewLocationButton.setVisibility(View.GONE);
         }
         if (type.equals("Tour")) {
             getLocation();
-            viewLocationButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(ViewPhotoActivity.this, ViewPhotoLocationActivity.class);
-                    Bundle args = new Bundle();
-                    args.putParcelable("location", location);
-                    intent.putExtra("bundle", args);
-                    startActivity(intent);
-                }
-            });
         }
 
-        uploadPhoto();
+        downLoadPhoto();
     }
 
     private void getLocation() {
@@ -79,16 +70,30 @@ public class ViewPhotoActivity extends AppCompatActivity {
         query.getFirstInBackground(new GetCallback<Photo>() {
             public void done(Photo photo, ParseException e) {
                 if (photo == null) {
-                    Log.d("ViewPhotoActivity", "The getFirst request failed.");
-                } else {
-                    Log.d("ViewPhotoActivity", "Retrieved the photo.");
+                    Log.d(Constants.ViewPhotoActivityTag, "The getFirst request failed.");
+                }
+                else if(e != null) {
+                    Log.d(Constants.ViewPhotoActivityTag, e.toString());
+                }
+                else {
+                    viewLocationButton.setClickable(true);
                     location = photo.getLocation();
+                    viewLocationButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(ViewPhotoActivity.this, ViewPhotoLocationActivity.class);
+                            Bundle args = new Bundle();
+                            args.putParcelable("location", location);
+                            intent.putExtra("bundle", args);
+                            startActivity(intent);
+                        }
+                    });
                 }
             }
         });
     }
 
-    private void uploadPhoto() {
+    private void downLoadPhoto() {
         Picasso.with(this).load(url).into(imageView);
     }
 

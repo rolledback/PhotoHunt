@@ -28,7 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.parse.Parse;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
@@ -312,7 +311,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 photoFile = createImageFile();
             } catch (IOException ex) {
                 // Error occurred while creating the File
-                Log.e(Constants.CreateNewPhotoHunt_Tag, "ERROR OCCURED WHILE CREATING FILE FOR NEW PICTURE");
+                Log.e(Constants.CreateNewPhotoHuntTag, "ERROR OCCURED WHILE CREATING FILE FOR NEW PICTURE");
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
@@ -440,7 +439,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                     thumbByteArray = Utils.compressImage(thumbBitmap, compressFormat);
                 }
                 else {
-                    Log.w(Constants.CreateNewPhotoHunt_Tag, "Unable to find a compression format for photo: " + imagePath);
+                    Log.w(Constants.CreateNewPhotoHuntTag, "Unable to find a compression format for photo: " + imagePath);
                     continue;
                 }
 

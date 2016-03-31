@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
-import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDescriptor;
 import com.drew.metadata.exif.GpsDirectory;
 import com.google.android.gms.maps.model.LatLng;
@@ -24,14 +23,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 
 /**
  * Created by Matthew on 3/16/2016.
@@ -58,8 +55,8 @@ public class Utils {
             return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
         }
         catch (FileNotFoundException e) {
-            Log.d(Constants.ImageAdapter_Tag, "Unable to decode image file");
-            Log.d(Constants.ImageAdapter_Tag, e.toString());
+            Log.d(Constants.UtilsTag, "Unable to decode image file");
+            Log.d(Constants.UtilsTag, e.toString());
         }
         return null;
     }
@@ -81,7 +78,7 @@ public class Utils {
             return new LatLng(latitudeDecimal, longitudeDecimal);
         }
         catch (Exception e) {
-            Log.d(Constants.Utils_Tag, e.toString());
+            Log.d(Constants.UtilsTag, e.toString());
         }
         return null;
     }

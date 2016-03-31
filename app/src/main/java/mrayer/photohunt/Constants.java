@@ -5,20 +5,18 @@ package mrayer.photohunt;
  */
 public class Constants {
     // log tags
-    public static final String CreateNewPhotoHunt_Tag = "CREATE_HUNT";
-    public static final String ImageAdapter_Tag = "IMAGE_ADAPTER";
-    public static final String Utils_Tag = "UTILS";
-    public static final String PhotoSaveCallback_Tag = "PHOTO_SAVE_CALLBACK";
-    public static final String PhotoProgressCallback_Tag = "PHOTO_PROGRESS_CALLBACK";
-    public static final String PhotoUploadProgressDialog_Tag = "PHOTO_PROGRESS_DIALOG";
-    public static final String AlbumGallery_Tag = "ALBUM_GALLERY";
+    public static final String CreateNewPhotoHuntTag = "CREATE_HUNT_ACTIVITY";
+    public static final String UtilsTag = "UTILS";
+    public static final String PhotoSaveCallbackTag = "PHOTO_SAVE_CALLBACK";
+    public static final String PhotoProgressCallbackTag = "PHOTO_PROGRESS_CALLBACK";
+    public static final String PhotoUploadProgressDialogTag = "PHOTO_PROGRESS_DIALOG";
+    public static final String AlbumGalleryTag = "ALBUM_GALLERY_ACTIVITY";
     public static final String SetChangeLocation_Tag = "SET_CHANGE_LOCATION";
-    public static final String FileCache_Tag = "FILE_CACHE";
-    public static final String MemoryCacheTag = "MEMORY_CACHE";
-    public static final String SignUpTag = "SIGN_UP";
-    public static final String AccountTag ="ACCOUNT";
-    public static final String AlbumListAdapter_Tag = "ALBUM_LIST_ADAPTER";
-    public static final String AlbumGridAdapter_Tag = "ALBUM_GRID_ADAPTER";
+    public static final String SignUpTag = "SIGN_UP_ACTIVITY";
+    public static final String AccountTag ="ACCOUNT_ACTIVITY";
+    public static final String AlbumListAdapterTag = "ALBUM_LIST_ADAPTER";
+    public static final String AlbumGridAdapterTag = "ALBUM_GRID_ADAPTER";
+    public static final String ViewPhotoActivityTag = "VIEW_PHOTO_ACTIVITY";
 
     // start activity for result codes for CreateNewPhotoHuntActivity
     public static final int REQUEST_LOAD_IMAGE = 1;
@@ -36,9 +34,6 @@ public class Constants {
 
     // Max uploadable image size
     public static final int MAX_IMAGE_SIZE = 1000 * 1024;
-
-    // Cache directory name
-    public static final String CACHE_NAME = "PhotoHunt";
 
     // Thumbnail dimensions
     public static final int THUMBNAIL_WIDTH = 500;

@@ -48,7 +48,7 @@ public class AlbumGridAdapter extends BaseAdapter {
                     notifyDataSetChanged();
                 }
                 else {
-                    Log.d(Constants.AlbumGridAdapter_Tag, e.toString());
+                    Log.d(Constants.AlbumGridAdapterTag, e.toString());
                 }
             }
         });

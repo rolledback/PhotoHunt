@@ -57,7 +57,7 @@ public class AlbumListAdapter extends BaseAdapter {
                     notifyDataSetChanged();
                 }
                 else {
-                    Log.d(Constants.AlbumListAdapter_Tag, e.toString());
+                    Log.d(Constants.AlbumListAdapterTag, e.toString());
                 }
             }
         });
