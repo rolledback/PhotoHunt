@@ -15,7 +15,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.parse.FindCallback;
@@ -50,6 +52,19 @@ public class SearchActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.search_result_list);
 
         listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                PhotoHuntAlbum selectedAlbum = adapter.getItem(position);
+                ParseProxyObject ppo = new ParseProxyObject(selectedAlbum);
+                Intent detailsIntent = new Intent(SearchActivity.this, DetailedPhotoHuntActivity.class);
+                detailsIntent.putExtra("albumProxy", ppo);
+                detailsIntent.putExtra("albumId", selectedAlbum.getAlbumId());
+                detailsIntent.putExtra("type", selectedAlbum.getType());
+                startActivity(detailsIntent);
+            }
+        });
 
         handleIntent(getIntent());
     }

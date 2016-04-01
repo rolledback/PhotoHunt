@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -26,11 +27,13 @@ import java.util.List;
 public class SearchResultAdapter extends BaseAdapter {
     private final Context context;
     private List<PhotoHuntAlbum> results;
+    private boolean searchEmpty;
 
     public SearchResultAdapter(Context context) {
         // make sure to call one of the load functions after constructing this object
         this.context = context;
         results = new ArrayList<PhotoHuntAlbum>();
+        searchEmpty = false;
     }
 
     public void doSearch(String queryString) {
@@ -62,7 +65,18 @@ public class SearchResultAdapter extends BaseAdapter {
                 else {
                     Log.d("Search Activity", "Search successful");
                     results = searchResults;
+//                    for (PhotoHuntAlbum p : results) {
+//                        Log.d("SERACH", "NAME = " + p.getName());
+//                    }
+//                    if (results.size() == 0) {
+//                        Log.d("SEARCH", "RESULT EMPTY");
+//                        searchEmpty = true;
+//                    }
+//                    else {
+//                        searchEmpty = false;
+//                    }
                     notifyDataSetChanged();
+
                 }
             }
         });
@@ -70,6 +84,7 @@ public class SearchResultAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
+//        Log.d("SEARCH", "SEARCH EMPTY = " + searchEmpty);
         ViewHolder holder;
         if (view == null) {
             view = LayoutInflater.from(context).inflate(R.layout.search_result_list_row, parent, false);
@@ -83,6 +98,11 @@ public class SearchResultAdapter extends BaseAdapter {
         else {
             holder = (ViewHolder) view.getTag();
         }
+
+//        if (searchEmpty) {
+//            Toast.makeText(context, "Search result empty", Toast.LENGTH_LONG).show();
+//            return view;
+//        }
 
         if(results.size() == 0) {
             // can't do anything, we haven't finished querying for the albums yet
@@ -99,6 +119,9 @@ public class SearchResultAdapter extends BaseAdapter {
             // Trigger the download of the URL asynchronously into the image view.
             Picasso.with(context).load(url).into(holder.photo);
         }
+//        else {
+//            Log.e("IN SEARCH", "EMPTY");
+//        }
 
         return view;
     }
