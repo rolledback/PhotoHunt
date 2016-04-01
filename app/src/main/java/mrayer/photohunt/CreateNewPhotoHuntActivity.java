@@ -479,7 +479,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
                 Bitmap thumbBitmap;
                 byte[] fullByteArray, thumbByteArray;
-                Bitmap fullBitmap = Utils.decodeFile(file, width, height);
+                Bitmap fullBitmap = Utils.imageOrientationValidator(Utils.decodeFile(file, width, height), imagePath);
 
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 Bitmap.CompressFormat compressFormat = Utils.determineCompresionFormat(file.getName());
