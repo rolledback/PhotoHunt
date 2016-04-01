@@ -391,6 +391,10 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         photoHunt.setAlbumId(albumId);
         photoHunt.setDescription(photoHuntDescription);
         photoHunt.setNumPhotos(createNewPhotoHuntImageAdapter.getGalImages().size());
+        photoHunt.setSearchName(photoHuntName.toLowerCase());
+        photoHunt.setSearchAuthor(photoHuntAuthor.toLowerCase());
+        photoHunt.setSearchLocation(photoHuntLocation.toLowerCase());
+        photoHunt.setSearchDescription(photoHuntDescription.toLowerCase());
 
         return photoHunt;
     }
@@ -407,7 +411,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         private PhotoHuntAlbum albumToUpload;
         private ArrayList<String> photos;
 
-        public UploadAlbumTask(PhotoHuntAlbum albumToUpload, ArrayList<String> photos) {
+            public UploadAlbumTask(PhotoHuntAlbum albumToUpload, ArrayList<String> photos) {
             this.albumToUpload = albumToUpload;
             this.photos = photos;
         }

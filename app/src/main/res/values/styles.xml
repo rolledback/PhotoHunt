@@ -64,4 +64,10 @@
 
     <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="SearchBackground"
+        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/iron</item>
+        <item name="background">@color/iron</item>
+    </style>
+
 </resources>

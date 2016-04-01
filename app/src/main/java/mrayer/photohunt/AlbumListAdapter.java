@@ -47,7 +47,7 @@ public class AlbumListAdapter extends BaseAdapter {
 
     public void loadCurrentUserAlbums() {
         ParseQuery<PhotoHuntAlbum> query = ParseQuery.getQuery("PhotoHuntAlbum");
-        query.orderByAscending("name");
+        query.orderByDescending("createdAt");
         query.whereEqualTo("authorId", ParseUser.getCurrentUser().getObjectId());
         query.findInBackground(new FindCallback<PhotoHuntAlbum>() {
             public void done(List<PhotoHuntAlbum> objects, ParseException e) {
@@ -63,7 +63,8 @@ public class AlbumListAdapter extends BaseAdapter {
         });
     }
 
-    @Override public View getView(int position, View view, ViewGroup parent) {
+    @Override
+    public View getView(int position, View view, ViewGroup parent) {
         ViewHolder holder;
         if (view == null) {
             view = LayoutInflater.from(context).inflate(R.layout.album_list_row, parent, false);
