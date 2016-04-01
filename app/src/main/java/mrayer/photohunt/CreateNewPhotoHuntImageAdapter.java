@@ -73,7 +73,8 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
         int width = context.getResources().getDisplayMetrics().widthPixels;
 
         Bitmap bitmap = Utils.decodeFile(file, width, height);
-        imageView.setImageBitmap(bitmap);
+        Bitmap correctedBitmap = Utils.imageOrientationValidator(bitmap, picturePath);
+        imageView.setImageBitmap(correctedBitmap);
 
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, height);
         imageView.setLayoutParams(params);

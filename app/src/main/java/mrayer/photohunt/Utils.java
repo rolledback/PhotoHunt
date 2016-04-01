@@ -3,7 +3,9 @@ package mrayer.photohunt;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Point;
+import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -148,46 +150,43 @@ public class Utils {
         return resized;
     }
 
-    static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+    public static Bitmap imageOrientationValidator(Bitmap bitmap, String path) {
 
-        private ImageView imageView;
-
-        public DownloadImageTask(ImageView imageView) {
-            super();
-            this.imageView = imageView;
+        ExifInterface ei;
+        try {
+            ei = new ExifInterface(path);
+            int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL);
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    bitmap = rotateImage(bitmap, 90);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    bitmap = rotateImage(bitmap, 180);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    bitmap = rotateImage(bitmap, 270);
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        protected Bitmap doInBackground(String... params) {
-            Bitmap returnImage = null;
-            URL url = null;
-            HttpURLConnection urlConnection = null;
+        return bitmap;
+    }
 
-            try {
-                url = new URL(params[0]);
-                urlConnection = (HttpURLConnection) url.openConnection();
+    public static Bitmap rotateImage(Bitmap source, float angle) {
 
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                returnImage = BitmapFactory.decodeStream(in); //note, this is not a return statement…the variable
-            }
-            catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-            catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-            finally {
-                urlConnection.disconnect();
-                return returnImage;
-            }
+        Bitmap bitmap = null;
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        try {
+            bitmap = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
+                    matrix, true);
+        } catch (OutOfMemoryError err) {
+            err.printStackTrace();
         }
-        protected void onPostExecute(Bitmap result) {
-            if(result != null) {
-                imageView.setImageBitmap(result);
-            }
-        }
+        return bitmap;
     }
 
     public static void copyStream(InputStream is, OutputStream os)
