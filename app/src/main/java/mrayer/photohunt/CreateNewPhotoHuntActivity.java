@@ -13,16 +13,20 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,6 +66,10 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private Button viewAddLocationButton;
 
     private PhotoUploadProgressDialog uploadDialog;
+    private AlertDialog quitConfirmation;
+
+    private AlertDialog.Builder dialogBuilder;
+    private LayoutInflater inflater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +82,11 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
 
-        createNewPhotoHuntImageAdapter = new CreateNewPhotoHuntImageAdapter(this);
+        dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder = new AlertDialog.Builder(this);
+        inflater = this.getLayoutInflater();
+
+        createNewPhotoHuntImageAdapter = new CreateNewPhotoHuntImageAdapter(this, inflater, dialogBuilder);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         viewPager.setAdapter(createNewPhotoHuntImageAdapter);
 
@@ -149,7 +161,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                viewPager.getAdapter().notifyDataSetChanged();// finish();
                 return;
             }
         });
@@ -204,10 +216,25 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            finish();
+            if(userStartedCreating()) {
+                confirmExit();
+            }
+            else {
+                finish();
+            }
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(userStartedCreating()) {
+            confirmExit();
+        }
+        else {
+            finish();
+        }
     }
 
     @Override
@@ -270,6 +297,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 galImages.add(picturePath);
                 createNewPhotoHuntImageAdapter.setGalImages((galImages));
                 createNewPhotoHuntImageAdapter.notifyDataSetChanged();
+
                 viewPager.setCurrentItem(galImages.size() - 1);
             }
         }
@@ -299,6 +327,27 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    public void confirmExit() {
+        dialogBuilder.setMessage("Your progress will be lost if you return to the gallery. " +
+                "Are you sure you want to continue?");
+        dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                quitConfirmation.dismiss();
+                quitConfirmation = null;
+                finish();
+            }
+
+        });
+        dialogBuilder.setNegativeButton("No", null);
+        quitConfirmation = dialogBuilder.show();
+    }
+
+    public boolean userStartedCreating() {
+        return inputNameEditText.getText().length() != 0 || inputLocationEditText.getText().length() != 0 ||
+                inputDescriptionEditText.getText().length() != 0 || viewPager.getAdapter().getCount() != 0;
     }
 
     private void dispatchTakePictureIntent() {

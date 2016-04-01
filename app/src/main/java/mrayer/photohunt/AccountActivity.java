@@ -1,6 +1,7 @@
 package mrayer.photohunt;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -65,19 +66,14 @@ public class AccountActivity extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                View dialogView = inflater.inflate(R.layout.album_management_dialog, null);
-                dialogBuilder.setView(dialogView);
-
-                ListView managementList =  (ListView) dialogView.findViewById(R.id.management_options_list);
-                managementList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                dialogBuilder.setTitle("Photo Hunt Options");
+                dialogBuilder.setItems(getResources().getStringArray(R.array.account_management_dialog_options), new DialogInterface.OnClickListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    public void onClick(DialogInterface dialog, int which) {
                         Toast.makeText(getApplicationContext(), "Action not currently implemented.", Toast.LENGTH_SHORT).show();
                     }
                 });
-
-                AlertDialog alertDialog = dialogBuilder.create();
-                alertDialog.show();
+                dialogBuilder.show();
             }
         });
     }
