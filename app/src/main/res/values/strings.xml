@@ -41,6 +41,7 @@
     </string-array>
 
     <string-array name="create_hunt_photo_dialog_options">
+        <item>Set/View Location</item>
         <item>Move to Front</item>
         <item>Remove</item>
     </string-array>

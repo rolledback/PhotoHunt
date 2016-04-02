@@ -20,6 +20,7 @@ public class PhotoProgressCallback implements ProgressCallback {
 
     @Override
     public void done(Integer percentDone) {
+        // Log.d(Constants.PhotoProgressCallbackTag, this.hashCode() + " is updating the percentage of photo " + index + " to " + percentDone);
         parentDialog.setPhotoProgresses(percentDone, index);
     }
 }

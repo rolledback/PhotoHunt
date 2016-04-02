@@ -83,9 +83,9 @@ public class AlbumGridAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ViewPhotoActivity.class);
-                intent.putExtra("photo url", currPhoto.getPhoto().getUrl());
+                intent.putExtra("url", currPhoto.getPhoto().getUrl());
                 intent.putExtra("type", type);
-                intent.putExtra("photo id", currPhoto.getObjectId());
+                intent.putExtra("id", currPhoto.getObjectId());
                 context.startActivity(intent);
             }
         });

@@ -7,20 +7,14 @@ package mrayer.photohunt;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.media.Image;
+import android.graphics.BitmapFactory;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.Toast;
-import android.net.Uri;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -29,7 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
-    Context context;
+    private Context context;
     private ArrayList<String> galImages = new ArrayList<String>();
     private ArrayList<ImageView> galImageViews = new ArrayList<ImageView>();
 
@@ -42,18 +36,23 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
     private LayoutInflater inflater;
     private AlertDialog.Builder dialogBuilder;
 
-    CreateNewPhotoHuntImageAdapter(Context context, LayoutInflater inflater, AlertDialog.Builder dialogBuilder){
+    // I hate myself for doing this
+    private CreateNewPhotoHuntActivity parent;
+
+    CreateNewPhotoHuntImageAdapter(Context context, LayoutInflater inflater, AlertDialog.Builder dialogBuilder, CreateNewPhotoHuntActivity parent){
         this.context = context;
         this.inflater = inflater;
         this.dialogBuilder = dialogBuilder;
+        this.parent = parent;
         manualLocations = new HashMap<String, LatLng>();
         metaLocations = new HashMap<String, LatLng>();
     }
 
-    CreateNewPhotoHuntImageAdapter(Context context, LayoutInflater inflater, AlertDialog.Builder dialogBuilder, ArrayList<String> list) {
+    CreateNewPhotoHuntImageAdapter(Context context, LayoutInflater inflater, AlertDialog.Builder dialogBuilder, ArrayList<String> list, CreateNewPhotoHuntActivity parent) {
         this.context = context;
         this.inflater = inflater;
         this.dialogBuilder = dialogBuilder;
+        this.parent = parent;
         galImages = list;
         manualLocations = new HashMap<String, LatLng>();
         metaLocations = new HashMap<String, LatLng>();
@@ -75,7 +74,7 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
         int padding = context.getResources().getDimensionPixelSize(R.dimen.fab_margin);
         imageView.setPadding(padding, padding, padding, padding);
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-        String picturePath = galImages.get(position);
+        final String picturePath = galImages.get(position);
         File file = new File(picturePath);
 
         // get location if it exists
@@ -95,6 +94,12 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
         imageView.setLayoutParams(params);
 
         ((ViewPager) container).addView(imageView, 0);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                parent.launchViewPhoto(picturePath);
+            }
+        });
         imageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -103,6 +108,9 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
+                            parent.launchViewSetLocation();
+                        }
+                        else if (which == 1) {
                             if (((ViewPager) container).getCurrentItem() == 0) {
                                 return;
                             }
@@ -120,7 +128,7 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
 
                             ((ViewPager) container).setCurrentItem(0, true);
                         }
-                        else {
+                        else if(which == 2) {
                             ImageView viewToRemove = galImageViews.get(((ViewPager) container).getCurrentItem());
 
                             galImages.remove(((ViewPager) container).getCurrentItem());
@@ -128,6 +136,10 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
                             ((ViewPager) container).removeView(viewToRemove);
 
                             notifyDataSetChanged();
+
+                            if(galImages.size() == 0) {
+                                parent.hideViewPager();
+                            }
                         }
                     }
                 });
