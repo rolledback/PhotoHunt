@@ -1,6 +1,8 @@
 package mrayer.photohunt;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -65,21 +67,27 @@ public class AccountActivity extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                View dialogView = inflater.inflate(R.layout.album_management_dialog, null);
-                dialogBuilder.setView(dialogView);
-
-                ListView managementList =  (ListView) dialogView.findViewById(R.id.management_options_list);
-                managementList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Toast.makeText(getApplicationContext(), "Action not currently implemented.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                AlertDialog alertDialog = dialogBuilder.create();
-                alertDialog.show();
+                PhotoHuntAlbum selectedAlbum = adapter.getItem(position);
+                ParseProxyObject ppo = new ParseProxyObject(selectedAlbum);
+                Intent detailsIntent = new Intent(AccountActivity.this, DetailedPhotoHuntActivity.class);
+                detailsIntent.putExtra("albumProxy", ppo);
+                detailsIntent.putExtra("action", "delete");
+                startActivityForResult(detailsIntent, Constants.REQUEST_MANAGEMENT_RESULT);
             }
         });
+
+        // this only changes if the deletion took place
+        setResult(Constants.NO_RESULT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Constants.REQUEST_MANAGEMENT_RESULT && resultCode == Constants.DELETE_RESULT) {
+            adapter.loadCurrentUserAlbums();
+            setResult(Constants.DELETE_RESULT);
+        }
     }
 
     private void setTextFields() {

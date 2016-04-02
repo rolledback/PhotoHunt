@@ -1,10 +1,15 @@
 package mrayer.photohunt;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -13,7 +18,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.DeleteCallback;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseQuery;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 public class DetailedPhotoHuntActivity extends AppCompatActivity {
     private TextView nameView;
@@ -26,10 +39,14 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
     private ImageView imageView;
 
     private Button viewPhotosButton;
-    private Button startPhotoHuntButton;
+    private Button actionButton;
 
     private String albumId;
     private String type;
+
+    private AlertDialog deleteConfirmation;
+    private AlertDialog.Builder dialogBuilder;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +63,13 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Detailed Photo Hunt");
 
-        albumId = getIntent().getStringExtra("albumId");
-        type = getIntent().getStringExtra("type");
+        dialogBuilder = new AlertDialog.Builder(this);
+
+        Intent intent = getIntent();
+        ParseProxyObject ppo = (ParseProxyObject) intent.getSerializableExtra("albumProxy");
+
+        albumId = ppo.getString("albumId");
+        type = ppo.getString("type");
 
         nameView = (TextView) findViewById(R.id.detailed_name);
         authorView = (TextView) findViewById(R.id.detailed_author);
@@ -69,27 +91,22 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
             }
         });
 
-        startPhotoHuntButton = (Button) findViewById(R.id.detailed_start_photo_hunt_button);
-        startPhotoHuntButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Action not currently implemented.", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        Intent intent = getIntent();
-        ParseProxyObject ppo = (ParseProxyObject) intent.getSerializableExtra("albumProxy");
+        actionButton = (Button) findViewById(R.id.action_button);
+        setActionButtonListener(intent.getStringExtra("action"));
 
         nameView.setText(ppo.getString("name"));
         authorView.setText(ppo.getString("author"));
         locationView.setText(ppo.getString("location"));
         albumSizeView.setText(Integer.toString(ppo.getInt("numPhotos")));
         descriptionView.setText(ppo.getString("description"));
-        typeView.setText(ppo.getString("type"));
+        typeView.setText(type);
 
         // download image from url
         String coverPhotoUrl = ppo.getString("coverPhoto");
         Picasso.with(this).load(coverPhotoUrl).into(imageView);
+
+        // this only changes if the deletion took place
+        setResult(Constants.NO_RESULT);
     }
 
     @Override
@@ -99,5 +116,86 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setActionButtonListener(String action) {
+        if(action.equals("start")){
+            actionButton.setText("Start Photo Hunt");
+            actionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getApplicationContext(), "Action not currently implemented.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        else if(action.equals("delete")){
+            actionButton.setText("Delete Photo Hunt");
+            actionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    confirmDelete();
+                }
+            });
+        }
+    }
+
+    private void confirmDelete() {
+        dialogBuilder.setTitle("Warning");
+        dialogBuilder.setMessage("This action cannot be undone. Are you sure you want to delete your photo hunt?");
+        dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteConfirmation.dismiss();
+                deleteConfirmation = null;
+                deleteAlbum();
+            }
+
+        });
+        dialogBuilder.setNegativeButton("No", null);
+        deleteConfirmation = dialogBuilder.show();
+    }
+
+    private void deleteAlbum() {
+        // delete all associated photos
+        ParseQuery<Photo> photoQuery = ParseQuery.getQuery("Photo");
+        photoQuery.whereEqualTo("albumId", albumId);
+        photoQuery.orderByAscending("index");
+        photoQuery.findInBackground(new FindCallback<Photo>() {
+            public void done(List<Photo> objects, ParseException e) {
+                if (e == null) {
+                    for (Photo photo : objects) {
+                        photo.deleteInBackground();
+                    }
+                } else {
+                    Log.d(Constants.DetailedPhotoHuntActivityTag, e.toString());
+                }
+            }
+        });
+
+        dialog = new ProgressDialog(this);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setCancelable(false);
+
+        // delete the album
+        ParseQuery<PhotoHuntAlbum> albumQuery = ParseQuery.getQuery("PhotoHuntAlbum");
+        albumQuery.whereEqualTo("albumId", albumId);
+        albumQuery.orderByAscending("index");
+        albumQuery.getFirstInBackground(new GetCallback<PhotoHuntAlbum>() {
+            public void done(PhotoHuntAlbum object, ParseException e) {
+                dialog.show();
+                if (e == null) {
+                    object.deleteInBackground(new DeleteCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            setResult(Constants.DELETE_RESULT);
+                            dialog.dismiss();
+                            finish();
+                        }
+                    });
+                } else {
+                    Log.d(Constants.DetailedPhotoHuntActivityTag, e.toString());
+                }
+            }
+        });
     }
 }

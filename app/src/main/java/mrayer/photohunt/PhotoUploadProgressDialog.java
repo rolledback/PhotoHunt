@@ -20,11 +20,13 @@ public class PhotoUploadProgressDialog {
     private ProgressDialog dialog;
 
     public PhotoUploadProgressDialog(Context c, int numPhotos) {
+        // Log.d(Constants.PhotoUploadProgressDialogTag, "Creating upload dialog with " + numPhotos + " photos.");
         dialog = new ProgressDialog(c);
         progresses = new int[numPhotos];
     }
 
     public void setPhotoProgresses(int percentage, int photo) {
+        // Log.d(Constants.PhotoUploadProgressDialogTag, "Set photo progress of photo " + photo + " to " + percentage);
         progresses[photo] = percentage;
         int totalProgress = 0;
         for(int i = 0; i < progresses.length; i++) {
@@ -32,6 +34,7 @@ public class PhotoUploadProgressDialog {
             totalProgress += (int)Math.ceil((double)progresses[i] / (double)progresses.length);
         }
         dialog.setProgress(totalProgress);
+        // Log.d(Constants.PhotoUploadProgressDialogTag, "Total progress is " + totalProgress);
 
         if(dialog.getProgress() == 100) {
             dialog.setCancelable(true);

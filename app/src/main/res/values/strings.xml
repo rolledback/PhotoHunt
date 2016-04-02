@@ -39,7 +39,15 @@
         <item>Edit Photo Hunt</item>
         <item>Delete Photo Hunt</item>
     </string-array>
+
+    <string-array name="create_hunt_photo_dialog_options">
+        <item>Set/View Location</item>
+        <item>Move to Front</item>
+        <item>Remove</item>
+    </string-array>
     <string name="title_activity_view_photo">ViewPhotoActivity</string>
     <string name="title_activity_view_photo_location">ViewPhotoLocationActivity</string>
 
+    <string name="search_hint">Search Photohunts</string>
+    <string name="title_activity_search">SearchActivity</string>
 </resources>

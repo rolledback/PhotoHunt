@@ -1,11 +1,16 @@
 package mrayer.photohunt;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -50,8 +55,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 ParseProxyObject ppo = new ParseProxyObject(selectedAlbum);
                 Intent detailsIntent = new Intent(AlbumGalleryActivity.this, DetailedPhotoHuntActivity.class);
                 detailsIntent.putExtra("albumProxy", ppo);
-                detailsIntent.putExtra("albumId", selectedAlbum.getAlbumId());
-                detailsIntent.putExtra("type", selectedAlbum.getType());
+                detailsIntent.putExtra("action", "start");
                 startActivity(detailsIntent);
             }
         });
@@ -73,8 +77,22 @@ public class AlbumGalleryActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.album_gallery_menu, menu);
-        return super.onCreateOptionsMenu(menu);
+//        getMenuInflater().inflate(R.menu.album_gallery_menu, menu);
+//        return super.onCreateOptionsMenu(menu);
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.album_gallery_menu, menu);
+
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+
+        return true;
     }
 
     @Override
@@ -95,7 +113,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 return true;
             case R.id.action_my_account:
                 Intent accountIntent = new Intent(AlbumGalleryActivity.this, AccountActivity.class);
-                startActivity(accountIntent);
+                startActivityForResult(accountIntent, Constants.REQUEST_MANAGEMENT_RESULT);
                 return true;
 
             // uncomment corresponding test items in album_gallery_menu.xml to access these
@@ -123,7 +141,10 @@ public class AlbumGalleryActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == Constants.REQUEST_CREATE_NEW_PHOTO_HUNT && resultCode == RESULT_OK ) {
+        if (requestCode == Constants.REQUEST_CREATE_NEW_PHOTO_HUNT && resultCode == RESULT_OK) {
+            refreshList();
+        }
+        else if (requestCode == Constants.REQUEST_MANAGEMENT_RESULT && resultCode == Constants.DELETE_RESULT) {
             refreshList();
         }
     }

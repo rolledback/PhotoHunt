@@ -13,16 +13,22 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,14 +60,20 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private EditText inputDescriptionEditText;
     private Spinner typeSpinner;
 
+    private FrameLayout viewPagerLayout;
+
     private ViewPager viewPager;
     private Button addFromGalleryButton;
     private Button takePhotoButton;
     private Button uploadButton;
     private Button cancelButton;
-    private Button viewAddLocationButton;
+    private ImageView locationStatus;
 
     private PhotoUploadProgressDialog uploadDialog;
+    private AlertDialog quitConfirmation;
+
+    private AlertDialog.Builder dialogBuilder;
+    private LayoutInflater inflater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +86,15 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
 
-        createNewPhotoHuntImageAdapter = new CreateNewPhotoHuntImageAdapter(this);
+        dialogBuilder = new AlertDialog.Builder(this);
+        inflater = this.getLayoutInflater();
+
+        viewPagerLayout = (FrameLayout) findViewById(R.id.view_pager_layout);
+        viewPagerLayout.setVisibility(View.GONE);
+
+        createNewPhotoHuntImageAdapter = new CreateNewPhotoHuntImageAdapter(this, inflater, dialogBuilder, this);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPager.addOnPageChangeListener(new CustomOnPageChangeListener());
         viewPager.setAdapter(createNewPhotoHuntImageAdapter);
 
         setSupportActionBar(toolbar);
@@ -149,7 +168,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                viewPager.getAdapter().notifyDataSetChanged();// finish();
                 return;
             }
         });
@@ -162,40 +181,8 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             }
         });
 
-        viewAddLocationButton = (Button) findViewById(R.id.view_add_location_button);
-        viewPager.addOnPageChangeListener(new CustomOnPageChangeListener(viewAddLocationButton));
-        viewAddLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (createNewPhotoHuntImageAdapter.getGalImages().size() == 0) {
-                    // no images, so we can't set any locations
-                    Toast.makeText(getApplicationContext(), "No images have been added.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                int currentItem = viewPager.getCurrentItem();
-                String filePath = createNewPhotoHuntImageAdapter.getGalImages().get(currentItem);
-
-                Bundle args = new Bundle();
-                Intent addSetLocationIntent = new Intent(CreateNewPhotoHuntActivity.this, SetChangeLocationActivity.class);
-
-                LatLng manualLocation = createNewPhotoHuntImageAdapter.getManualLocation(filePath);
-                LatLng metaLocation = createNewPhotoHuntImageAdapter.getMetaLocation(filePath);
-
-                if(manualLocation != null) {
-                    // user has previously set a location for this file
-                    args.putParcelable("location", manualLocation);
-                    addSetLocationIntent.putExtra("bundle", args);
-                }
-                else if(metaLocation != null) {
-                    // able to find a location in the metadata
-                    args.putParcelable("location", metaLocation);
-                    addSetLocationIntent.putExtra("bundle", args);
-                }
-
-                startActivityForResult(addSetLocationIntent, Constants.REQUEST_SET_ADD_LOCATION);
-            }
-        });
+        locationStatus = (ImageView) findViewById(R.id.location_status);
+        locationStatus.setVisibility(View.GONE);
 
         // this only changes if the uplaod dialog was cancelled after upload complete
         setResult(Activity.RESULT_CANCELED);
@@ -204,10 +191,25 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            finish();
+            if(userStartedCreating()) {
+                confirmExit();
+            }
+            else {
+                finish();
+            }
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(userStartedCreating()) {
+            confirmExit();
+        }
+        else {
+            finish();
+        }
     }
 
     @Override
@@ -242,9 +244,10 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             String filePath = createNewPhotoHuntImageAdapter.getGalImages().get(currentItem);
             Bundle bundle = data.getParcelableExtra("bundle");
             createNewPhotoHuntImageAdapter.addManualLocation(filePath, (LatLng) bundle.getParcelable("location"));
-            viewAddLocationButton.setText("View/Set Location");
+            locationStatus.setImageResource(R.drawable.ic_done_black_24dp);
         }
         else if (requestCode == Constants.REQUEST_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+            viewPagerLayout.setVisibility(View.VISIBLE);
             Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
@@ -270,10 +273,15 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 galImages.add(picturePath);
                 createNewPhotoHuntImageAdapter.setGalImages((galImages));
                 createNewPhotoHuntImageAdapter.notifyDataSetChanged();
+
                 viewPager.setCurrentItem(galImages.size() - 1);
+            }
+            else {
+                makeAndShowDuplicateToast();
             }
         }
         else if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            viewPagerLayout.setVisibility(View.VISIBLE);
             restorePreferences();
             galleryAddPic();
             ArrayList<String> galImages = createNewPhotoHuntImageAdapter.getGalImages();
@@ -299,6 +307,28 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    public void confirmExit() {
+        dialogBuilder.setTitle("Warning");
+        dialogBuilder.setMessage("Your progress will be lost if you return to the gallery. " +
+                "Are you sure you want to continue?");
+        dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                quitConfirmation.dismiss();
+                quitConfirmation = null;
+                finish();
+            }
+
+        });
+        dialogBuilder.setNegativeButton("No", null);
+        quitConfirmation = dialogBuilder.show();
+    }
+
+    public boolean userStartedCreating() {
+        return inputNameEditText.getText().length() != 0 || inputLocationEditText.getText().length() != 0 ||
+                inputDescriptionEditText.getText().length() != 0 || viewPager.getAdapter().getCount() != 0;
     }
 
     private void dispatchTakePictureIntent() {
@@ -369,7 +399,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         uploadDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             public void onCancel(DialogInterface dialog) {
                 setResult(Activity.RESULT_OK);
-                finish(); //If you want to finish the activity.
+                finish();
             }
         });
     }
@@ -391,6 +421,10 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         photoHunt.setAlbumId(albumId);
         photoHunt.setDescription(photoHuntDescription);
         photoHunt.setNumPhotos(createNewPhotoHuntImageAdapter.getGalImages().size());
+        photoHunt.setSearchName(photoHuntName.toLowerCase());
+        photoHunt.setSearchAuthor(photoHuntAuthor.toLowerCase());
+        photoHunt.setSearchLocation(photoHuntLocation.toLowerCase());
+        photoHunt.setSearchDescription(photoHuntDescription.toLowerCase());
 
         return photoHunt;
     }
@@ -402,12 +436,58 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         toast.show();
     }
 
+    private void makeAndShowDuplicateToast() {
+        Toast toast = Toast.makeText(this, "This image has already been added to the photo hunt.", Toast.LENGTH_LONG);
+        toast.show();
+    }
+
+    public void launchViewSetLocation() {
+        if (createNewPhotoHuntImageAdapter.getGalImages().size() == 0) {
+            // no images, so we can't set any locations
+            Toast.makeText(getApplicationContext(), "No images have been added.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        int currentItem = viewPager.getCurrentItem();
+        String filePath = createNewPhotoHuntImageAdapter.getGalImages().get(currentItem);
+
+        Bundle args = new Bundle();
+        Intent addSetLocationIntent = new Intent(CreateNewPhotoHuntActivity.this, SetChangeLocationActivity.class);
+
+        LatLng manualLocation = createNewPhotoHuntImageAdapter.getManualLocation(filePath);
+        LatLng metaLocation = createNewPhotoHuntImageAdapter.getMetaLocation(filePath);
+
+        if (manualLocation != null) {
+            // user has previously set a location for this file
+            args.putParcelable("location", manualLocation);
+            addSetLocationIntent.putExtra("bundle", args);
+        } else if (metaLocation != null) {
+            // able to find a location in the metadata
+            args.putParcelable("location", metaLocation);
+            addSetLocationIntent.putExtra("bundle", args);
+        }
+
+        startActivityForResult(addSetLocationIntent, Constants.REQUEST_SET_ADD_LOCATION);
+    }
+
+    public void launchViewPhoto(String path) {
+        Intent viewPhotoIntent = new Intent(CreateNewPhotoHuntActivity.this, ViewPhotoActivity.class);
+        viewPhotoIntent.putExtra("path", path);
+        startActivity(viewPhotoIntent);
+    }
+
+    public void hideViewPager() {
+        if(createNewPhotoHuntImageAdapter.getCount() == 0) {
+            viewPagerLayout.setVisibility(View.GONE);
+        }
+    }
+
     private class UploadAlbumTask extends AsyncTask<Void, Void, Void> {
 
         private PhotoHuntAlbum albumToUpload;
         private ArrayList<String> photos;
 
-        public UploadAlbumTask(PhotoHuntAlbum albumToUpload, ArrayList<String> photos) {
+            public UploadAlbumTask(PhotoHuntAlbum albumToUpload, ArrayList<String> photos) {
             this.albumToUpload = albumToUpload;
             this.photos = photos;
         }
@@ -456,7 +536,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
                 if(index > 0) {
                     // non-cover photo
-                    fullPhoto.saveInBackground(new PhotoSaveCallback(fullPhoto, thumbPhoto, photoObject,  numPhoto + 1, uploadDialog),
+                    fullPhoto.saveInBackground(new PhotoSaveCallback(fullPhoto, thumbPhoto, photoObject, numPhoto + 1, uploadDialog),
                             new PhotoProgressCallback(uploadDialog, numPhoto));
                 }
                 else {
@@ -474,23 +554,22 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
     private class CustomOnPageChangeListener implements ViewPager.OnPageChangeListener {
 
-        private Button toUpdate;
-
-        public CustomOnPageChangeListener(Button toUpdate) {
-            this.toUpdate = toUpdate;
-        }
-
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            if( createNewPhotoHuntImageAdapter.getGalImages().size() == 0) {return;}
+            if(createNewPhotoHuntImageAdapter.getGalImages().size() == 0) {
+                viewPagerLayout.setVisibility(View.GONE);
+                return;
+            }
             String filePath = createNewPhotoHuntImageAdapter.getGalImages().get(position);
+            locationStatus.setVisibility(View.INVISIBLE);
 
             if(createNewPhotoHuntImageAdapter.getMetaLocation(filePath) != null || createNewPhotoHuntImageAdapter.getManualLocation(filePath) != null) {
-                toUpdate.setText("View/Set Location");
+                locationStatus.setImageResource(R.drawable.ic_done_black_24dp);
             }
             else {
-                toUpdate.setText("Set Location");
+                locationStatus.setImageResource(R.drawable.ic_report_problem_black_24dp);
             }
+            locationStatus.setVisibility(View.VISIBLE);
         }
 
         @Override

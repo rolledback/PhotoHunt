@@ -5,14 +5,15 @@ package mrayer.photohunt;
  */
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.media.Image;
+import android.graphics.BitmapFactory;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
+import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -22,8 +23,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
-    Context context;
+    private Context context;
     private ArrayList<String> galImages = new ArrayList<String>();
+    private ArrayList<Integer> galImageViews = new ArrayList<Integer>();
 
     // file path - > manual location
     private HashMap<String, LatLng> manualLocations;
@@ -31,14 +33,26 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
     // file path -> meta location
     private HashMap<String, LatLng> metaLocations;
 
-    CreateNewPhotoHuntImageAdapter(Context context){
-        this.context=context;
+    private LayoutInflater inflater;
+    private AlertDialog.Builder dialogBuilder;
+
+    // I hate myself for doing this
+    private CreateNewPhotoHuntActivity parent;
+
+    CreateNewPhotoHuntImageAdapter(Context context, LayoutInflater inflater, AlertDialog.Builder dialogBuilder, CreateNewPhotoHuntActivity parent){
+        this.context = context;
+        this.inflater = inflater;
+        this.dialogBuilder = dialogBuilder;
+        this.parent = parent;
         manualLocations = new HashMap<String, LatLng>();
         metaLocations = new HashMap<String, LatLng>();
     }
 
-    CreateNewPhotoHuntImageAdapter(Context context, ArrayList<String> list) {
+    CreateNewPhotoHuntImageAdapter(Context context, LayoutInflater inflater, AlertDialog.Builder dialogBuilder, ArrayList<String> list, CreateNewPhotoHuntActivity parent) {
         this.context = context;
+        this.inflater = inflater;
+        this.dialogBuilder = dialogBuilder;
+        this.parent = parent;
         galImages = list;
         manualLocations = new HashMap<String, LatLng>();
         metaLocations = new HashMap<String, LatLng>();
@@ -55,12 +69,12 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(final ViewGroup container, int position) {
         ImageView imageView = new ImageView(context);
         int padding = context.getResources().getDimensionPixelSize(R.dimen.fab_margin);
         imageView.setPadding(padding, padding, padding, padding);
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-        String picturePath = galImages.get(position);
+        final String picturePath = galImages.get(position);
         File file = new File(picturePath);
 
         // get location if it exists
@@ -80,7 +94,80 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
         imageView.setLayoutParams(params);
 
         ((ViewPager) container).addView(imageView, 0);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                parent.launchViewPhoto(picturePath);
+            }
+        });
+        imageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                dialogBuilder.setTitle("Photo Options");
+                dialogBuilder.setItems(context.getResources().getStringArray(R.array.create_hunt_photo_dialog_options), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0) {
+                            parent.launchViewSetLocation();
+                        }
+                        else if (which == 1) {
+                            if (((ViewPager) container).getCurrentItem() == 0) {
+                                return;
+                            }
+
+                            String imageToMove = galImages.get(((ViewPager) container).getCurrentItem());
+                            Integer viewToMove = galImageViews.get(((ViewPager) container).getCurrentItem());
+
+                            galImages.remove(((ViewPager) container).getCurrentItem());
+                            galImageViews.remove(((ViewPager) container).getCurrentItem());
+
+                            galImages.add(0, imageToMove);
+                            galImageViews.add(0, viewToMove);
+
+                            notifyDataSetChanged();
+
+                            ((ViewPager) container).setCurrentItem(0, true);
+                        }
+                        else if(which == 2) {
+                            Integer viewToRemove = galImageViews.get(((ViewPager) container).getCurrentItem());
+
+                            galImages.remove(((ViewPager) container).getCurrentItem());
+                            galImageViews.remove(viewToRemove);
+
+                            notifyDataSetChanged();
+
+                            if(galImages.size() == 0) {
+                                parent.hideViewPager();
+                            }
+                        }
+                    }
+                });
+                dialogBuilder.show();
+
+                return true;
+            }
+        });
+
+        if(galImageViews.size() > position) {
+            // if you are instantiating a view not at the end of the list
+            galImageViews.set(position, imageView.hashCode());
+        }
+        else if(!galImageViews.contains(imageView)) {
+            // if you are instantiating a view at the end which isn't already in the list
+            galImageViews.add(imageView.hashCode());
+        }
+
         return imageView;
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        if(galImageViews.contains(((ImageView) object).hashCode())) {
+            return galImageViews.indexOf(((ImageView) object).hashCode());
+        }
+        else {
+            return POSITION_NONE;
+        }
     }
 
     @Override
@@ -93,7 +180,7 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
     }
 
     public void setGalImages(ArrayList<String> newGalImages) {
-        galImages = newGalImages;
+        this.galImages = newGalImages;
     }
 
     public LatLng getManualLocation(String filePath) {

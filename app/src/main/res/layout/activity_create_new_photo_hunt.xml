@@ -1,5 +1,6 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:andriod="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -89,25 +90,31 @@
                 android:entries="@array/photo_hunt_type"
                 android:prompt="@string/photo_hunt_type_prompt" />
 
-            <Button
-                android:id="@+id/view_add_location_button"
-                android:layout_below="@+id/spinner_type"
-                android:layout_width="match_parent"
+            <FrameLayout
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="View/Add Location"/>
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/view_pager"
-                android:layout_below="@+id/view_add_location_button"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/create_new_photo_hunt_image_size" />
+                android:id="@+id/view_pager_layout"
+                android:layout_below="@+id/spinner_type">
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/view_pager"
+                    android:layout_below="@+id/view_add_location_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/create_new_photo_hunt_image_size" />
+                <ImageView
+                    android:id="@+id/location_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|right"
+                    android:layout_marginRight="10dp" />
+            </FrameLayout>
 
             <RelativeLayout
-                android:layout_below="@+id/view_pager"
+                android:layout_below="@+id/view_pager_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:id="@+id/button_top_row"

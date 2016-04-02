@@ -1,6 +1,8 @@
 package mrayer.photohunt;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -20,6 +22,8 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 public class ViewPhotoActivity extends AppCompatActivity {
     private ImageView imageView;
@@ -48,20 +52,25 @@ public class ViewPhotoActivity extends AppCompatActivity {
 
         imageView = (ImageView) findViewById(R.id.view_photo_imageview);
         viewLocationButton = (Button) findViewById(R.id.view_photo_location_button);
+        viewLocationButton.setVisibility(View.GONE);
 
-        url = getIntent().getStringExtra("photo url");
-        type = getIntent().getStringExtra("type");
-        photo_id = getIntent().getStringExtra("photo id");
+        if(getIntent().hasExtra("url")) {
+            url = getIntent().getStringExtra("url");
+            type = getIntent().getStringExtra("type");
+            photo_id = getIntent().getStringExtra("id");
 
-        viewLocationButton.setClickable(false);
-        if (type.equals("Scavenger")) {
-            viewLocationButton.setVisibility(View.GONE);
+            viewLocationButton.setClickable(false);
+            if (type.equals("Tour")) {
+                viewLocationButton.setVisibility(View.VISIBLE);
+                getLocation();
+            }
+
+            downLoadPhoto();
         }
-        if (type.equals("Tour")) {
-            getLocation();
+        else {
+            url = getIntent().getStringExtra("path");
+            loadPhoto();
         }
-
-        downLoadPhoto();
     }
 
     private void getLocation() {
@@ -95,6 +104,14 @@ public class ViewPhotoActivity extends AppCompatActivity {
 
     private void downLoadPhoto() {
         Picasso.with(this).load(url).into(imageView);
+    }
+
+    private void loadPhoto() {
+        File imgFile = new File(url);
+        if(imgFile.exists()){
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            imageView.setImageBitmap(myBitmap);
+        }
     }
 
     @Override

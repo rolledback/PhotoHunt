@@ -17,6 +17,7 @@ public class Constants {
     public static final String AlbumListAdapterTag = "ALBUM_LIST_ADAPTER";
     public static final String AlbumGridAdapterTag = "ALBUM_GRID_ADAPTER";
     public static final String ViewPhotoActivityTag = "VIEW_PHOTO_ACTIVITY";
+    public static final String DetailedPhotoHuntActivityTag = "DETAILED_PHOTO_HUNT";
 
     // start activity for result codes for CreateNewPhotoHuntActivity
     public static final int REQUEST_LOAD_IMAGE = 1;
@@ -38,4 +39,11 @@ public class Constants {
     // Thumbnail dimensions
     public static final int THUMBNAIL_WIDTH = 500;
     public static final int THUMBNAIL_HEIGHT = 500;
+
+    // start activity for result code for AccountActivity
+    public static final int REQUEST_MANAGEMENT_RESULT = 1;
+
+    // result codes for detailed DetailedPhotoHuntActivity
+    public static final int NO_RESULT = 1;
+    public static final int DELETE_RESULT = 2;
 }

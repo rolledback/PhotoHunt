@@ -94,4 +94,36 @@ public class PhotoHuntAlbum extends ParseObject {
     public void setCoverPhotoThumbnail(ParseFile file) {
         put("coverPhotoThumbnail", file);
     }
+
+    public String getSearchName() {
+        return getString("searchName");
+    }
+
+    public void setSearchName(String searchName) {
+        put("searchName", searchName);
+    }
+
+    public String getSearchAuthor() {
+        return getString("searchAuthor");
+    }
+
+    public void setSearchAuthor(String searchAuthor) {
+        put("searchAuthor", searchAuthor);
+    }
+
+    public String getSearchLocation() {
+        return getString("searchLocation");
+    }
+
+    public void setSearchLocation(String searchLocation) {
+        put("searchLocation", searchLocation);
+    }
+
+    public String getSearchDescription() {
+        return getString("searchDescription");
+    }
+
+    public void setSearchDescription(String searchDescription) {
+        put("searchDescription", searchDescription);
+    }
 }

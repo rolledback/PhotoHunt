@@ -180,7 +180,7 @@
               android:layout_weight="1"/>
 
           <Button
-              android:id="@+id/detailed_start_photo_hunt_button"
+              android:id="@+id/action_button"
               android:layout_width="0dp"
               android:layout_height="match_parent"
               android:text="Start Photo Hunt"
