@@ -55,8 +55,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 ParseProxyObject ppo = new ParseProxyObject(selectedAlbum);
                 Intent detailsIntent = new Intent(AlbumGalleryActivity.this, DetailedPhotoHuntActivity.class);
                 detailsIntent.putExtra("albumProxy", ppo);
-                detailsIntent.putExtra("albumId", selectedAlbum.getAlbumId());
-                detailsIntent.putExtra("type", selectedAlbum.getType());
+                detailsIntent.putExtra("action", "start");
                 startActivity(detailsIntent);
             }
         });
@@ -114,7 +113,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 return true;
             case R.id.action_my_account:
                 Intent accountIntent = new Intent(AlbumGalleryActivity.this, AccountActivity.class);
-                startActivity(accountIntent);
+                startActivityForResult(accountIntent, Constants.REQUEST_MANAGEMENT_RESULT);
                 return true;
 
             // uncomment corresponding test items in album_gallery_menu.xml to access these
@@ -142,7 +141,10 @@ public class AlbumGalleryActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == Constants.REQUEST_CREATE_NEW_PHOTO_HUNT && resultCode == RESULT_OK ) {
+        if (requestCode == Constants.REQUEST_CREATE_NEW_PHOTO_HUNT && resultCode == RESULT_OK) {
+            refreshList();
+        }
+        else if (requestCode == Constants.REQUEST_MANAGEMENT_RESULT && resultCode == Constants.DELETE_RESULT) {
             refreshList();
         }
     }

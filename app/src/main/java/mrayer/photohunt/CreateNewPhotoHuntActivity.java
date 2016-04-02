@@ -87,7 +87,6 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         }
 
         dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder = new AlertDialog.Builder(this);
         inflater = this.getLayoutInflater();
 
         viewPagerLayout = (FrameLayout) findViewById(R.id.view_pager_layout);
@@ -400,7 +399,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         uploadDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             public void onCancel(DialogInterface dialog) {
                 setResult(Activity.RESULT_OK);
-                finish(); //If you want to finish the activity.
+                finish();
             }
         });
     }
