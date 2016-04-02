@@ -25,7 +25,7 @@ import java.util.HashMap;
 public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
     private Context context;
     private ArrayList<String> galImages = new ArrayList<String>();
-    private ArrayList<ImageView> galImageViews = new ArrayList<ImageView>();
+    private ArrayList<Integer> galImageViews = new ArrayList<Integer>();
 
     // file path - > manual location
     private HashMap<String, LatLng> manualLocations;
@@ -116,7 +116,7 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
                             }
 
                             String imageToMove = galImages.get(((ViewPager) container).getCurrentItem());
-                            ImageView viewToMove = galImageViews.get(((ViewPager) container).getCurrentItem());
+                            Integer viewToMove = galImageViews.get(((ViewPager) container).getCurrentItem());
 
                             galImages.remove(((ViewPager) container).getCurrentItem());
                             galImageViews.remove(((ViewPager) container).getCurrentItem());
@@ -129,11 +129,10 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
                             ((ViewPager) container).setCurrentItem(0, true);
                         }
                         else if(which == 2) {
-                            ImageView viewToRemove = galImageViews.get(((ViewPager) container).getCurrentItem());
+                            Integer viewToRemove = galImageViews.get(((ViewPager) container).getCurrentItem());
 
                             galImages.remove(((ViewPager) container).getCurrentItem());
                             galImageViews.remove(viewToRemove);
-                            ((ViewPager) container).removeView(viewToRemove);
 
                             notifyDataSetChanged();
 
@@ -151,11 +150,11 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
 
         if(galImageViews.size() > position) {
             // if you are instantiating a view not at the end of the list
-            galImageViews.set(position, imageView);
+            galImageViews.set(position, imageView.hashCode());
         }
         else if(!galImageViews.contains(imageView)) {
             // if you are instantiating a view at the end which isn't already in the list
-            galImageViews.add(imageView);
+            galImageViews.add(imageView.hashCode());
         }
 
         return imageView;
@@ -163,8 +162,8 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
 
     @Override
     public int getItemPosition(Object object) {
-        if(galImageViews.contains((ImageView) object)) {
-            return galImageViews.indexOf((ImageView) object);
+        if(galImageViews.contains(((ImageView) object).hashCode())) {
+            return galImageViews.indexOf(((ImageView) object).hashCode());
         }
         else {
             return POSITION_NONE;
