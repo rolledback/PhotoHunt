@@ -115,6 +115,10 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 Intent accountIntent = new Intent(AlbumGalleryActivity.this, AccountActivity.class);
                 startActivityForResult(accountIntent, Constants.REQUEST_MANAGEMENT_RESULT);
                 return true;
+            case R.id.action_settings:
+                Intent settingsIntent = new Intent(AlbumGalleryActivity.this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                return true;
 
             // uncomment corresponding test items in album_gallery_menu.xml to access these
 //            case R.id.action_test_set_add_location:

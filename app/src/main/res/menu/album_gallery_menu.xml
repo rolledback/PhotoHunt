@@ -27,6 +27,10 @@
         android:icon="@drawable/ic_cached_white_24dp"
         android:title="Logout"
         app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_settings"
+        android:title="Settings"
+        app:showAsAction="never"/>
 
     <!--<item-->
     <!--android:id="@+id/action_test_set_add_location"-->

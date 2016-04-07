@@ -96,6 +96,10 @@
             android:label="@string/title_activity_view_photo_location"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_settings_activity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
             android:name=".SearchActivity"
             android:label="@string/title_activity_search"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">

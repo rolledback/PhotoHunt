@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Account">
+        <CheckBoxPreference
+            android:key="account_private"
+            android:title="Make Account Private"
+            android:defaultValue="false"
+            android:summary="Prevent people from adding you to a private album."/>
+    </PreferenceCategory>
+</PreferenceScreen>

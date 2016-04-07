@@ -12,6 +12,8 @@
     <string name="title_activity_detailed_photo_hunt">DetailedPhotoHuntActivity</string>
     <string name="title_activity_album">AlbumActivity</string>
 
+    <string name="title_settings_activity">SettingsActivity</string>
+
     <!-- Login label is inadvertently being used as the app name -->
     <string name="title_activity_login">PhotoHunt</string>
 
