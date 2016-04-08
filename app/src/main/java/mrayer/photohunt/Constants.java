@@ -18,6 +18,7 @@ public class Constants {
     public static final String AlbumGridAdapterTag = "ALBUM_GRID_ADAPTER";
     public static final String ViewPhotoActivityTag = "VIEW_PHOTO_ACTIVITY";
     public static final String DetailedPhotoHuntActivityTag = "DETAILED_PHOTO_HUNT";
+    public static final String UserListAdapterTag = "USER_LIST_ADAPTER";
 
     // start activity for result codes for CreateNewPhotoHuntActivity
     public static final int REQUEST_LOAD_IMAGE = 1;

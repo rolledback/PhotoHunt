@@ -100,16 +100,28 @@
             android:label="@string/title_settings_activity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
+            android:name=".FavoriteUsersActivity"
+            android:label="@string/title_favorite_users_activity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
             android:name=".SearchActivity"
             android:label="@string/title_activity_search"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-            <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
-        <service android:name=".LocationService"/>
+
+        <service android:name=".LocationService" />
+
+        <activity
+            android:name=".FavoritedByActivity"
+            android:label="@string/title_activity_favorited_by"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 
 </manifest>

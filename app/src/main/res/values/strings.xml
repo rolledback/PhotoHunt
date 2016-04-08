@@ -13,6 +13,8 @@
     <string name="title_activity_album">AlbumActivity</string>
 
     <string name="title_settings_activity">SettingsActivity</string>
+    <string name="title_favorite_users_activity">FavoriteUsersActivity</string>
+    <string name="title_activity_favorited_by">FavoritedByActivity</string>
 
     <!-- Login label is inadvertently being used as the app name -->
     <string name="title_activity_login">PhotoHunt</string>

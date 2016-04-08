@@ -62,6 +62,7 @@ public class SearchActivity extends AppCompatActivity {
                 detailsIntent.putExtra("albumProxy", ppo);
                 detailsIntent.putExtra("albumId", selectedAlbum.getAlbumId());
                 detailsIntent.putExtra("type", selectedAlbum.getType());
+                detailsIntent.putExtra("action", "start");
                 startActivity(detailsIntent);
             }
         });

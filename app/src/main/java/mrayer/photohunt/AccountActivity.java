@@ -1,7 +1,6 @@
 package mrayer.photohunt;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,9 +11,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.parse.ParseUser;
 
@@ -23,6 +22,9 @@ public class AccountActivity extends AppCompatActivity {
     private TextView username;
     private TextView accountCreatedDate;
     private TextView numPhotoHunts;
+
+    private Button favoriteUsers;
+    private Button favoritedBy;
 
     private AlbumListAdapter adapter;
     private ListView list;
@@ -73,6 +75,24 @@ public class AccountActivity extends AppCompatActivity {
                 detailsIntent.putExtra("albumProxy", ppo);
                 detailsIntent.putExtra("action", "delete");
                 startActivityForResult(detailsIntent, Constants.REQUEST_MANAGEMENT_RESULT);
+            }
+        });
+
+        favoritedBy = (Button) findViewById(R.id.favorited_button);
+        favoritedBy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent favoritedByIntent = new Intent(AccountActivity.this, FavoritedByActivity.class);
+                startActivity(favoritedByIntent);
+            }
+        });
+
+        favoriteUsers = (Button) findViewById(R.id.favorites_button);
+        favoriteUsers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent favoritesIntent = new Intent(AccountActivity.this, FavoriteUsersActivity.class);
+                startActivity(favoritesIntent);
             }
         });
 

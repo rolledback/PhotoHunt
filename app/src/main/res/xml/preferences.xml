@@ -5,6 +5,6 @@
             android:key="account_private"
             android:title="Make Account Private"
             android:defaultValue="false"
-            android:summary="Prevent people from adding you to a private album."/>
+            android:summary="Prevent people from adding you to their Favorite Users List."/>
     </PreferenceCategory>
 </PreferenceScreen>
