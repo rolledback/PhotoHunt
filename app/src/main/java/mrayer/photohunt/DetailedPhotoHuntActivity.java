@@ -1,12 +1,13 @@
 package mrayer.photohunt;
 
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,13 +20,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.squareup.picasso.Picasso;
 
@@ -35,10 +40,10 @@ import java.util.List;
 
 // Geofence code from http://developer.android.com/training/location/geofencing.html
 
-// Aila's TODO: Need to connect to the Google API Client
-// TODO: Figure out if I need to do something with the Request and Intent methods
+// Aila's TODO: Test if this actually works
 
-public class DetailedPhotoHuntActivity extends AppCompatActivity {
+public class DetailedPhotoHuntActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     static final int GEOFENCE_RADIUS_IN_METERS = 150;
     static final String TAG = "DetailedPHActivity";
@@ -62,6 +67,9 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
     private AlertDialog deleteConfirmation;
     private AlertDialog.Builder dialogBuilder;
     private ProgressDialog dialog;
+
+    GoogleApiClient googleAPI;
+    List<Geofence> geofences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +130,15 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
 
         // this only changes if the deletion took place
         setResult(Constants.NO_RESULT);
+
+        // Create a new googleAPI client
+        if (googleAPI == null) {
+            googleAPI = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
     }
 
     @Override
@@ -151,33 +168,31 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
                             if (e == null) {
                                 photos.clear();
                                 photos.addAll(objects);
-                            }
-                            else {
+
+                                geofences = new ArrayList<Geofence>();
+                                // Create a list of geofences
+                                for (Photo p : photos) {
+                                    geofences.add(new Geofence.Builder()
+                                            // Set the request ID, a string to identify geofence as photo ID
+                                            .setRequestId("" + p.getIndex())
+                                            .setCircularRegion(
+                                                    p.getLocation().latitude,
+                                                    p.getLocation().longitude,
+                                                    GEOFENCE_RADIUS_IN_METERS)
+                                            .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                                            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                                                    Geofence.GEOFENCE_TRANSITION_EXIT)
+                                            .build());
+                                }
+
+                                // Actually connect to the Google API
+                                googleAPI.connect();
+
+                            } else {
                                 Log.d(TAG, " " + e.toString());
                             }
                         }
                     });
-
-                    List<Geofence> geofences = new ArrayList<Geofence>();
-
-                    // Create a list of geofences
-                    for(Photo p: photos) {
-                        geofences.add(new Geofence.Builder()
-                        // Set the request ID, a string to identify geofence as photo ID
-                                .setRequestId("" + p.getIndex())
-                                .setCircularRegion(
-                                        p.getLocation().latitude,
-                                        p.getLocation().longitude,
-                                        GEOFENCE_RADIUS_IN_METERS)
-                                .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-                                        Geofence.GEOFENCE_TRANSITION_EXIT)
-                        .build());
-                    }
-
-                    // Not sure what these do...
-                    GeofencingRequest req = getGeofencingRequest(geofences);
-                    getGeofencePendingIntent();
 
                 }
             });
@@ -270,5 +285,42 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.i(TAG, " location services connected.");
+        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            Log.d(TAG, "Do not have correct permissions");
+        }
+        else
+        {
+            // Sent the geofences to the GoogleAPI
+            LocationServices.GeofencingApi.addGeofences(
+                    googleAPI,
+                    getGeofencingRequest(geofences),
+                    getGeofencePendingIntent()
+            ).setResultCallback(new ResultCallback<Status>() {
+                @Override
+                public void onResult(Status status) {
+                    if (status.isSuccess()) {
+                        // Success
+                        Log.i(TAG, " geofence request success!");
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(TAG, " Location services suspended. Please reconnect.");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 }

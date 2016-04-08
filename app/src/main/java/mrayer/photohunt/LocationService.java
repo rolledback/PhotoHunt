@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -20,16 +21,15 @@ import java.util.List;
 
 // Geofencing code from http://developer.android.com/training/location/geofencing.html
 
-// Aila's TODO: Add GoogleAPIClient in here, add location monitoring
+// Aila's TODO: Add location monitoring
 
-public class LocationService extends IntentService {
+public class LocationService extends IntentService implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     static final int GEOFENCE_RADIUS_IN_METERS = 150;
     static final String TAG = "LocationService";
 
     GoogleApiClient googleAPI;
     ArrayList<Geofence> geofences;
-    ArrayList<Photo> photos;
 
     /**
      * A constructor is required, and must call the super IntentService(String)
@@ -39,27 +39,27 @@ public class LocationService extends IntentService {
         super("LocationService");
     }
 
-//    public void onCreate() {
-//        // Make a new GoogleAPIClient
-//        googleAPI = new GoogleApiClient.Builder(this)
-//                .addConnectionCallbacks(this)
-//                .addOnConnectionFailedListener(this)
-//                .addApi(LocationServices.API)
-//                .build();
-//        geofences = new ArrayList<Geofence>();
-//        super.onCreate();
-//    }
-//
-//
-//    public int onStartCommand(Intent intent, int flags, int startId) {
-//        googleAPI.connect();
-//        return super.onStartCommand(intent,flags,startId);
-//    }
-//
-//    public void onDestroy() {
-//        googleAPI.disconnect();
-//        super.onDestroy();
-//    }
+    public void onCreate() {
+        // Make a new GoogleAPIClient
+        googleAPI = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        geofences = new ArrayList<Geofence>();
+        super.onCreate();
+    }
+
+
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        googleAPI.connect();
+        return super.onStartCommand(intent,flags,startId);
+    }
+
+    public void onDestroy() {
+        googleAPI.disconnect();
+        super.onDestroy();
+    }
 
     /**
      * The IntentService calls this method from the default worker thread with
@@ -79,6 +79,8 @@ public class LocationService extends IntentService {
         int transition = geofencingEvent.getGeofenceTransition();
 
         if (transition == Geofence.GEOFENCE_TRANSITION_ENTER) {
+            Log.d(TAG, " geofence entered");
+            Toast.makeText(this, " geofence entered!!!1 ", Toast.LENGTH_LONG);
             // If entered, need to make sure location monitoring is set
 
             // Get the geofences that were triggered
@@ -92,6 +94,21 @@ public class LocationService extends IntentService {
             // Check if any geofences entered... if none, stop location monitoring
         }
 
+
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.i(TAG, " location services connected.");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(TAG, " Location services suspended. Please reconnect.");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
 
     }
 }
