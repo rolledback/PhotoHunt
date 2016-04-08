@@ -1,6 +1,7 @@
 package mrayer.photohunt;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingRequest;
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -26,9 +29,21 @@ import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
+
+// Geofence code from http://developer.android.com/training/location/geofencing.html
+
+// Aila's TODO: Need to connect to the Google API Client
+// TODO: Figure out if I need to do something with the Request and Intent methods
+
 public class DetailedPhotoHuntActivity extends AppCompatActivity {
+
+    static final int GEOFENCE_RADIUS_IN_METERS = 150;
+    static final String TAG = "DetailedPHActivity";
+    PendingIntent geofencePendingIntent;
+
     private TextView nameView;
     private TextView authorView;
     private TextView locationView;
@@ -124,7 +139,46 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
             actionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getApplicationContext(), "Action not currently implemented.", Toast.LENGTH_SHORT).show();
+
+                    final List<Photo> photos = new ArrayList<Photo>();
+
+                    // Get all the photos for that album
+                    ParseQuery<Photo> query = ParseQuery.getQuery("Photo");
+                    query.whereEqualTo("albumId", albumId);
+                    query.orderByAscending("index");
+                    query.findInBackground(new FindCallback<Photo>() {
+                        public void done(List<Photo> objects, ParseException e) {
+                            if (e == null) {
+                                photos.clear();
+                                photos.addAll(objects);
+                            }
+                            else {
+                                Log.d(TAG, " " + e.toString());
+                            }
+                        }
+                    });
+
+                    List<Geofence> geofences = new ArrayList<Geofence>();
+
+                    // Create a list of geofences
+                    for(Photo p: photos) {
+                        geofences.add(new Geofence.Builder()
+                        // Set the request ID, a string to identify geofence as photo ID
+                                .setRequestId("" + p.getIndex())
+                                .setCircularRegion(
+                                        p.getLocation().latitude,
+                                        p.getLocation().longitude,
+                                        GEOFENCE_RADIUS_IN_METERS)
+                                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                                        Geofence.GEOFENCE_TRANSITION_EXIT)
+                        .build());
+                    }
+
+                    // Not sure what these do...
+                    GeofencingRequest req = getGeofencingRequest(geofences);
+                    getGeofencePendingIntent();
+
                 }
             });
         }
@@ -137,6 +191,25 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private GeofencingRequest getGeofencingRequest(List<Geofence> geofences) {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.addGeofences(geofences);
+        return builder.build();
+    }
+
+    private PendingIntent getGeofencePendingIntent() {
+        // Reuse the PendingIntent if we already have it.
+        if (geofencePendingIntent != null) {
+            return geofencePendingIntent;
+        }
+        Intent intent = new Intent(this, LocationService.class);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
+        // calling addGeofences() and removeGeofences()
+        return PendingIntent.getService(this, 0, intent, PendingIntent.
+                FLAG_UPDATE_CURRENT);
     }
 
     private void confirmDelete() {
