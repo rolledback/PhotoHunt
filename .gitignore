@@ -10,6 +10,7 @@
 /.idea/workspace.xml
 /.idea/gradle.xml
 /.idea/libraries
+/.idea/misc.xml
 
 # key files
 *google_maps_api.xml

@@ -1,25 +1,35 @@
 <resources>
-    <string name="app_name">PhotoHunt</string>
-    <string name="title_activity_create_new_photo_hunt">CreateNewPhotoHuntActivity</string>
     <string name="google_app_id">marine-lacing-125120</string>
 
+    <!-- Activity Titles -->
+    <string name="title_activity_sign_up">Sign Up</string>
+    <string name="title_activity_set_change_location">SetChangeLocationActivity</string>
+    <string name="title_activity_detailed_photo_hunt">DetailedPhotoHuntActivity</string>
+    <string name="title_activity_album">AlbumActivity</string>
+    <string name="title_settings_activity">SettingsActivity</string>
+    <string name="title_favorite_users_activity">FavoriteUsersActivity</string>
+    <string name="title_activity_favorited_by">FavoritedByActivity</string>
+    <string name="title_activity_login">PhotoHunt</string>
+    <string name="title_activity_account">AccountActivity</string>
+    <string name="title_activity_view_photo_location">ViewPhotoLocationActivity</string>
+    <string name="title_activity_view_photo">ViewPhotoActivity</string>
+    <string name="title_activity_search">SearchActivity</string>
+
+    <!-- Create Photo Hunt Activity -->
+    <string name="app_name">PhotoHunt</string>
+    <string name="title_activity_create_new_photo_hunt">CreateNewPhotoHuntActivity</string>
     <string name="photo_hunt_type_prompt">Type of Photo Hunt</string>
     <string-array name="photo_hunt_type">
         <item>Scavenger</item>
         <item>Tour</item>
     </string-array>
-    <string name="title_activity_set_change_location">SetChangeLocationActivity</string>
-    <string name="title_activity_detailed_photo_hunt">DetailedPhotoHuntActivity</string>
-    <string name="title_activity_album">AlbumActivity</string>
+    <string-array name="create_hunt_photo_dialog_options">
+        <item>Set/View Location</item>
+        <item>Move to Front</item>
+        <item>Remove</item>
+    </string-array>
 
-    <string name="title_settings_activity">SettingsActivity</string>
-    <string name="title_favorite_users_activity">FavoriteUsersActivity</string>
-    <string name="title_activity_favorited_by">FavoritedByActivity</string>
-
-    <!-- Login label is inadvertently being used as the app name -->
-    <string name="title_activity_login">PhotoHunt</string>
-
-    <!-- Strings related to login -->
+    <!-- Login/Signup Activities -->
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
@@ -31,27 +41,15 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="title_activity_sign_up">Sign Up</string>
-
-    <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="error_invalid_email">This email address is invalid</string>
 
-    <string name="title_activity_account">AccountActivity</string>
-
+    <!-- Account Activity -->
     <string-array name="account_management_dialog_options">
         <item>Edit Photo Hunt</item>
         <item>Delete Photo Hunt</item>
     </string-array>
 
-    <string-array name="create_hunt_photo_dialog_options">
-        <item>Set/View Location</item>
-        <item>Move to Front</item>
-        <item>Remove</item>
-    </string-array>
-    <string name="title_activity_view_photo">ViewPhotoActivity</string>
-    <string name="title_activity_view_photo_location">ViewPhotoLocationActivity</string>
-
+    <!-- Album Gallery Activity -->
     <string name="search_hint">Search Photohunts</string>
-    <string name="title_activity_search">SearchActivity</string>
 </resources>
