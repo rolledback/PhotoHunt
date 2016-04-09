@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/search_toolbar"
+        android:id="@+id/user_search_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimary"
@@ -15,7 +15,7 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <ListView
-        android:id="@+id/search_result_list"
+        android:id="@+id/user_search_result_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

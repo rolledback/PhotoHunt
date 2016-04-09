@@ -19,6 +19,8 @@ public class Constants {
     public static final String ViewPhotoActivityTag = "VIEW_PHOTO_ACTIVITY";
     public static final String DetailedPhotoHuntActivityTag = "DETAILED_PHOTO_HUNT";
     public static final String UserListAdapterTag = "USER_LIST_ADAPTER";
+    public static final String AlbumSearchResultsAdapterTag = "ALBUM_SEARCH_RESULTS";
+    public static final String UserSearchActivityTag = "USER_SEARCH_ACTIVITY";
 
     // start activity for result codes for CreateNewPhotoHuntActivity
     public static final int REQUEST_LOAD_IMAGE = 1;

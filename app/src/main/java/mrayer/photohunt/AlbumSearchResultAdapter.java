@@ -8,15 +8,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +20,12 @@ import java.util.List;
 /**
  * Created by Matthew on 3/25/2016.
  */
-public class SearchResultAdapter extends BaseAdapter {
+public class AlbumSearchResultAdapter extends BaseAdapter {
     private final Context context;
     private List<PhotoHuntAlbum> results;
     private boolean searchEmpty;
 
-    public SearchResultAdapter(Context context) {
+    public AlbumSearchResultAdapter(Context context) {
         // make sure to call one of the load functions after constructing this object
         this.context = context;
         results = new ArrayList<PhotoHuntAlbum>();
@@ -60,10 +56,10 @@ public class SearchResultAdapter extends BaseAdapter {
         mainQuery.findInBackground(new FindCallback<PhotoHuntAlbum>() {
             public void done(List<PhotoHuntAlbum> searchResults, ParseException e) {
                 if (searchResults == null) {
-                    Log.d("Search Activity", "Search result is null");
+                    Log.d(Constants.AlbumSearchResultsAdapterTag, "Search result is null");
                 }
                 else {
-                    Log.d("Search Activity", "Search successful");
+                    Log.d(Constants.AlbumSearchResultsAdapterTag, "Search successful");
                     results = searchResults;
 //                    for (PhotoHuntAlbum p : results) {
 //                        Log.d("SERACH", "NAME = " + p.getName());
@@ -87,7 +83,7 @@ public class SearchResultAdapter extends BaseAdapter {
 //        Log.d("SEARCH", "SEARCH EMPTY = " + searchEmpty);
         ViewHolder holder;
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.search_result_list_row, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.album_search_result_list_row, parent, false);
             holder = new ViewHolder();
             holder.photo = (ImageView) view.findViewById(R.id.search_result_photo);
             holder.name = (TextView) view.findViewById(R.id.search_result_name);

@@ -7,13 +7,14 @@
     <string name="title_activity_detailed_photo_hunt">DetailedPhotoHuntActivity</string>
     <string name="title_activity_album">AlbumActivity</string>
     <string name="title_settings_activity">SettingsActivity</string>
-    <string name="title_favorite_users_activity">FavoriteUsersActivity</string>
+    <string name="title_activity_favorite_users">FavoriteUsersActivity</string>
     <string name="title_activity_favorited_by">FavoritedByActivity</string>
     <string name="title_activity_login">PhotoHunt</string>
     <string name="title_activity_account">AccountActivity</string>
     <string name="title_activity_view_photo_location">ViewPhotoLocationActivity</string>
     <string name="title_activity_view_photo">ViewPhotoActivity</string>
-    <string name="title_activity_search">SearchActivity</string>
+    <string name="title_activity_album_search">AlbumSearchActivity</string>
+    <string name="title_activity_user_search">UserSearchActivity</string>
 
     <!-- Create Photo Hunt Activity -->
     <string name="app_name">PhotoHunt</string>
@@ -50,6 +51,9 @@
         <item>Delete Photo Hunt</item>
     </string-array>
 
-    <!-- Album Gallery Activity -->
-    <string name="search_hint">Search Photohunts</string>
+    <!-- Album Search -->
+    <string name="album_search_hint">Search Photohunts</string>
+
+    <!-- User Search -->
+    <string name="user_search_hint">Search Users</string>
 </resources>

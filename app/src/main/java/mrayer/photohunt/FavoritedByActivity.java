@@ -31,7 +31,7 @@ public class FavoritedByActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Favorited By");
 
-        adapter = new UserListAdapter(this);
+        adapter = new UserListAdapter(this, false);
         adapter.loadFavoritedBy();
 
         favoritedByListView = (ListView) findViewById(R.id.favorited_by_list);

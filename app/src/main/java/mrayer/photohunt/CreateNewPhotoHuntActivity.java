@@ -23,12 +23,10 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -244,7 +242,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             String filePath = createNewPhotoHuntImageAdapter.getGalImages().get(currentItem);
             Bundle bundle = data.getParcelableExtra("bundle");
             createNewPhotoHuntImageAdapter.addManualLocation(filePath, (LatLng) bundle.getParcelable("location"));
-            locationStatus.setImageResource(R.drawable.ic_done_black_24dp);
+            locationStatus.setImageResource(R.drawable.ic_done_green_24dp);
         }
         else if (requestCode == Constants.REQUEST_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
             viewPagerLayout.setVisibility(View.VISIBLE);
@@ -564,7 +562,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             locationStatus.setVisibility(View.INVISIBLE);
 
             if(createNewPhotoHuntImageAdapter.getMetaLocation(filePath) != null || createNewPhotoHuntImageAdapter.getManualLocation(filePath) != null) {
-                locationStatus.setImageResource(R.drawable.ic_done_black_24dp);
+                locationStatus.setImageResource(R.drawable.ic_done_green_24dp);
             }
             else {
                 locationStatus.setImageResource(R.drawable.ic_report_problem_black_24dp);
