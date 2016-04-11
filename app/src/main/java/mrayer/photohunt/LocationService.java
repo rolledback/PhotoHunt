@@ -3,6 +3,8 @@ package mrayer.photohunt;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -80,11 +82,20 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
 
         if (transition == Geofence.GEOFENCE_TRANSITION_ENTER) {
             Log.d(TAG, " geofence entered");
-            Toast.makeText(this, " geofence entered!!!1 ", Toast.LENGTH_LONG);
+
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), " geofence entered!!!1 ", Toast.LENGTH_LONG).show();
+                }
+            });
+
             // If entered, need to make sure location monitoring is set
 
             // Get the geofences that were triggered
-            List<Geofence> geofences = geofencingEvent.getTriggeringGeofences();
+            List < Geofence > geofences = geofencingEvent.getTriggeringGeofences();
 
             // Could get location here... debatable
 
