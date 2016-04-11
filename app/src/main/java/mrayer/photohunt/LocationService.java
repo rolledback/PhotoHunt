@@ -13,8 +13,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -31,7 +33,7 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
     static final String TAG = "LocationService";
 
     GoogleApiClient googleAPI;
-    ArrayList<Geofence> geofences;
+    List<LatLng> loc;
 
     /**
      * A constructor is required, and must call the super IntentService(String)
@@ -48,7 +50,7 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-        geofences = new ArrayList<Geofence>();
+
         super.onCreate();
     }
 
@@ -72,6 +74,7 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
     protected void onHandleIntent(Intent intent) {
 
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+
         if (geofencingEvent.hasError()) {
             Log.e(TAG, " error code: " + geofencingEvent.getErrorCode());
             return;
@@ -92,12 +95,29 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
                 }
             });
 
-            // If entered, need to make sure location monitoring is set
-
+            // Need to know what to compare to, get geofence locations
             // Get the geofences that were triggered
-            List < Geofence > geofences = geofencingEvent.getTriggeringGeofences();
+            List<Geofence> geofences = geofencingEvent.getTriggeringGeofences();
+            loc = new ArrayList<LatLng>();
+            for(Geofence g : geofences)
+            {
+                String[] coord = g.getRequestId().split(",");
+                double lat = Double.parseDouble(coord[0]);
+                double lon = Double.parseDouble(coord[1]);
+                LatLng location = new LatLng(lat, lon);
+                loc.add(location);
+            }
 
-            // Could get location here... debatable
+            handler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), "LatLng: " + loc.toString(), Toast.LENGTH_LONG).show();
+                }
+            });
+
+            // Set up location monitoring, now have global list to compare to
+
 
         }
         else if(transition == Geofence.GEOFENCE_TRANSITION_EXIT)

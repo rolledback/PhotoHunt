@@ -27,6 +27,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -35,6 +36,7 @@ import com.parse.ParseQuery;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -170,11 +172,12 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
                                 photos.addAll(objects);
 
                                 geofences = new ArrayList<Geofence>();
+
                                 // Create a list of geofences
                                 for (Photo p : photos) {
                                     geofences.add(new Geofence.Builder()
                                             // Set the request ID, a string to identify geofence as photo ID
-                                            .setRequestId("" + p.getIndex())
+                                            .setRequestId(p.getLocation().latitude + "," + p.getLocation().longitude)
                                             .setCircularRegion(
                                                     p.getLocation().latitude,
                                                     p.getLocation().longitude,
@@ -289,15 +292,28 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.i(TAG, " location services connected.");
+        Log.i(TAG, " location services connected");
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
-            Log.d(TAG, "Do not have correct permissions");
+            Log.d(TAG, " do not have correct permissions");
         }
         else
         {
-            // Sent the geofences to the GoogleAPI
+            // Remove previous current album geofences
+            LocationServices.GeofencingApi.removeGeofences(
+                    googleAPI,
+                    getGeofencePendingIntent()
+            ).setResultCallback(new ResultCallback<Status>() {
+                @Override
+                public void onResult(Status status) {
+                    if (status.isSuccess()) {
+                        Log.i(TAG, " previous geofences removed");
+                    }
+                }
+            });
+
+            // Send the geofences to the GoogleAPI
             LocationServices.GeofencingApi.addGeofences(
                     googleAPI,
                     getGeofencingRequest(geofences),
@@ -307,7 +323,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
                 public void onResult(Status status) {
                     if (status.isSuccess()) {
                         // Success
-                        Log.i(TAG, " geofence request success!");
+                        Log.i(TAG, " geofence request success");
                     }
                 }
             });
@@ -316,11 +332,11 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.i(TAG, " Location services suspended. Please reconnect.");
+        Log.i(TAG, " location services suspended");
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
+        Log.e(TAG, " location services failed");
     }
 }
