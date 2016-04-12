@@ -67,7 +67,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private Button cancelButton;
     private ImageView locationStatus;
 
-    private PhotoUploadProgressDialog uploadDialog;
+    private UploadProgressNotification uploadNotification;
     private AlertDialog quitConfirmation;
 
     private AlertDialog.Builder dialogBuilder;
@@ -152,13 +152,15 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                     }
                 }
 
-                setupUploadDialog(createNewPhotoHuntImageAdapter.getGalImages().size());
+                setupNotification();
 
                 // create Parse Object for the album
                 String albumId = UUID.randomUUID().toString();
                 PhotoHuntAlbum photoHunt = createPhotoHunt(albumId);
 
                 new UploadAlbumTask(photoHunt, createNewPhotoHuntImageAdapter.getGalImages()).execute();
+                setResult(Activity.RESULT_OK);
+                finish();
             }
         });
 
@@ -390,18 +392,6 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         mCurrentPhotoPath = settings.getString("mCurrentPhotoPath", "");
     }
 
-    private void setupUploadDialog(int numPhotos) {
-        // multiply numPhoto by two to account for thumbnails
-        uploadDialog = new PhotoUploadProgressDialog(this, numPhotos * 2);
-        uploadDialog.setup();
-        uploadDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            public void onCancel(DialogInterface dialog) {
-                setResult(Activity.RESULT_OK);
-                finish();
-            }
-        });
-    }
-
     private PhotoHuntAlbum createPhotoHunt(String albumId) {
         String photoHuntName = ((EditText) findViewById(R.id.input_name)).getText().toString();
         String photoHuntAuthorId = ParseUser.getCurrentUser().getObjectId();
@@ -480,6 +470,10 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         }
     }
 
+    private void setupNotification() {
+        uploadNotification = new UploadProgressNotification(this, createNewPhotoHuntImageAdapter.getGalImages().size());
+    }
+
     private class UploadAlbumTask extends AsyncTask<Void, Void, Void> {
 
         private PhotoHuntAlbum albumToUpload;
@@ -534,13 +528,13 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
                 if(index > 0) {
                     // non-cover photo
-                    fullPhoto.saveInBackground(new PhotoSaveCallback(fullPhoto, thumbPhoto, photoObject, numPhoto + 1, uploadDialog),
-                            new PhotoProgressCallback(uploadDialog, numPhoto));
+                    fullPhoto.saveInBackground(new PhotoSaveCallback(fullPhoto, thumbPhoto, photoObject, numPhoto + 1, uploadNotification),
+                            new PhotoProgressCallback(uploadNotification, numPhoto));
                 }
                 else {
                     // cover photo
-                    fullPhoto.saveInBackground(new PhotoSaveCallback(fullPhoto, thumbPhoto, photoObject, albumToUpload, numPhoto + 1, uploadDialog),
-                            new PhotoProgressCallback(uploadDialog, numPhoto));
+                    fullPhoto.saveInBackground(new PhotoSaveCallback(fullPhoto, thumbPhoto, photoObject, albumToUpload, numPhoto + 1, uploadNotification),
+                            new PhotoProgressCallback(uploadNotification, numPhoto));
                 }
                 index++;
                 numPhoto += 2;

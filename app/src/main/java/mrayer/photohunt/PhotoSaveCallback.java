@@ -19,10 +19,10 @@ public class PhotoSaveCallback implements SaveCallback {
     private ParseFile thumbnailPhoto;
     private PhotoHuntAlbum album;
     private int numPhotoOfThumbnail;
-    private PhotoUploadProgressDialog dialog;
+    private UploadProgressNotification dialog;
 
     // standard callback constructor
-    public PhotoSaveCallback(ParseFile fullPhoto, ParseFile thumbnailPhoto, Photo photoObject, int numPhotoOfThumbnail, PhotoUploadProgressDialog dialog) {
+    public PhotoSaveCallback(ParseFile fullPhoto, ParseFile thumbnailPhoto, Photo photoObject, int numPhotoOfThumbnail, UploadProgressNotification dialog) {
         this.photoObject = photoObject;
         this.fullPhoto = fullPhoto;
         this.thumbnailPhoto = thumbnailPhoto;
@@ -32,7 +32,7 @@ public class PhotoSaveCallback implements SaveCallback {
     }
 
     // callback constructor for a cover photo
-    public PhotoSaveCallback(ParseFile fullPhoto, ParseFile thumbnailPhoto, Photo photoObject, PhotoHuntAlbum album, int numPhotoOfThumbnail, PhotoUploadProgressDialog dialog) {
+    public PhotoSaveCallback(ParseFile fullPhoto, ParseFile thumbnailPhoto, Photo photoObject, PhotoHuntAlbum album, int numPhotoOfThumbnail, UploadProgressNotification dialog) {
         this.photoObject = photoObject;
         this.fullPhoto = fullPhoto;
         this.thumbnailPhoto = thumbnailPhoto;

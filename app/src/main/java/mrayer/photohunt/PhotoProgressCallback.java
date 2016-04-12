@@ -1,8 +1,5 @@
 package mrayer.photohunt;
 
-import android.app.ProgressDialog;
-import android.util.Log;
-
 import com.parse.ProgressCallback;
 
 /**
@@ -10,10 +7,10 @@ import com.parse.ProgressCallback;
  */
 public class PhotoProgressCallback implements ProgressCallback {
 
-    private PhotoUploadProgressDialog parentDialog;
+    private UploadProgressNotification parentDialog;
     private int index;
 
-    public PhotoProgressCallback(PhotoUploadProgressDialog parentDialog, int index) {
+    public PhotoProgressCallback(UploadProgressNotification parentDialog, int index) {
         this.parentDialog = parentDialog;
         this.index = index;
     }
