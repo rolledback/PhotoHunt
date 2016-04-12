@@ -128,8 +128,6 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
                 }
             });
 
-            googleAPI.connect();
-
             // This will run every time a geofence is entered...
             // Need to stop if you change the current album
             // Need to stop if you exit the geofence...
