@@ -24,6 +24,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -37,6 +39,9 @@ import com.parse.ParseUser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -58,6 +63,10 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private EditText inputDescriptionEditText;
     private Spinner typeSpinner;
 
+    private CheckBox isPrivateCheckBox;
+    private Button modifyWhiteListButton;
+    private TextView isPrivateCheckBoxLabel;
+
     private FrameLayout viewPagerLayout;
 
     private ViewPager viewPager;
@@ -72,6 +81,8 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
     private AlertDialog.Builder dialogBuilder;
     private LayoutInflater inflater;
+
+    private Set<String> whiteList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +129,29 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             }
         });
         typeSpinner = (Spinner) findViewById(R.id.spinner_type);
+
+        isPrivateCheckBox = (CheckBox) findViewById(R.id.make_private_checkbox);
+        isPrivateCheckBoxLabel = (TextView) findViewById(R.id.make_private_checkbox_label);
+        isPrivateCheckBoxLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isPrivateCheckBox.setChecked(!isPrivateCheckBox.isChecked());
+            }
+        });
+        modifyWhiteListButton = (Button) findViewById(R.id.change_whitelist);
+        modifyWhiteListButton.setEnabled(false);
+        isPrivateCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                modifyWhiteListButton.setEnabled(isChecked);
+            }
+        });
+        modifyWhiteListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                whiteListDialog();
+            }
+        });
 
         addFromGalleryButton = (Button) findViewById(R.id.add_from_gallery_button);
         addFromGalleryButton.setOnClickListener(new View.OnClickListener() {
@@ -183,6 +217,8 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
         locationStatus = (ImageView) findViewById(R.id.location_status);
         locationStatus.setVisibility(View.GONE);
+
+        whiteList = new HashSet<String>();
 
         // this only changes if the uplaod dialog was cancelled after upload complete
         setResult(Activity.RESULT_CANCELED);
@@ -409,6 +445,13 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         photoHunt.setAlbumId(albumId);
         photoHunt.setDescription(photoHuntDescription);
         photoHunt.setNumPhotos(createNewPhotoHuntImageAdapter.getGalImages().size());
+        photoHunt.setIsPrivate(isPrivateCheckBox.isChecked());
+        if(photoHunt.isPrivate()) {
+            photoHunt.setWhiteList(whiteList);
+        }
+        else {
+            photoHunt.setWhiteList(new HashSet<String>());
+        }
         photoHunt.setSearchName(photoHuntName.toLowerCase());
         photoHunt.setSearchAuthor(photoHuntAuthor.toLowerCase());
         photoHunt.setSearchLocation(photoHuntLocation.toLowerCase());
@@ -474,12 +517,68 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         uploadNotification = new UploadProgressNotification(this, createNewPhotoHuntImageAdapter.getGalImages().size());
     }
 
+    private void whiteListDialog() {
+        // arraylist to keep the selected items
+        final List<String> seletedItems = new ArrayList<String>();
+
+        List<String> favUserPairs = (ArrayList<String>)ParseUser.getCurrentUser().get("favoriteUsers");
+        final CharSequence[] favoriteUsernames = new CharSequence[favUserPairs.size()];
+        final boolean[] alreadyChecked = new boolean[favUserPairs.size()];
+
+        for(int i = 0; i < favUserPairs.size(); i++) {
+            favoriteUsernames[i] = favUserPairs.get(i).split(",")[0];
+            if(whiteList.contains(favoriteUsernames[i].toString())) {
+                alreadyChecked[i] = true;
+                seletedItems.add(favoriteUsernames[i].toString());
+            }
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Select Users")
+                .setMultiChoiceItems(favoriteUsernames, alreadyChecked, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
+                        String selectedUsername = favoriteUsernames[indexSelected].toString();
+                        if (isChecked) {
+                            Log.d(Constants.CreateNewPhotoHuntTag, "add " + selectedUsername + " to selected");
+                            seletedItems.add(selectedUsername);
+                        }
+                        else if (seletedItems.contains(selectedUsername)) {
+                            Log.d(Constants.CreateNewPhotoHuntTag, "remove " + selectedUsername + " from selected");
+                            seletedItems.remove(selectedUsername);
+                        }
+                    }
+                }).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        for(int i = 0; i < favoriteUsernames.length; i++) {
+                            String currentUsername =  favoriteUsernames[i].toString();
+                            if(seletedItems.contains(currentUsername)) {
+                                Log.d(Constants.CreateNewPhotoHuntTag, "add " + currentUsername + " to whiteList");
+                                whiteList.add(currentUsername);
+                            }
+                            else if (whiteList.contains(currentUsername)){
+                                Log.d(Constants.CreateNewPhotoHuntTag, "remove " + currentUsername + " from whiteList");
+                                whiteList.remove(currentUsername);
+                            }
+                        }
+                        dialog.dismiss();
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                }).create();
+        dialog.show();
+    }
+
     private class UploadAlbumTask extends AsyncTask<Void, Void, Void> {
 
         private PhotoHuntAlbum albumToUpload;
         private ArrayList<String> photos;
 
-            public UploadAlbumTask(PhotoHuntAlbum albumToUpload, ArrayList<String> photos) {
+        public UploadAlbumTask(PhotoHuntAlbum albumToUpload, ArrayList<String> photos) {
             this.albumToUpload = albumToUpload;
             this.photos = photos;
         }

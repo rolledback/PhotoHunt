@@ -63,18 +63,21 @@
             android:paddingLeft="4.0dip"
             android:paddingRight="4.0dip"
             android:paddingBottom="1.0dip"
-            android:layout_width="fill_parent" android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/text_num_hunts">
 
             <Button
                 android:id="@+id/favorites_button"
-                android:layout_width="0.0dip" android:layout_height="fill_parent"
+                android:layout_width="0.0dip"
+                android:layout_height="fill_parent"
                 android:text="Favorite Users"
                 android:layout_weight="1.0" />
 
             <Button
                 android:id="@+id/favorited_button"
-                android:layout_width="0.0dip" android:layout_height="fill_parent"
+                android:layout_width="0.0dip"
+                android:layout_height="fill_parent"
                 android:text="Favorited By"
                 android:layout_weight="1.0" />
         </LinearLayout>

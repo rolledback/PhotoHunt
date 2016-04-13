@@ -3,6 +3,11 @@ package mrayer.photohunt;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Matthew on 3/17/2016.
@@ -93,6 +98,24 @@ public class PhotoHuntAlbum extends ParseObject {
 
     public void setCoverPhotoThumbnail(ParseFile file) {
         put("coverPhotoThumbnail", file);
+    }
+
+    public boolean isPrivate() {
+        return getBoolean("isPrivate");
+    }
+
+    public void setIsPrivate(Boolean isPrivate) {
+        put("isPrivate", isPrivate);
+    }
+
+    public List<String> getWhiteList() {
+        return (ArrayList<String>)get("whiteList");
+    }
+
+    public void setWhiteList(Set<String> whiteList) {
+        List<String> temp = new ArrayList<String>();
+        temp.addAll(whiteList);
+        put("whiteList", temp);
     }
 
     public String getSearchName() {
