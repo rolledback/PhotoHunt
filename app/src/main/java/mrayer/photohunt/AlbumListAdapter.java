@@ -45,10 +45,10 @@ public class AlbumListAdapter extends BaseAdapter {
         });
     }
 
-    public void loadCurrentUserAlbums() {
+    public void loadAlbumsById(String userId) {
         ParseQuery<PhotoHuntAlbum> query = ParseQuery.getQuery("PhotoHuntAlbum");
         query.orderByDescending("createdAt");
-        query.whereEqualTo("authorId", ParseUser.getCurrentUser().getObjectId());
+        query.whereEqualTo("authorId", userId);
         query.findInBackground(new FindCallback<PhotoHuntAlbum>() {
             public void done(List<PhotoHuntAlbum> objects, ParseException e) {
                 if (e == null) {
@@ -61,6 +61,10 @@ public class AlbumListAdapter extends BaseAdapter {
                 }
             }
         });
+    }
+
+    public void loadCurrentUserAlbums() {
+        loadAlbumsById(ParseUser.getCurrentUser().getObjectId());
     }
 
     @Override

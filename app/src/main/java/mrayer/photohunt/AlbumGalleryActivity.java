@@ -110,6 +110,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 return true;
             case R.id.action_my_account:
                 Intent accountIntent = new Intent(AlbumGalleryActivity.this, AccountActivity.class);
+                accountIntent.putExtra("accountType", "currentUser");
                 startActivityForResult(accountIntent, Constants.REQUEST_MANAGEMENT_RESULT);
                 return true;
             case R.id.action_settings:

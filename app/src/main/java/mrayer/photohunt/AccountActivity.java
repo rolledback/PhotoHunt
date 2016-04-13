@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +16,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 public class AccountActivity extends AppCompatActivity {
@@ -32,20 +36,37 @@ public class AccountActivity extends AppCompatActivity {
     private AlertDialog.Builder dialogBuilder;
     private LayoutInflater inflater;
 
+    private String otherUserId;
+    private String otherUsername;
+    private String otherDateCreated;
+    private int otherNumAlbums;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
+        findViewById(R.id.account_main_layout).setVisibility(View.GONE);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.account_toolbar);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
-
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("My Account");
+
+        Intent intent = getIntent();
+        String whichSetup = intent.getStringExtra("accountType");
+
+        if(whichSetup.equals("currentUser")) {
+            getSupportActionBar().setTitle("My Account");
+        }
+        else {
+            otherUserId = whichSetup;
+            otherUsername = intent.getStringExtra("username");
+            getSupportActionBar().setTitle(otherUsername);
+        }
 
         dialogBuilder = new AlertDialog.Builder(this);
         inflater = this.getLayoutInflater();
@@ -54,17 +75,84 @@ public class AccountActivity extends AppCompatActivity {
         accountCreatedDate = (TextView) findViewById(R.id.text_user_since);
         numPhotoHunts = (TextView) findViewById(R.id.text_num_hunts);
 
-        setTextFields();
-
         // Set up the adapter to get the data from Parse
         adapter = new AlbumListAdapter(this);
-        adapter.loadCurrentUserAlbums();
 
         // Get the list view
         list = (ListView) findViewById(R.id.my_album_list);
 
         // Default view is all PhotoHuntAlbums
         list.setAdapter(adapter);
+
+        favoritedBy = (Button) findViewById(R.id.favorited_button);
+        favoriteUsers = (Button) findViewById(R.id.favorites_button);
+
+        if(whichSetup.equals("currentUser")) {
+            findViewById(R.id.account_main_layout).setVisibility(View.VISIBLE);
+            setupMyAccountComponents();
+            setMyAccountTextFields();
+        }
+        else {
+            getOtherAccount();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Constants.REQUEST_MANAGEMENT_RESULT && resultCode == Constants.DELETE_RESULT) {
+            adapter.loadCurrentUserAlbums();
+            setResult(Constants.DELETE_RESULT);
+        }
+    }
+
+    private void getOtherAccount() {
+        ParseQuery<ParseUser> userQuery = ParseQuery.getQuery("_User");
+        userQuery.whereContains("objectId", otherUserId);
+        userQuery.getFirstInBackground(new GetCallback<ParseUser>() {
+            @Override
+            public void done(ParseUser object, ParseException e) {
+                if (e == null) {
+                    otherDateCreated = object.getCreatedAt().toString();
+                    if(object.has("numAlbums")) {
+                        otherNumAlbums = (Integer) object.get("numAlbums");
+                    }
+                    else {
+                        otherNumAlbums = 0;
+                    }
+
+                    setupOtherAccountComponents();
+                    setOtherAccountTextFields();
+                    findViewById(R.id.account_main_layout).setVisibility(View.VISIBLE);
+                } else {
+                    Log.d(Constants.FavoriteUsersActivityTag, e.toString());
+                }
+            }
+        });
+    }
+
+    private void setupOtherAccountComponents() {
+
+        adapter.loadAlbumsById(otherUserId);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                PhotoHuntAlbum selectedAlbum = adapter.getItem(position);
+                ParseProxyObject ppo = new ParseProxyObject(selectedAlbum);
+                Intent detailsIntent = new Intent(AccountActivity.this, DetailedPhotoHuntActivity.class);
+                detailsIntent.putExtra("albumProxy", ppo);
+                detailsIntent.putExtra("action", "start");
+                startActivityForResult(detailsIntent, Constants.REQUEST_MANAGEMENT_RESULT);
+            }
+        });
+
+        favoritedBy.setVisibility(View.GONE);
+        favoriteUsers.setVisibility(View.GONE);
+    }
+
+    private void setupMyAccountComponents() {
+        adapter.loadCurrentUserAlbums();
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -78,7 +166,6 @@ public class AccountActivity extends AppCompatActivity {
             }
         });
 
-        favoritedBy = (Button) findViewById(R.id.favorited_button);
         favoritedBy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,17 +187,7 @@ public class AccountActivity extends AppCompatActivity {
         setResult(Constants.NO_RESULT);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == Constants.REQUEST_MANAGEMENT_RESULT && resultCode == Constants.DELETE_RESULT) {
-            adapter.loadCurrentUserAlbums();
-            setResult(Constants.DELETE_RESULT);
-        }
-    }
-
-    private void setTextFields() {
+    private void setMyAccountTextFields() {
         username.setText(ParseUser.getCurrentUser().getUsername());
         if(ParseUser.getCurrentUser().has("numAlbums")) {
             numPhotoHunts.setText("Number of Photo Hunts: " + ParseUser.getCurrentUser().get("numAlbums"));
@@ -121,6 +198,14 @@ public class AccountActivity extends AppCompatActivity {
 
         // need to work on parsing this into human readable date
         accountCreatedDate.setText("User Since: " + parseOutJoinDate(ParseUser.getCurrentUser().getCreatedAt().toString()));
+    }
+
+    private void setOtherAccountTextFields() {
+        username.setText(otherUsername);
+        numPhotoHunts.setText("Number of Photo Hunts: " + otherNumAlbums);
+
+        // need to work on parsing this into human readable date
+        accountCreatedDate.setText("User Since: " + parseOutJoinDate(otherDateCreated));
     }
 
     private String parseOutJoinDate(String fullDate) {

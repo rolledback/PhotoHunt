@@ -68,8 +68,10 @@ public class UserListAdapter extends BaseAdapter {
                 if (e == null) {
                     userList.clear();
                     for(ParseUser user : objects) {
-                        if(!alreadyFavorited.contains(user.getUsername())) {
-                            userList.add(new Pair<String, String>(user.getUsername(), user.getObjectId()));
+                        if(!user.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+                            if(!alreadyFavorited.contains(user.getUsername())) {
+                                userList.add(new Pair<String, String>(user.getUsername(), user.getObjectId()));
+                            }
                         }
                     }
                     notifyDataSetChanged();
@@ -161,6 +163,11 @@ public class UserListAdapter extends BaseAdapter {
 
     @Override public long getItemId(int position) {
         return position;
+    }
+
+    public void removeItem(int position) {
+        userList.remove(position);
+        notifyDataSetChanged();
     }
 
     static class ViewHolder {

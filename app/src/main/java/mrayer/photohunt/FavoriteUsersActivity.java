@@ -2,24 +2,42 @@ package mrayer.photohunt;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.util.Pair;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ListView;
+
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 public class FavoriteUsersActivity extends AppCompatActivity {
 
     private UserListAdapter adapter;
     private ListView favoriteUsersListView;
+
+    private LayoutInflater inflater;
+    private AlertDialog.Builder dialogBuilder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +57,53 @@ public class FavoriteUsersActivity extends AppCompatActivity {
         adapter = new UserListAdapter(this, false);
         adapter.loadFavoriteUsers();
 
+        dialogBuilder = new AlertDialog.Builder(this);
+        inflater = this.getLayoutInflater();
+
         favoriteUsersListView = (ListView) findViewById(R.id.favorite_users_list);
         favoriteUsersListView.setAdapter(adapter);
+        favoriteUsersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                launchAccountIntent(position);
+            }
+        });
+        favoriteUsersListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                dialogBuilder.setTitle("Photo Options");
+                dialogBuilder.setItems(getResources().getStringArray(R.array.user_dialog_options), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(which == 0) {
+                            launchAccountIntent(position);
+                        }
+                        else {
+                            deleteUser(position);
+                        }
+                    }
+                });
+                dialogBuilder.show();
+                return true;
+            }
+        });
+    }
+
+    private void launchAccountIntent(int position) {
+        Intent accountIntent = new Intent(FavoriteUsersActivity.this, AccountActivity.class);
+        accountIntent.putExtra("accountType", adapter.getItem(position).second);
+        accountIntent.putExtra("username", adapter.getItem(position).first);
+        startActivity(accountIntent);
+    }
+
+    private void deleteUser(int position) {
+        ParseUser currUser = ParseUser.getCurrentUser();
+        ArrayList<String> temp = (ArrayList<String>)currUser.get("favoriteUsers");
+        temp.remove(position);
+        currUser.put("favoriteUsers", temp);
+        currUser.saveInBackground();
+
+        adapter.removeItem(position);
     }
 
     @Override

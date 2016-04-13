@@ -30,6 +30,12 @@
         <item>Remove</item>
     </string-array>
 
+    <!-- Favorite Users Activity -->
+    <string-array name="user_dialog_options">
+        <item>View User</item>
+        <item>Delete User</item>
+    </string-array>
+
     <!-- Login/Signup Activities -->
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>

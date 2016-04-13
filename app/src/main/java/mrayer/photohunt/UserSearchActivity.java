@@ -92,8 +92,8 @@ public class UserSearchActivity extends AppCompatActivity {
         for(Pair<String, String> checkedUser : checked) {
             temp.add(checkedUser.first + "," + checkedUser.second);
         }
-
         currUser.put("favoriteUsers", temp);
+
         currUser.saveInBackground();
         finish();
     }

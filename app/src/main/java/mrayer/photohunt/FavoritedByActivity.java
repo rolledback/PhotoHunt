@@ -1,5 +1,6 @@
 package mrayer.photohunt;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 public class FavoritedByActivity extends AppCompatActivity {
@@ -36,6 +38,12 @@ public class FavoritedByActivity extends AppCompatActivity {
 
         favoritedByListView = (ListView) findViewById(R.id.favorited_by_list);
         favoritedByListView.setAdapter(adapter);
+        favoritedByListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                launchAccountIntent(position);
+            }
+        });
     }
 
     @Override
@@ -45,6 +53,13 @@ public class FavoritedByActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void launchAccountIntent(int position) {
+        Intent accountIntent = new Intent(FavoritedByActivity.this, AccountActivity.class);
+        accountIntent.putExtra("accountType", adapter.getItem(position).second);
+        accountIntent.putExtra("username", adapter.getItem(position).first);
+        startActivity(accountIntent);
     }
 
 }
