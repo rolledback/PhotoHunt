@@ -2,8 +2,10 @@ package mrayer.photohunt;
 
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,7 +29,6 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -36,13 +37,10 @@ import com.parse.ParseQuery;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
 // Geofence code from http://developer.android.com/training/location/geofencing.html
-
-// Aila's TODO: Test if this actually works
 
 public class DetailedPhotoHuntActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
@@ -69,6 +67,8 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
     private AlertDialog deleteConfirmation;
     private AlertDialog.Builder dialogBuilder;
     private ProgressDialog dialog;
+
+    SharedPreferences currentAlbumPref;
 
     GoogleApiClient googleAPI;
     List<Geofence> geofences;
@@ -141,6 +141,10 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
                     .addApi(LocationServices.API)
                     .build();
         }
+
+        // Create the shared preferences file
+        currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref),
+                Context.MODE_PRIVATE);
     }
 
     @Override
@@ -187,6 +191,17 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
                                                     Geofence.GEOFENCE_TRANSITION_EXIT)
                                             .build());
                                 }
+
+                                // Add the total number of photos to the shared pref
+                                // Set total number of photos found to 0
+                                int totalPhotos = photos.size();
+                                SharedPreferences.Editor editor = currentAlbumPref.edit();
+                                editor.putInt(getString(R.string.total_photos), totalPhotos);
+                                editor.putInt(getString(R.string.photos_found), 0);
+                                editor.putString(getString(R.string.album_id), albumId);
+                                editor.commit();
+
+                                Log.d(TAG, "Photos found set to 0, total pics: " + currentAlbumPref.getInt(getString(R.string.total_photos), -1));
 
                                 // Actually connect to the Google API
                                 googleAPI.connect();

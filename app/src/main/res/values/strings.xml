@@ -62,4 +62,9 @@
 
     <!-- User Search -->
     <string name="user_search_hint">Search Users</string>
+
+    <string name="current_album_pref">current_album_pref</string>
+    <string name="total_photos">total photos</string>
+    <string name="photos_found">photos found</string>
+    <string name="album_id">album ID</string>
 </resources>

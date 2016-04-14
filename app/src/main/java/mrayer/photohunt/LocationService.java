@@ -2,7 +2,10 @@ package mrayer.photohunt;
 
 import android.Manifest;
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationProvider;
@@ -10,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -24,8 +28,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by ailae on 4/7/16.
@@ -33,7 +37,7 @@ import java.util.List;
 
 // Geofencing code from http://developer.android.com/training/location/geofencing.html
 
-// Aila's TODO: Add location monitoring
+// Location code from http://developer.android.com/training/location/receive-location-updates.html
 
 public class LocationService extends IntentService implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -41,9 +45,12 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
     static final int DIST = 5;
     static final String TAG = "LocationService";
 
+    int photosFound;
+
     GoogleApiClient googleAPI;
     List<LatLng> loc;
     int numGeofences;
+    SharedPreferences currentAlbumPref;
 
     /**
      * A constructor is required, and must call the super IntentService(String)
@@ -62,6 +69,12 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
                 .build();
 
         googleAPI.connect();
+        photosFound = 0;
+
+        Context context = getApplicationContext();
+        currentAlbumPref = context.getSharedPreferences(getString(R.string.current_album_pref),
+                Context.MODE_PRIVATE);
+
         super.onCreate();
     }
 
@@ -97,14 +110,25 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
         if (transition == Geofence.GEOFENCE_TRANSITION_ENTER) {
             Log.d(TAG, " geofence entered");
 
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
+//            Handler handler = new Handler(Looper.getMainLooper());
+//            handler.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Toast.makeText(getApplicationContext(), " geofence entered!!!1 ", Toast.LENGTH_LONG).show();
+//                }
+//            });
 
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(), " geofence entered!!!1 ", Toast.LENGTH_LONG).show();
-                }
-            });
+            // TODO: Need to make this open a new Current PhotoHunt Activity - once I make it
+
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.drawable.notification_icon)
+                    .setContentTitle("PhotoHunt")
+                    .setContentText("Geofence entered - you are close to a photo");
+
+            int rand = new Random().nextInt();
+            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            // Notification ID allows you to update the notification later on
+            nm.notify(rand, notificationBuilder.build());
 
             // Need to know what to compare location to once location monitoring occurs
             // Need to get geofence locations from geofences that were triggered
@@ -119,18 +143,6 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
                 LatLng location = new LatLng(lat, lon);
                 loc.add(location);
             }
-
-            handler.post(new Runnable() {
-
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(), "LatLng: " + loc.toString(), Toast.LENGTH_LONG).show();
-                }
-            });
-
-            // This will run every time a geofence is entered...
-            // Need to stop if you change the current album
-            // Need to stop if you exit the geofence...
 
         }
 
@@ -171,19 +183,54 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
             // Dist in meters
             Log.d(TAG, "location: " + location.getLatitude() + " " + location.getLongitude() + " comparing to: "
             + l.latitude + " " + l.longitude + " which is: " + location.distanceTo(temp));
+
             if(location.distanceTo(temp) < DIST)
             {
                 // You are here! Make toast
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), "You are at a photo location!!", Toast.LENGTH_LONG).show();
-                    }
-                });
+//                Handler handler = new Handler(Looper.getMainLooper());
+//                handler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(getApplicationContext(), "You are at a photo location!!", Toast.LENGTH_LONG).show();
+//                    }
+//                });
+
+                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.notification_icon)
+                        .setContentTitle("PhotoHunt")
+                        .setContentText("You are at a photo location!");
+
+                int rand = new Random().nextInt();
+                NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                // Notification ID allows you to update the notification later on
+                nm.notify(rand, notificationBuilder.build());
 
                 // Remove l from loc
                 loc.remove(temp);
+
+                SharedPreferences.Editor editor = currentAlbumPref.edit();
+                // Get the current photos found and increment it by 1
+                // Keeping track of the photos found in this class would not reset it properly
+                editor.putInt(getString(R.string.photos_found), currentAlbumPref.getInt(getString(R.string.photos_found), 0) + 1);
+                editor.commit();
+
+                // Check to see if they completed the album
+                // TODO: What if they exit a geofence and re-enter? Could count photo more than once
+                if(currentAlbumPref.getInt(getString(R.string.photos_found), -1) == currentAlbumPref.getInt(getString(R.string.total_photos), -2))
+                {
+                    NotificationCompat.Builder notification = new NotificationCompat.Builder(this)
+                            .setSmallIcon(R.drawable.notification_icon)
+                            .setContentTitle("PhotoHunt")
+                            .setContentText("You have completed your current album!");
+
+                    rand = new Random().nextInt();
+                    // Notification ID allows you to update the notification later on
+                    nm.notify(rand, notification.build());
+
+                    // TODO: Add this album to user's completed album list/count
+                }
+
+                Log.d(TAG, "Photos found: " + currentAlbumPref.getInt(getString(R.string.photos_found), -1));
 
                 // If loc is empty, can stop monitoring locations
                 if(loc.size() == 0)
