@@ -133,7 +133,6 @@ public class AccountActivity extends AppCompatActivity {
     }
 
     private void setupOtherAccountComponents() {
-
         adapter.loadAlbumsById(otherUserId);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

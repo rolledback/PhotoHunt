@@ -64,7 +64,7 @@ public class AlbumSearchActivity extends AppCompatActivity {
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            adapter.doSearch(query);
+            adapter.doSearch(query.toLowerCase());
         }
     }
 

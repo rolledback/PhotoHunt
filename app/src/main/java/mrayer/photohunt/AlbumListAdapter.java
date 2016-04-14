@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
@@ -31,10 +32,27 @@ public class AlbumListAdapter extends BaseAdapter {
         albums = new ArrayList<PhotoHuntAlbum>();
     }
 
+    private ParseQuery<PhotoHuntAlbum> makeGeneralQuery() {
+        ParseQuery<PhotoHuntAlbum> queryNonPrivate = ParseQuery.getQuery("PhotoHuntAlbum");
+        queryNonPrivate.whereEqualTo("isPrivate", false);
+
+        ParseQuery<PhotoHuntAlbum> queryPrivate = ParseQuery.getQuery("PhotoHuntAlbum");
+        queryPrivate.whereEqualTo("isPrivate", true);
+        queryPrivate.whereEqualTo("whiteList", ParseUser.getCurrentUser().getUsername());
+
+        List<ParseQuery<PhotoHuntAlbum>> queries = new ArrayList<ParseQuery<PhotoHuntAlbum>>();
+        queries.add(queryNonPrivate);
+        queries.add(queryPrivate);
+
+        ParseQuery<PhotoHuntAlbum> combinedQuery = ParseQuery.or(queries);
+        combinedQuery.orderByDescending("createdAt");
+
+        return combinedQuery;
+    }
+
     public void loadAllAlbums() {
-        ParseQuery<PhotoHuntAlbum> query = ParseQuery.getQuery("PhotoHuntAlbum");
-        query.orderByDescending("createdAt");
-        query.findInBackground(new FindCallback<PhotoHuntAlbum>() {
+        ParseQuery<PhotoHuntAlbum> allAlbumsQuery = makeGeneralQuery();
+        allAlbumsQuery.findInBackground(new FindCallback<PhotoHuntAlbum>() {
             public void done(List<PhotoHuntAlbum> objects, ParseException e) {
                 if (e == null) {
                     albums.clear();
@@ -46,10 +64,9 @@ public class AlbumListAdapter extends BaseAdapter {
     }
 
     public void loadAlbumsById(String userId) {
-        ParseQuery<PhotoHuntAlbum> query = ParseQuery.getQuery("PhotoHuntAlbum");
-        query.orderByDescending("createdAt");
-        query.whereEqualTo("authorId", userId);
-        query.findInBackground(new FindCallback<PhotoHuntAlbum>() {
+        ParseQuery<PhotoHuntAlbum> albumsByIdQuery = makeGeneralQuery();
+        albumsByIdQuery.whereEqualTo("authorId", userId);
+        albumsByIdQuery.findInBackground(new FindCallback<PhotoHuntAlbum>() {
             public void done(List<PhotoHuntAlbum> objects, ParseException e) {
                 if (e == null) {
                     albums.clear();

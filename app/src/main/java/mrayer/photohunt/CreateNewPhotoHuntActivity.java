@@ -447,6 +447,8 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         photoHunt.setNumPhotos(createNewPhotoHuntImageAdapter.getGalImages().size());
         photoHunt.setIsPrivate(isPrivateCheckBox.isChecked());
         if(photoHunt.isPrivate()) {
+            // author should be able to view their own photo hunt
+            whiteList.add(ParseUser.getCurrentUser().getUsername());
             photoHunt.setWhiteList(whiteList);
         }
         else {
@@ -540,11 +542,9 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
                         String selectedUsername = favoriteUsernames[indexSelected].toString();
                         if (isChecked) {
-                            Log.d(Constants.CreateNewPhotoHuntTag, "add " + selectedUsername + " to selected");
                             seletedItems.add(selectedUsername);
                         }
                         else if (seletedItems.contains(selectedUsername)) {
-                            Log.d(Constants.CreateNewPhotoHuntTag, "remove " + selectedUsername + " from selected");
                             seletedItems.remove(selectedUsername);
                         }
                     }
@@ -554,11 +554,9 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                         for(int i = 0; i < favoriteUsernames.length; i++) {
                             String currentUsername =  favoriteUsernames[i].toString();
                             if(seletedItems.contains(currentUsername)) {
-                                Log.d(Constants.CreateNewPhotoHuntTag, "add " + currentUsername + " to whiteList");
                                 whiteList.add(currentUsername);
                             }
                             else if (whiteList.contains(currentUsername)){
-                                Log.d(Constants.CreateNewPhotoHuntTag, "remove " + currentUsername + " from whiteList");
                                 whiteList.remove(currentUsername);
                             }
                         }

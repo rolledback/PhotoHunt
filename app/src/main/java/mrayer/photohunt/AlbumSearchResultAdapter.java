@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -51,7 +52,19 @@ public class AlbumSearchResultAdapter extends BaseAdapter {
         queries.add(locationQuery);
         queries.add(descriptionQuery);
 
+        ParseQuery<PhotoHuntAlbum> searchQueryNonPrivate = ParseQuery.or(queries);
+        searchQueryNonPrivate.whereEqualTo("isPrivate", false);
+
+        ParseQuery<PhotoHuntAlbum> searchQueryPrivate = ParseQuery.or(queries);
+        searchQueryPrivate.whereEqualTo("isPrivate", true);
+        searchQueryPrivate.whereEqualTo("whiteList", ParseUser.getCurrentUser().getUsername());
+
+        queries.clear();
+        queries.add(searchQueryNonPrivate);
+        queries.add(searchQueryPrivate);
+
         ParseQuery<PhotoHuntAlbum> mainQuery = ParseQuery.or(queries);
+
         mainQuery.orderByDescending("createdAt");
         mainQuery.findInBackground(new FindCallback<PhotoHuntAlbum>() {
             public void done(List<PhotoHuntAlbum> searchResults, ParseException e) {
