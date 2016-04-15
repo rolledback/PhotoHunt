@@ -26,87 +26,76 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" >
-        </meta-data>
+            android:value="@string/google_maps_key"></meta-data>
+
         <activity
             android:name=".AlbumGalleryActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".AlbumSearchActivity" >
-            </meta-data>
+                android:value=".AlbumSearchActivity"></meta-data>
         </activity>
         <activity
             android:name=".CreateNewPhotoHuntActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_create_new_photo_hunt"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".SetChangeLocationActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_set_change_location"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".DetailedPhotoHuntActivity"
             android:label="@string/title_activity_detailed_photo_hunt"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".AlbumActivity"
             android:label="@string/title_activity_album"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.Dark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".SignUpActivity"
             android:label="@string/title_activity_sign_up"
-            android:theme="@style/AppTheme.Dark">
-        </activity>
+            android:theme="@style/AppTheme.Dark"></activity>
         <activity
             android:name=".AccountActivity"
             android:label="@string/title_activity_account"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".ViewPhotoActivity"
             android:label="@string/title_activity_view_photo"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
         <activity
             android:name=".ViewPhotoLocationActivity"
             android:label="@string/title_activity_view_photo_location"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_settings_activity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
         <activity
             android:name=".FavoritedByActivity"
             android:label="@string/title_activity_favorited_by"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
         <activity
             android:name=".FavoriteUsersActivity"
             android:label="@string/title_activity_favorite_users"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".UserSearchActivity">
-            </meta-data>
+                android:value=".UserSearchActivity"></meta-data>
         </activity>
         <activity
             android:name=".AlbumSearchActivity"
@@ -115,10 +104,10 @@
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/album_searchable">
-            </meta-data>
+                android:resource="@xml/album_searchable"></meta-data>
         </activity>
         <activity
             android:name=".UserSearchActivity"
@@ -127,14 +116,18 @@
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/user_searchable">
-            </meta-data>
+                android:resource="@xml/user_searchable"></meta-data>
         </activity>
 
         <service android:name=".LocationService" />
 
+        <activity
+            android:name=".CurrentPhotoHuntActivity"
+            android:label="@string/title_activity_current_photo_hunt"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 
 </manifest>

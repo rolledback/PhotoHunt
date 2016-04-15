@@ -3,6 +3,8 @@ package mrayer.photohunt;
 import android.Manifest;
 import android.app.IntentService;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -222,6 +224,8 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
                             .setSmallIcon(R.drawable.notification_icon)
                             .setContentTitle("PhotoHunt")
                             .setContentText("You have completed your current album!");
+
+                    // TODO: Open the CurrentPhotoHunt upon clicking notification
 
                     rand = new Random().nextInt();
                     // Notification ID allows you to update the notification later on

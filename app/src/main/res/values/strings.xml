@@ -67,4 +67,5 @@
     <string name="total_photos">total photos</string>
     <string name="photos_found">photos found</string>
     <string name="album_id">album ID</string>
+    <string name="title_activity_current_photo_hunt">CurrentPhotoHuntActivity</string>
 </resources>

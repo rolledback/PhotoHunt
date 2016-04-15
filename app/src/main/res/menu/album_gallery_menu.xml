@@ -12,6 +12,12 @@
         android:icon="@drawable/ic_add_circle_outline_white_24dp"
         android:title="Create Photo Hunt"
         app:showAsAction="ifRoom"/>
+    <!--TODO: Change the icon-->
+    <item
+        android:id="@+id/action_current_photo_hunt"
+        android:icon="@drawable/ic_add_circle_outline_white_24dp"
+        android:title="Current Photo Hunt"
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/action_refresh_list"
         android:icon="@drawable/ic_cached_white_24dp"

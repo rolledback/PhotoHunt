@@ -117,6 +117,10 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 Intent settingsIntent = new Intent(AlbumGalleryActivity.this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
+            case R.id.action_current_photo_hunt:
+                Intent currentIntent = new Intent(AlbumGalleryActivity.this, CurrentPhotoHuntActivity.class);
+                startActivity(currentIntent);
+                return true;
 
             // uncomment corresponding test items in album_gallery_menu.xml to access these
 //            case R.id.action_test_set_add_location:

@@ -9,7 +9,7 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/detailed_photo_hunt_toolbar"
+            android:id="@+id/current_photo_hunt_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:layout_scrollFlags="scroll|enterAlways"
@@ -31,7 +31,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/detailed_name"
+                android:id="@+id/current_name"
                 android:text="Default Photo Hunt Name"
                 android:textSize="20sp"
                 android:gravity="center"
@@ -40,19 +40,19 @@
                 android:layout_height="wrap_content" />
 
             <ImageView
-                android:id="@+id/detailed_cover_photo"
+                android:id="@+id/current_cover_photo"
                 android:padding="@dimen/detailed_photo_hunt_text_margins"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/detailed_cover_image_size"/>
 
             <LinearLayout
-                android:id="@+id/detailed_text_layout"
+                android:id="@+id/current_text_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/detailed_author_layout"
+                    android:id="@+id/current_author_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/detailed_photo_hunt_text_margins">
@@ -65,7 +65,7 @@
                         android:text="Author: " />
 
                     <TextView
-                        android:id="@+id/detailed_author"
+                        android:id="@+id/current_author"
                         android:layout_width="0dp"
                         android:layout_height="@dimen/detailed_photo_hunt_text_height"
                         android:layout_weight="3"
@@ -75,7 +75,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/detailed_location_layout"
+                    android:id="@+id/current_location_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/detailed_photo_hunt_text_margins">
@@ -88,7 +88,7 @@
                         android:text="Location: " />
 
                     <TextView
-                        android:id="@+id/detailed_location"
+                        android:id="@+id/current_location"
                         android:layout_width="0dp"
                         android:layout_height="@dimen/detailed_photo_hunt_text_height"
                         android:layout_weight="3"
@@ -98,7 +98,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/detailed_album_size_layout"
+                    android:id="@+id/current_completed_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/detailed_photo_hunt_text_margins">
@@ -108,20 +108,20 @@
                         android:layout_weight="1"
                         android:gravity="center_vertical"
                         android:layout_gravity="center_vertical"
-                        android:text="Album Size: " />
+                        android:text="Photos Found: " />
 
                     <TextView
-                        android:id="@+id/detailed_album_size"
+                        android:id="@+id/current_completed"
                         android:layout_width="0dp"
                         android:layout_height="@dimen/detailed_photo_hunt_text_height"
                         android:layout_weight="3"
                         android:gravity="center_vertical|right"
                         android:layout_gravity="center_vertical"
-                        android:text="Default Album Size"/>
+                        android:text="Current Album Size"/>
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/detailed_type_layout"
+                    android:id="@+id/current_type_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/detailed_photo_hunt_text_margins">
@@ -134,7 +134,7 @@
                         android:text="Type: " />
 
                     <TextView
-                        android:id="@+id/detailed_type"
+                        android:id="@+id/current_type"
                         android:layout_width="0dp"
                         android:layout_height="@dimen/detailed_photo_hunt_text_height"
                         android:layout_weight="3"
@@ -144,7 +144,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/detailed_description_layout"
+                    android:id="@+id/current_description_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/detailed_photo_hunt_text_margins">
@@ -157,7 +157,7 @@
                         android:text="Description: " />
 
                     <TextView
-                        android:id="@+id/detailed_description"
+                        android:id="@+id/current_description"
                         android:layout_width="0dp"
                         android:layout_height="@dimen/detailed_photo_hunt_text_height"
                         android:layout_weight="3"
@@ -173,7 +173,7 @@
                 android:layout_weight="1">
 
                 <Button
-                    android:id="@+id/detailed_view_photos_button"
+                    android:id="@+id/current_view_photos_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:text="View Photos"
