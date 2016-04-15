@@ -113,10 +113,8 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity {
                     descriptionView.setText(album.getDescription());
                     typeView.setText(type);
 
-                    // TODO: Fix this
                     // download image from url
-//                    String coverPhotoUrl = ppo.getString("coverPhoto");
-//                    Picasso.with(this).load(coverPhotoUrl).into(imageView);
+                    Picasso.with(CurrentPhotoHuntActivity.this).load(album.getCoverPhoto().getUrl()).into(imageView);
 
                     // this only changes if the deletion took place
                     setResult(Constants.NO_RESULT);
