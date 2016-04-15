@@ -278,10 +278,6 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
             }
         });
 
-        dialog = new ProgressDialog(this);
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.setCancelable(false);
-
         // delete the album
         ParseQuery<PhotoHuntAlbum> albumQuery = ParseQuery.getQuery("PhotoHuntAlbum");
         albumQuery.whereEqualTo("albumId", albumId);
@@ -294,7 +290,6 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
                         @Override
                         public void done(ParseException e) {
                             setResult(Constants.DELETE_RESULT);
-                            dialog.dismiss();
                             finish();
                         }
                     });
