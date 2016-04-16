@@ -34,6 +34,7 @@ import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
     private String type;
 
     private AlertDialog deleteConfirmation;
+    private AlertDialog errorDialog;
     private AlertDialog.Builder dialogBuilder;
     private ProgressDialog dialog;
 
@@ -141,6 +143,9 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
                     .addApi(LocationServices.API)
                     .build();
         }
+
+        dialog = new ProgressDialog(this);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
         // Create the shared preferences file
         currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref),
@@ -261,6 +266,21 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
         deleteConfirmation = dialogBuilder.show();
     }
 
+    private void deleteError(String msg) {
+        dialogBuilder.setTitle("Deletion Error");
+        dialogBuilder.setMessage(msg);
+        dialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                errorDialog.dismiss();
+                errorDialog = null;
+                finish();
+            }
+
+        });
+        errorDialog = dialogBuilder.show();
+    }
+
     private void deleteAlbum() {
         // delete all associated photos
         ParseQuery<Photo> photoQuery = ParseQuery.getQuery("Photo");
@@ -295,9 +315,14 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
                     });
                 } else {
                     Log.d(Constants.DetailedPhotoHuntActivityTag, e.toString());
+                    deleteError(e.toString());
                 }
             }
         });
+
+        int numHunts = ParseUser.getCurrentUser().getInt("numAlbums");
+        ParseUser.getCurrentUser().put("numAlbums", numHunts - 1);
+        ParseUser.getCurrentUser().saveInBackground();
     }
 
     @Override

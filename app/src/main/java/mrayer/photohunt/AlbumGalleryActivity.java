@@ -92,12 +92,8 @@ public class AlbumGalleryActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.album_gallery_menu, menu);
-//        return super.onCreateOptionsMenu(menu);
-
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.album_gallery_menu, menu);
-
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);

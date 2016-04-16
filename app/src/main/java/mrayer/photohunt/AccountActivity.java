@@ -1,13 +1,18 @@
 package mrayer.photohunt;
 
 import android.app.AlertDialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -15,11 +20,14 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.RefreshCallback;
 
 public class AccountActivity extends AppCompatActivity {
 
@@ -36,6 +44,7 @@ public class AccountActivity extends AppCompatActivity {
     private AlertDialog.Builder dialogBuilder;
     private LayoutInflater inflater;
 
+    private String whichSetup;
     private String otherUserId;
     private String otherUsername;
     private String otherDateCreated;
@@ -57,7 +66,7 @@ public class AccountActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         Intent intent = getIntent();
-        String whichSetup = intent.getStringExtra("accountType");
+        whichSetup = intent.getStringExtra("accountType");
 
         if(whichSetup.equals("currentUser")) {
             getSupportActionBar().setTitle("My Account");
@@ -88,9 +97,7 @@ public class AccountActivity extends AppCompatActivity {
         favoriteUsers = (Button) findViewById(R.id.favorites_button);
 
         if(whichSetup.equals("currentUser")) {
-            findViewById(R.id.account_main_layout).setVisibility(View.VISIBLE);
-            setupMyAccountComponents();
-            setMyAccountTextFields();
+            loadCurrentUserAccount();
         }
         else {
             getOtherAccount();
@@ -98,13 +105,60 @@ public class AccountActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.account_menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            case R.id.action_refresh_account:
+                if(whichSetup.equals("currentUser")) {
+                    loadCurrentUserAccount();
+                }
+                else {
+                    getOtherAccount();
+                }
+                return true;
+        }
+
+        return true;
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == Constants.REQUEST_MANAGEMENT_RESULT && resultCode == Constants.DELETE_RESULT) {
-            adapter.loadCurrentUserAlbums();
+            setupMyAccountComponents();
+            setMyAccountTextFields();
             setResult(Constants.DELETE_RESULT);
         }
+    }
+
+    private void loadCurrentUserAccount() {
+        findViewById(R.id.account_main_layout).setVisibility(View.VISIBLE);
+        refreshCurrentUser();
+        setupMyAccountComponents();
+        setMyAccountTextFields();
+    }
+
+    private void refreshCurrentUser() {
+        ParseUser.getCurrentUser().fetchInBackground(new GetCallback<ParseObject>() {
+            public void done(ParseObject object, ParseException e) {
+                if (e == null) {
+                    setMyAccountTextFields();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Unable to fetch latest account data.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void getOtherAccount() {
@@ -115,10 +169,9 @@ public class AccountActivity extends AppCompatActivity {
             public void done(ParseUser object, ParseException e) {
                 if (e == null) {
                     otherDateCreated = object.getCreatedAt().toString();
-                    if(object.has("numAlbums")) {
+                    if (object.has("numAlbums")) {
                         otherNumAlbums = (Integer) object.get("numAlbums");
-                    }
-                    else {
+                    } else {
                         otherNumAlbums = 0;
                     }
 
@@ -195,7 +248,6 @@ public class AccountActivity extends AppCompatActivity {
             numPhotoHunts.setText("Number of Photo Hunts: " + 0);
         }
 
-        // need to work on parsing this into human readable date
         accountCreatedDate.setText("User Since: " + parseOutJoinDate(ParseUser.getCurrentUser().getCreatedAt().toString()));
     }
 
@@ -203,7 +255,6 @@ public class AccountActivity extends AppCompatActivity {
         username.setText(otherUsername);
         numPhotoHunts.setText("Number of Photo Hunts: " + otherNumAlbums);
 
-        // need to work on parsing this into human readable date
         accountCreatedDate.setText("User Since: " + parseOutJoinDate(otherDateCreated));
     }
 
@@ -217,14 +268,4 @@ public class AccountActivity extends AppCompatActivity {
 
         return temp.toString();
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
 }
