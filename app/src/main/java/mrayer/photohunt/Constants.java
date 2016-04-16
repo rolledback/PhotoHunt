@@ -9,7 +9,7 @@ public class Constants {
     public static final String UtilsTag = "UTILS";
     public static final String PhotoSaveCallbackTag = "PHOTO_SAVE_CALLBACK";
     public static final String PhotoProgressCallbackTag = "PHOTO_PROGRESS_CALLBACK";
-    public static final String PhotoUploadProgressDialogTag = "PHOTO_PROGRESS_DIALOG";
+    public static final String UploadProgressNotificationTag = "UPLOAD_NOTIFICATION";
     public static final String AlbumGalleryTag = "ALBUM_GALLERY_ACTIVITY";
     public static final String SetChangeLocation_Tag = "SET_CHANGE_LOCATION";
     public static final String SignUpTag = "SIGN_UP_ACTIVITY";
@@ -50,4 +50,7 @@ public class Constants {
     // result codes for detailed DetailedPhotoHuntActivity
     public static final int NO_RESULT = 1;
     public static final int DELETE_RESULT = 2;
+
+    // message codes
+    public static final int UPLOAD_COMPLETE = 1;
 }

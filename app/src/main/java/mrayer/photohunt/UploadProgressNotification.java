@@ -1,16 +1,13 @@
 package mrayer.photohunt;
 
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import java.util.Arrays;
-
-import mrayer.photohunt.Constants;
 
 /**
  * Created by Matthew on 3/17/2016.
@@ -22,12 +19,16 @@ public class UploadProgressNotification {
     private int[] progresses;
     private NotificationCompat.Builder notificationBuilder;
     private NotificationManager notificationManager;
+    private Messenger callbackMessenger;
+    private int prevProgress;
 
-    public UploadProgressNotification(Context c, int numPhotos) {
-        // Log.d(Constants.PhotoUploadProgressDialogTag, "Creating upload dialog with " + numPhotos + " photos.");
+    public UploadProgressNotification(Context c, int numPhotos, Messenger callbackMessenger) {
+        // Log.d(Constants.UploadProgressNotificationTag, "Creating upload dialog with " + numPhotos + " photos.");
         progresses = new int[numPhotos];
+        this.callbackMessenger = callbackMessenger;
         notificationManager = (NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationBuilder = new NotificationCompat.Builder(c);
+        prevProgress = 0;
         buildNotification();
     }
 
@@ -39,22 +40,42 @@ public class UploadProgressNotification {
     }
 
     public void setPhotoProgresses(int percentage, int photo) {
-        // Log.d(Constants.PhotoUploadProgressDialogTag, "Set photo progress of photo " + photo + " to " + percentage);
+        // Log.d(Constants.UploadProgressNotificationTag, "Set photo progress of photo " + photo + " to " + percentage);
         progresses[photo] = percentage;
-        int totalProgress = 0;
+        double totalProgressDouble = 0;
         for(int i = 0; i < progresses.length; i++) {
-            // take care of rounding issues
-            totalProgress += (int)Math.ceil((double)progresses[i] / (double)progresses.length);
+            totalProgressDouble += (double)progresses[i] / (double)progresses.length;
         }
-        // Log.d(Constants.PhotoUploadProgressDialogTag, "Total progress is " + totalProgress);
+
+        // handle rounding as best as we can
+        int totalProgress = (int)Math.ceil(totalProgressDouble);
+
+        if(totalProgress <= prevProgress || prevProgress >= 100) {
+            // only update notification if there is a point, and only update to 100% once
+            return;
+        }
+        prevProgress = totalProgress;
+
+        // Log.d(Constants.UploadProgressNotificationTag, "Total progress is " + totalProgress);
+        // Log.d(Constants.UploadProgressNotificationTag, Arrays.toString(progresses));
         notificationBuilder.setProgress(100, totalProgress, false);
         notificationManager.notify(1, notificationBuilder.build());
 
         if(totalProgress >= 100) {
-            notificationBuilder.setContentText("Upload complete!");
+            notificationBuilder.setContentText("Upload complete! ");
             notificationBuilder.setSmallIcon(R.drawable.ic_done_black_24dp);
             notificationBuilder.setProgress(0, 0, false);
             notificationManager.notify(1, notificationBuilder.build());
+            Message msg = Message.obtain();
+
+            msg.what = Constants.UPLOAD_COMPLETE;
+
+            try {
+                callbackMessenger.send(msg);
+            }
+            catch (android.os.RemoteException e1) {
+                Log.d(Constants.UploadProgressNotificationTag, e1.toString());
+            }
         }
     }
 }

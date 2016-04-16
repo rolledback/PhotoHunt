@@ -4,6 +4,10 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
@@ -16,6 +20,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.parse.ParseUser;
 
@@ -23,6 +28,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
 
     private AlbumListAdapter adapter;
     private ListView list;
+    private Handler messageHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,15 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 startActivity(detailsIntent);
             }
         });
+
+        messageHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if(msg.what == Constants.UPLOAD_COMPLETE) {
+                    refreshList();
+                }
+            }
+        };
 
         /**
          * May the souls of the buttons that were one initialized here rest in peace.
@@ -100,6 +115,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 return true;
             case R.id.action_create_photo_hunt:
                 Intent intent = new Intent(AlbumGalleryActivity.this, CreateNewPhotoHuntActivity.class);
+                intent.putExtra("callbackMessenger", new Messenger(messageHandler));
                 startActivityForResult(intent, Constants.REQUEST_CREATE_NEW_PHOTO_HUNT);
                 return true;
             case R.id.action_logout:
@@ -154,5 +170,4 @@ public class AlbumGalleryActivity extends AppCompatActivity {
             refreshList();
         }
     }
-
 }

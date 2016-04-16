@@ -11,6 +11,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Message;
+import android.os.Messenger;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -83,6 +85,8 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private LayoutInflater inflater;
 
     private Set<String> whiteList;
+
+    private Messenger callbackMessenger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -219,6 +223,8 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         locationStatus.setVisibility(View.GONE);
 
         whiteList = new HashSet<String>();
+
+        callbackMessenger = (Messenger)(getIntent().getExtras().get("callbackMessenger"));
 
         // this only changes if the uplaod dialog was cancelled after upload complete
         setResult(Activity.RESULT_CANCELED);
@@ -516,7 +522,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     }
 
     private void setupNotification() {
-        uploadNotification = new UploadProgressNotification(this, createNewPhotoHuntImageAdapter.getGalImages().size());
+        uploadNotification = new UploadProgressNotification(this, createNewPhotoHuntImageAdapter.getGalImages().size() * 2, callbackMessenger);
     }
 
     private void whiteListDialog() {
