@@ -142,6 +142,10 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
         {
             @Override
             public void onClick(View v) {
+                stopService(new Intent(CurrentPhotoHuntActivity.this, LocationService.class));
+
+                // TODO: Remove the geofences so the service doesn't start up again
+
                 // Create a new googleAPI client
 //                if (googleAPI == null) {
 //                    googleAPI = new GoogleApiClient.Builder(CurrentPhotoHuntActivity.this)
@@ -213,7 +217,6 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
                     }
                 }
             });
-
         }
     }
 
