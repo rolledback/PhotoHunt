@@ -112,14 +112,6 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
         if (transition == Geofence.GEOFENCE_TRANSITION_ENTER) {
             Log.d(TAG, " geofence entered");
 
-//            Handler handler = new Handler(Looper.getMainLooper());
-//            handler.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Toast.makeText(getApplicationContext(), " geofence entered!!!1 ", Toast.LENGTH_LONG).show();
-//                }
-//            });
-
             // TODO: Need to make this open a new Current PhotoHunt Activity - once I make it
 
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
@@ -188,15 +180,6 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
 
             if(location.distanceTo(temp) < DIST)
             {
-                // You are here! Make toast
-//                Handler handler = new Handler(Looper.getMainLooper());
-//                handler.post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Toast.makeText(getApplicationContext(), "You are at a photo location!!", Toast.LENGTH_LONG).show();
-//                    }
-//                });
-
                 NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.notification_icon)
                         .setContentTitle("PhotoHunt")
