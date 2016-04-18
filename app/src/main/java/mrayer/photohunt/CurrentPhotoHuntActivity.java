@@ -196,20 +196,20 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, " do not have correct permissions");
-        } else {
+        }
+        else {
 
-            // Null out shared preferences
-            SharedPreferences.Editor editor = currentAlbumPref.edit();
-            editor.putInt(getString(R.string.total_photos), -1);
-            editor.putInt(getString(R.string.photos_found), -1);
-            editor.putString(getString(R.string.album_id), "" + -1);
-            editor.commit();
+            List<String> geofenceIDs = new ArrayList<String>();
 
-            // Remove previous current album geofences
-            LocationServices.GeofencingApi.removeGeofences(
-                    googleAPI,
-                    getGeofencePendingIntent()
-                    ).setResultCallback(new ResultCallback<Status>() {
+
+            // Get the geofence IDs
+            for(int i = 1; i < currentAlbumPref.getInt(getString(R.string.total_photos) + 1, -1); i++)
+            {
+                geofenceIDs.add(currentAlbumPref.getString("photo" + i, ""));
+            }
+
+            // Remove all the geofences
+            LocationServices.GeofencingApi.removeGeofences(googleAPI, geofenceIDs).setResultCallback(new ResultCallback<Status>() {
                 @Override
                 public void onResult(Status status) {
                     if (status.isSuccess()) {
@@ -217,19 +217,14 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
                     }
                 }
             });
-        }
-    }
 
-    private PendingIntent getGeofencePendingIntent() {
-        // Reuse the PendingIntent if we already have it.
-        if (geofencePendingIntent != null) {
-            return geofencePendingIntent;
+            // Null out shared preferences
+            SharedPreferences.Editor editor = currentAlbumPref.edit();
+            editor.putInt(getString(R.string.total_photos), -1);
+            editor.putInt(getString(R.string.photos_found), -1);
+            editor.putString(getString(R.string.album_id), "" + -1);
+            editor.commit();
         }
-        Intent intent = new Intent(this, LocationService.class);
-        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
-        // calling addGeofences() and removeGeofences()
-        return PendingIntent.getService(this, 0, intent, PendingIntent.
-                FLAG_UPDATE_CURRENT);
     }
 
     @Override

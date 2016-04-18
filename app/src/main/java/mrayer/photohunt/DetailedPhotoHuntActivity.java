@@ -182,8 +182,20 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
 
                                 geofences = new ArrayList<Geofence>();
 
+                                // Add the total number of photos to the shared pref
+                                // Set total number of photos found to 0
+                                int totalPhotos = photos.size();
+                                SharedPreferences.Editor editor = currentAlbumPref.edit();
+                                editor.putInt(getString(R.string.total_photos), totalPhotos);
+                                editor.putInt(getString(R.string.photos_found), 0);
+                                editor.putString(getString(R.string.album_id), albumId);
+                                int count = 1;
+
                                 // Create a list of geofences
                                 for (Photo p : photos) {
+                                    // Add in the geofence requestID so it can later be removed in CurrentPhotoHunt
+                                    editor.putString("photo" + count, p.getLocation().latitude + "," + p.getLocation().longitude);
+                                    count++;
                                     geofences.add(new Geofence.Builder()
                                             // Set the request ID, a string to identify geofence as photo ID
                                             .setRequestId(p.getLocation().latitude + "," + p.getLocation().longitude)
@@ -197,13 +209,6 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
                                             .build());
                                 }
 
-                                // Add the total number of photos to the shared pref
-                                // Set total number of photos found to 0
-                                int totalPhotos = photos.size();
-                                SharedPreferences.Editor editor = currentAlbumPref.edit();
-                                editor.putInt(getString(R.string.total_photos), totalPhotos);
-                                editor.putInt(getString(R.string.photos_found), 0);
-                                editor.putString(getString(R.string.album_id), albumId);
                                 editor.commit();
 
                                 Log.d(TAG, "Photos found set to 0, total pics: " + currentAlbumPref.getInt(getString(R.string.total_photos), -1));
