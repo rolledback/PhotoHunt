@@ -114,10 +114,22 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
 
             // TODO: Need to make this open a new Current PhotoHunt Activity - once I make it
 
+            Intent notifyIntent = new Intent(this, CurrentPhotoHuntActivity.class);
+
+            // Because clicking the notification opens a new ("special") activity, there's
+            // no need to create an artificial back stack.
+            PendingIntent pendingIntent = PendingIntent.getActivity(
+                    this,
+                    0,
+                    notifyIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+            );
+
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                     .setSmallIcon(R.drawable.notification_icon)
                     .setContentTitle("PhotoHunt")
-                    .setContentText("Geofence entered - you are close to a photo");
+                    .setContentText("Geofence entered - you are close to a photo")
+                    .setContentIntent(pendingIntent);
 
             int rand = new Random().nextInt();
             NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -203,10 +215,21 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
                 // TODO: What if they exit a geofence and re-enter? Could count photo more than once
                 if(currentAlbumPref.getInt(getString(R.string.photos_found), -1) == currentAlbumPref.getInt(getString(R.string.total_photos), -2))
                 {
+
+                    Intent notifyIntent = new Intent(this, CurrentPhotoHuntActivity.class);
+
+                    PendingIntent pendingIntent = PendingIntent.getActivity(
+                            this,
+                            0,
+                            notifyIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT
+                    );
+
                     NotificationCompat.Builder notification = new NotificationCompat.Builder(this)
                             .setSmallIcon(R.drawable.notification_icon)
                             .setContentTitle("PhotoHunt")
-                            .setContentText("You have completed your current album!");
+                            .setContentText("You have completed your current album!")
+                            .setContentIntent(pendingIntent);
 
                     // TODO: Open the CurrentPhotoHunt upon clicking notification
 
@@ -233,8 +256,8 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
         Log.i(TAG, " location services connected.");
 
         LocationRequest locationReq = new LocationRequest();
-        locationReq.setInterval(5000);
-        locationReq.setFastestInterval(3000);
+        locationReq.setInterval(5000); // 5 sec
+        locationReq.setFastestInterval(3000); // 3 sec
         locationReq.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
