@@ -53,6 +53,7 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
 
     private String albumId;
     private String type;
+    private int totalPhotos;
 
     private AlertDialog deleteConfirmation;
     private AlertDialog.Builder dialogBuilder;
@@ -125,6 +126,8 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
                     descriptionView.setText(album.getDescription());
                     typeView.setText(type);
 
+                    totalPhotos = album.getNumPhotos();
+
                     // download image from url
                     Picasso.with(CurrentPhotoHuntActivity.this).load(album.getCoverPhoto().getUrl()).into(imageView);
 
@@ -144,20 +147,20 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
             public void onClick(View v) {
                 stopService(new Intent(CurrentPhotoHuntActivity.this, LocationService.class));
 
-                // TODO: Remove the geofences so the service doesn't start up again
-
                 // Create a new googleAPI client
-//                if (googleAPI == null) {
-//                    googleAPI = new GoogleApiClient.Builder(CurrentPhotoHuntActivity.this)
-//                            .addConnectionCallbacks(CurrentPhotoHuntActivity.this)
-//                            .addOnConnectionFailedListener(CurrentPhotoHuntActivity.this)
-//                            .addApi(LocationServices.API)
-//                            .build();
-//                }
-//                else
-//                {
-//                    googleAPI.connect();
-//                }
+                if (googleAPI == null) {
+                    googleAPI = new GoogleApiClient.Builder(CurrentPhotoHuntActivity.this)
+                            .addConnectionCallbacks(CurrentPhotoHuntActivity.this)
+                            .addOnConnectionFailedListener(CurrentPhotoHuntActivity.this)
+                            .addApi(LocationServices.API)
+                            .build();
+
+                    googleAPI.connect();
+                }
+                else
+                {
+                    googleAPI.connect();
+                }
             }
         });
 
@@ -201,9 +204,8 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
 
             List<String> geofenceIDs = new ArrayList<String>();
 
-
             // Get the geofence IDs
-            for(int i = 1; i < currentAlbumPref.getInt(getString(R.string.total_photos) + 1, -1); i++)
+            for(int i = 1; i < totalPhotos + 1; i++)
             {
                 geofenceIDs.add(currentAlbumPref.getString("photo" + i, ""));
             }

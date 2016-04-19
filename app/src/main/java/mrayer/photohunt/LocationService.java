@@ -44,7 +44,7 @@ import java.util.Random;
 public class LocationService extends IntentService implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    static final int DIST = 5;
+    static final int DIST = 10;
     static final String TAG = "LocationService";
 
     int photosFound;
@@ -111,8 +111,6 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
 
         if (transition == Geofence.GEOFENCE_TRANSITION_ENTER) {
             Log.d(TAG, " geofence entered");
-
-            // TODO: Need to make this open a new Current PhotoHunt Activity - once I make it
 
             Intent notifyIntent = new Intent(this, CurrentPhotoHuntActivity.class);
 
@@ -192,10 +190,22 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
 
             if(location.distanceTo(temp) < DIST)
             {
+                Intent notifyIntent = new Intent(this, CurrentPhotoHuntActivity.class);
+
+                // Because clicking the notification opens a new ("special") activity, there's
+                // no need to create an artificial back stack.
+                PendingIntent pendingIntent = PendingIntent.getActivity(
+                        this,
+                        0,
+                        notifyIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
                 NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.notification_icon)
                         .setContentTitle("PhotoHunt")
-                        .setContentText("You are at a photo location!");
+                        .setContentText("You are at a photo location!")
+                        .setContentIntent(pendingIntent);
 
                 int rand = new Random().nextInt();
                 NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -215,23 +225,11 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
                 // TODO: What if they exit a geofence and re-enter? Could count photo more than once
                 if(currentAlbumPref.getInt(getString(R.string.photos_found), -1) == currentAlbumPref.getInt(getString(R.string.total_photos), -2))
                 {
-
-                    Intent notifyIntent = new Intent(this, CurrentPhotoHuntActivity.class);
-
-                    PendingIntent pendingIntent = PendingIntent.getActivity(
-                            this,
-                            0,
-                            notifyIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                    );
-
                     NotificationCompat.Builder notification = new NotificationCompat.Builder(this)
                             .setSmallIcon(R.drawable.notification_icon)
                             .setContentTitle("PhotoHunt")
                             .setContentText("You have completed your current album!")
                             .setContentIntent(pendingIntent);
-
-                    // TODO: Open the CurrentPhotoHunt upon clicking notification
 
                     rand = new Random().nextInt();
                     // Notification ID allows you to update the notification later on

@@ -211,8 +211,6 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
 
                                 editor.commit();
 
-                                Log.d(TAG, "Photos found set to 0, total pics: " + currentAlbumPref.getInt(getString(R.string.total_photos), -1));
-
                                 // Actually connect to the Google API
                                 googleAPI.connect();
 
