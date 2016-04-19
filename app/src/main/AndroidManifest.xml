@@ -58,6 +58,7 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
+            android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.Dark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -68,6 +69,7 @@
         <activity
             android:name=".SignUpActivity"
             android:label="@string/title_activity_sign_up"
+            android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.Dark"></activity>
         <activity
             android:name=".AccountActivity"
