@@ -3,15 +3,19 @@ package mrayer.photohunt;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -55,16 +59,26 @@ public class AlbumGridAdapter extends BaseAdapter {
     }
 
     @Override public View getView(int position, View view, ViewGroup parent) {
-        ImageView imageView;
+        ViewHolder holder;
         if (view == null) {
             // if it's not recycled, initialize some attributes
-            imageView = new ImageView(context);
-            imageView.setLayoutParams(new GridView.LayoutParams(width, width));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            view = LayoutInflater.from(context).inflate(R.layout.album_grid_cell, parent, false);
+            holder = new ViewHolder();
+
+            holder.photo = (ImageView) view.findViewById(R.id.grid_photo);
+            holder.photo.setVisibility(View.INVISIBLE);
+            holder.photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+            holder.spinner = (ProgressBar) view.findViewById(R.id.grid_spinner);
+            holder.spinner.setVisibility(View.VISIBLE);
+            view.setTag(holder);
         }
         else {
-            imageView = (ImageView) view;
+            holder = (ViewHolder) view.getTag();
+            holder.photo.setVisibility(View.INVISIBLE);
+            holder.spinner.setVisibility(View.VISIBLE);
         }
+        view.setLayoutParams(new GridView.LayoutParams(width, width));
 
         if(photos.size() == 0) {
             // can't do anything, we haven't finished querying for the photos yet
@@ -72,14 +86,27 @@ public class AlbumGridAdapter extends BaseAdapter {
         }
 
         final Photo currPhoto = getItem(position);
+        final ViewHolder finalView = holder;
         if(currPhoto != null) {
             String url = currPhoto.getThumbnail().getUrl();
 
             // Trigger the download of the URL asynchronously into the image view.
-            Picasso.with(context).load(url).into(imageView);
+            Picasso.with(context).load(url).into(holder.photo, new Callback() {
+                @Override
+                public void onSuccess() {
+                    // it ends up looking better with the if in there, I swear
+                    if(Math.random() > -1) {
+                        finalView.spinner.setVisibility(View.INVISIBLE);
+                        finalView.photo.setVisibility(View.VISIBLE);
+                    }
+                }
+                public void onError() {
+                    // ???
+                }
+            });
         }
 
-        imageView.setOnClickListener(new View.OnClickListener() {
+        finalView.photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ViewPhotoActivity.class);
@@ -90,7 +117,7 @@ public class AlbumGridAdapter extends BaseAdapter {
             }
         });
 
-        return imageView;
+        return view;
     }
 
     @Override
@@ -106,6 +133,11 @@ public class AlbumGridAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    static class ViewHolder {
+        ImageView photo;
+        ProgressBar spinner;
     }
 
 }
