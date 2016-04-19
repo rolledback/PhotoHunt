@@ -107,6 +107,8 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
         // Set a mark at the user's current location if no location from photo
         if(currentPos.latitude == -1 && currentPos.longitude == -1)
         {
+            // Set the default to GDC, because -1, -1 is in Africa or something
+            currentPos = new LatLng(30.286315, -97.736669);
             LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
             Criteria criteria = new Criteria();
             String provider = service.getBestProvider(criteria, false);
@@ -123,11 +125,6 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
                 {
                     LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
                     currentPos = userLocation;
-                }
-                // Set the default to GDC, because -1, -1 is in Africa or something
-                else
-                {
-                    currentPos = new LatLng(30.286315, -97.736669);
                 }
             }
         }
