@@ -254,7 +254,7 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
         Log.i(TAG, " location services connected.");
 
         LocationRequest locationReq = new LocationRequest();
-        locationReq.setInterval(5000); // 5 sec
+        locationReq.setInterval(3000); // 3 sec
         locationReq.setFastestInterval(3000); // 3 sec
         locationReq.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
