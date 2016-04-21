@@ -42,7 +42,6 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
         setContentView(R.layout.activity_set_change_location);
         Toolbar toolbar = (Toolbar) findViewById(R.id.set_location_toolbar);
 
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
@@ -91,7 +90,6 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
         mapFragment.getMapAsync(this);
     }
 
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -120,6 +118,7 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
             else
             {
                 Location location = service.getLastKnownLocation(provider);
+
                 // Cannot retrieve the last known location
                 if(location != null)
                 {
@@ -128,6 +127,11 @@ public class SetChangeLocationActivity extends AppCompatActivity implements OnMa
                 }
             }
         }
+
+        try {
+            mMap.setMyLocationEnabled(true);
+        }
+        catch(SecurityException e) { }
 
         m = mMap.addMarker(new MarkerOptions().position(currentPos).draggable(true));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 16));
