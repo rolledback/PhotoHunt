@@ -226,6 +226,8 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
             editor.putInt(getString(R.string.photos_found), -1);
             editor.putString(getString(R.string.album_id), "" + -1);
             editor.commit();
+
+            finish();
         }
     }
 

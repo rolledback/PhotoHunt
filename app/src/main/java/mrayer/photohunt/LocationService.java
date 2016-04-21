@@ -14,6 +14,7 @@ import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.service.carrier.CarrierMessagingService;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 import com.google.android.gms.location.LocationListener;
@@ -258,6 +261,11 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
                     }
 
                     user.saveInBackground();
+
+                    List<String> completedAlbums = (ArrayList<String>) user.get("CompletedAlbums");
+                    int count = (int) user.get("CompletedCount");
+
+                    Log.d(TAG, "User's completedAlbums: " + completedAlbums.size() + " number: " + count);
                 }
 
                 Log.d(TAG, "Photos found: " + currentAlbumPref.getInt(getString(R.string.photos_found), -1));
@@ -287,8 +295,15 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
         }
         else
         {
-            Log.d(TAG, " requesting location updates");
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleAPI, locationReq, this);
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleAPI, locationReq, this).setResultCallback(
+                    new ResultCallback<Status>() {
+                @Override
+                public void onResult(Status status) {
+                    if (status.isSuccess()) {
+                        Log.i(TAG, " requesting location updates");
+                    }
+                }
+            });
         }
     }
 

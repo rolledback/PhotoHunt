@@ -3,6 +3,7 @@ package mrayer.photohunt;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -130,8 +131,18 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 startActivity(settingsIntent);
                 return true;
             case R.id.action_current_photo_hunt:
-                Intent currentIntent = new Intent(AlbumGalleryActivity.this, CurrentPhotoHuntActivity.class);
-                startActivity(currentIntent);
+                SharedPreferences currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref), Context.MODE_PRIVATE);
+                Log.d("AlbumGalleryActivity ", currentAlbumPref.getString(getString(R.string.album_id), "" + -1));
+                if (currentAlbumPref.getString(getString(R.string.album_id), "" + -1).equals("" + -1))
+                {
+                    Toast.makeText(AlbumGalleryActivity.this, "You do not have a current photo hunt!", Toast.LENGTH_LONG).show();
+                    return false;
+                }
+                else
+                {
+                    Intent currentIntent = new Intent(AlbumGalleryActivity.this, CurrentPhotoHuntActivity.class);
+                    startActivity(currentIntent);
+                }
                 return true;
 
             // uncomment corresponding test items in album_gallery_menu.xml to access these
