@@ -28,6 +28,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.Parse;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -235,7 +237,27 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
                     // Notification ID allows you to update the notification later on
                     nm.notify(rand, notification.build());
 
-                    // TODO: Add this album to user's completed album list/count
+                    ParseUser user = ParseUser.getCurrentUser();
+
+                    if(user.has("CompletedAlbums") && user.has("CompletedCount"))
+                    {
+                        List<String> completedAlbums = (ArrayList<String>) user.get("CompletedAlbums");
+                        int count = (int) user.get("CompletedCount");
+                        completedAlbums.add(currentAlbumPref.getString(getString(R.string.album_id), "-1"));
+                        count = count + 1;
+                        user.put("CompletedAlbums", completedAlbums);
+                        user.put("CompletedCount", count);
+                    }
+                    else
+                    {
+                        List<String> completedAlbums = new ArrayList<String>();
+                        int count = 1;
+                        completedAlbums.add(currentAlbumPref.getString(getString(R.string.album_id), "-1"));
+                        user.put("CompletedAlbums", completedAlbums);
+                        user.put("CompletedCount", count);
+                    }
+
+                    user.saveInBackground();
                 }
 
                 Log.d(TAG, "Photos found: " + currentAlbumPref.getInt(getString(R.string.photos_found), -1));
