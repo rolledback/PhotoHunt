@@ -191,12 +191,6 @@
                         android:text="Upload"
                         android:layout_weight="1.0" />
 
-                    <Button
-                        android:id="@+id/cancel_button"
-                        android:layout_width="0.0dip"
-                        android:layout_height="fill_parent"
-                        android:text="Cancel"
-                        android:layout_weight="1.0" />
                 </LinearLayout>
 
             </RelativeLayout>

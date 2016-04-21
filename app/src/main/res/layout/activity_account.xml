@@ -90,7 +90,8 @@
             android:id="@+id/photo_hunts"
             android:paddingTop="25dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_below="@+id/buttons" />
+            android:layout_below="@+id/buttons"
+            android:layout_marginLeft="15dip" />
 
         <ListView
             android:id="@+id/my_album_list"

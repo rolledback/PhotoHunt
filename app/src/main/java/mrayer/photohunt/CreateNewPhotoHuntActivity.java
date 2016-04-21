@@ -75,7 +75,6 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private Button addFromGalleryButton;
     private Button takePhotoButton;
     private Button uploadButton;
-    private Button cancelButton;
     private ImageView locationStatus;
 
     private UploadProgressNotification uploadNotification;
@@ -199,15 +198,6 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
                 new UploadAlbumTask(photoHunt, createNewPhotoHuntImageAdapter.getGalImages()).execute();
                 setResult(Activity.RESULT_OK);
                 finish();
-            }
-        });
-
-        cancelButton = (Button) findViewById(R.id.cancel_button);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewPager.getAdapter().notifyDataSetChanged();// finish();
-                return;
             }
         });
 

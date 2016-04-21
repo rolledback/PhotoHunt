@@ -30,7 +30,7 @@
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/action_logout"
-        android:icon="@drawable/ic_cached_white_24dp"
+        android:icon="@drawable/ic_exit_to_app_white_24dp"
         android:title="Logout"
         app:showAsAction="ifRoom"/>
     <item
