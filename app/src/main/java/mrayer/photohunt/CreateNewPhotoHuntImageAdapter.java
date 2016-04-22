@@ -11,10 +11,14 @@ import android.graphics.BitmapFactory;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -65,22 +69,37 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return view == ((ImageView) object);
+        return view == ((FrameLayout) object);
     }
 
     @Override
     public Object instantiateItem(final ViewGroup container, int position) {
-        ImageView imageView = new ImageView(context);
+        ViewHolder holder = new ViewHolder();
+        View view = LayoutInflater.from(context).inflate(R.layout.create_photo_hunt_view_pager, container, false);
+
+        holder.photo = (ImageView) view.findViewById(R.id.main_image);
+        holder.locStatus = (ImageView) view.findViewById(R.id.location_status);
+
+        ImageView imageView = holder.photo;
         int padding = context.getResources().getDimensionPixelSize(R.dimen.fab_margin);
         imageView.setPadding(padding, padding, padding, padding);
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
         final String picturePath = galImages.get(position);
         File file = new File(picturePath);
 
         // get location if it exists
         LatLng metaLocation = Utils.getImageLocation(file);
+        LatLng manLocation = manualLocations.get(picturePath);
         if(metaLocation != null) {
+            holder.locStatus.setImageResource(R.drawable.ic_done_green_24dp);
             metaLocations.put(picturePath, metaLocation);
+        }
+        else if(manLocation != null) {
+            holder.locStatus.setImageResource(R.drawable.ic_done_green_24dp);
+        }
+        else {
+            holder.locStatus.setImageResource(R.drawable.ic_report_problem_black_24dp);
         }
 
         int height = (int) context.getResources().getDimension(R.dimen.create_new_photo_hunt_image_size);
@@ -91,9 +110,8 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
         imageView.setImageBitmap(correctedBitmap);
 
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, height);
-        imageView.setLayoutParams(params);
+        view.setLayoutParams(params);
 
-        ((ViewPager) container).addView(imageView, 0);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,7 +146,7 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
 
                             ((ViewPager) container).setCurrentItem(0, true);
                         }
-                        else if(which == 2) {
+                        else if (which == 2) {
                             Integer viewToRemove = galImageViews.get(((ViewPager) container).getCurrentItem());
 
                             galImages.remove(((ViewPager) container).getCurrentItem());
@@ -136,7 +154,7 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
 
                             notifyDataSetChanged();
 
-                            if(galImages.size() == 0) {
+                            if (galImages.size() == 0) {
                                 parent.hideViewPager();
                             }
                         }
@@ -148,6 +166,9 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
             }
         });
 
+        view.setTag(holder);
+        ((ViewPager) container).addView(view, 0);
+
         if(galImageViews.size() > position) {
             // if you are instantiating a view not at the end of the list
             galImageViews.set(position, imageView.hashCode());
@@ -155,15 +176,18 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
         else if(!galImageViews.contains(imageView)) {
             // if you are instantiating a view at the end which isn't already in the list
             galImageViews.add(imageView.hashCode());
+            if(metaLocation == null && manLocation == null) {
+                parent.makeAndShowSetLocationHintToast();
+            }
         }
 
-        return imageView;
+        return view;
     }
 
     @Override
     public int getItemPosition(Object object) {
-        if(galImageViews.contains(((ImageView) object).hashCode())) {
-            return galImageViews.indexOf(((ImageView) object).hashCode());
+        if(galImageViews.contains(((FrameLayout) object).hashCode())) {
+            return galImageViews.indexOf(((FrameLayout) object).hashCode());
         }
         else {
             return POSITION_NONE;
@@ -172,7 +196,7 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        ((ViewPager) container).removeView((ImageView) object);
+        ((ViewPager) container).removeView((FrameLayout) object);
     }
 
     public ArrayList<String> getGalImages() {
@@ -217,4 +241,8 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
         }
     }
 
+    static class ViewHolder {
+        ImageView photo;
+        ImageView locStatus;
+    }
 }
