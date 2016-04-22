@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -58,6 +60,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
     private TextView descriptionView;
 
     private ImageView imageView;
+    private ProgressBar imageSpinner;
 
     private Button viewPhotosButton;
     private Button actionButton;
@@ -106,6 +109,9 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
         typeView = (TextView) findViewById(R.id.detailed_type);
 
         imageView = (ImageView) findViewById(R.id.detailed_cover_photo);
+        imageView.setVisibility(View.INVISIBLE);
+
+        imageSpinner = (ProgressBar) findViewById(R.id.spinner);
 
         viewPhotosButton = (Button) findViewById(R.id.detailed_view_photos_button);
         viewPhotosButton.setOnClickListener(new View.OnClickListener() {
@@ -130,7 +136,18 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
 
         // download image from url
         String coverPhotoUrl = ppo.getString("coverPhoto");
-        Picasso.with(this).load(coverPhotoUrl).into(imageView);
+        Picasso.with(this).load(coverPhotoUrl).into(imageView, new Callback() {
+            @Override
+            public void onSuccess() {
+                imageSpinner.setVisibility(View.GONE);
+                imageView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onError() {
+                // ???
+            }
+        });
 
         // this only changes if the deletion took place
         setResult(Constants.NO_RESULT);

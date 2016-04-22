@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -31,6 +32,7 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -47,6 +49,7 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
     private TextView descriptionView;
 
     private ImageView imageView;
+    private ProgressBar imageSpinner;
 
     private Button viewPhotosButton;
     private Button actionButton;
@@ -93,6 +96,8 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
 
         imageView = (ImageView) findViewById(R.id.current_cover_photo);
 
+        imageSpinner = (ProgressBar) findViewById(R.id.spinner);
+
         viewPhotosButton = (Button) findViewById(R.id.current_view_photos_button);
         actionButton = (Button) findViewById(R.id.action_button);
 
@@ -129,7 +134,18 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
                     totalPhotos = album.getNumPhotos();
 
                     // download image from url
-                    Picasso.with(CurrentPhotoHuntActivity.this).load(album.getCoverPhoto().getUrl()).into(imageView);
+                    Picasso.with(CurrentPhotoHuntActivity.this).load(album.getCoverPhoto().getUrl()).into(imageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            imageSpinner.setVisibility(View.GONE);
+                            imageView.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onError() {
+                            // ???
+                        }
+                    });
 
                     // this only changes if the deletion took place
                     setResult(Constants.NO_RESULT);

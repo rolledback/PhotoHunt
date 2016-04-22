@@ -72,10 +72,10 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private FrameLayout viewPagerLayout;
 
     private ViewPager viewPager;
+    private CustomOnPageChangeListener listener;
     private Button addFromGalleryButton;
     private Button takePhotoButton;
     private Button uploadButton;
-    private ImageView locationStatus;
 
     private UploadProgressNotification uploadNotification;
     private AlertDialog quitConfirmation;
@@ -106,7 +106,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
         createNewPhotoHuntImageAdapter = new CreateNewPhotoHuntImageAdapter(this, inflater, dialogBuilder, this);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPager.addOnPageChangeListener(new CustomOnPageChangeListener());
+        viewPager.addOnPageChangeListener(listener = new CustomOnPageChangeListener());
         viewPager.setAdapter(createNewPhotoHuntImageAdapter);
 
         setSupportActionBar(toolbar);
@@ -209,9 +209,6 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             }
         });
 
-        locationStatus = (ImageView) findViewById(R.id.location_status);
-        locationStatus.setVisibility(View.GONE);
-
         whiteList = new HashSet<String>();
 
         callbackMessenger = (Messenger)(getIntent().getExtras().get("callbackMessenger"));
@@ -276,7 +273,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             String filePath = createNewPhotoHuntImageAdapter.getGalImages().get(currentItem);
             Bundle bundle = data.getParcelableExtra("bundle");
             createNewPhotoHuntImageAdapter.addManualLocation(filePath, (LatLng) bundle.getParcelable("location"));
-            locationStatus.setImageResource(R.drawable.ic_done_green_24dp);
+            createNewPhotoHuntImageAdapter.notifyDataSetChanged();
         }
         else if (requestCode == Constants.REQUEST_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
             viewPagerLayout.setVisibility(View.VISIBLE);
@@ -292,45 +289,35 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
 
-            // make sure it is valid
-            if(!Utils.validImage(picturePath)) {
-                makeAndShowInvalidImageToast();
-                return;
-            }
-
-            ArrayList<String> galImages = createNewPhotoHuntImageAdapter.getGalImages();
-
-            // check if galImages already has images
-            if (!galImages.contains(picturePath)) {
-                galImages.add(picturePath);
-                createNewPhotoHuntImageAdapter.setGalImages((galImages));
-                createNewPhotoHuntImageAdapter.notifyDataSetChanged();
-
-                viewPager.setCurrentItem(galImages.size() - 1);
-            }
-            else {
-                makeAndShowDuplicateToast();
-            }
+            addToGalImages(picturePath);
         }
         else if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             viewPagerLayout.setVisibility(View.VISIBLE);
             restorePreferences();
+
             galleryAddPic();
-            ArrayList<String> galImages = createNewPhotoHuntImageAdapter.getGalImages();
+            addToGalImages(mCurrentPhotoPath);
+        }
+    }
 
-            // make sure it is valid
-            if(!Utils.validImage(mCurrentPhotoPath)) {
-                makeAndShowInvalidImageToast();
-                return;
-            }
+    private void addToGalImages(String path) {
+        ArrayList<String> galImages = createNewPhotoHuntImageAdapter.getGalImages();
 
-            // check if galImages already has images
-            if (!galImages.contains(mCurrentPhotoPath)) {
-                galImages.add(mCurrentPhotoPath);
-                createNewPhotoHuntImageAdapter.setGalImages((galImages));
-                createNewPhotoHuntImageAdapter.notifyDataSetChanged();
-                viewPager.setCurrentItem(galImages.size() - 1);
-            }
+        // make sure it is valid
+        if(!Utils.validImage(path)) {
+            makeAndShowInvalidImageToast();
+            return;
+        }
+
+        // check if galImages already has images
+        if (!galImages.contains(path)) {
+            galImages.add(path);
+            createNewPhotoHuntImageAdapter.setGalImages((galImages));
+            createNewPhotoHuntImageAdapter.notifyDataSetChanged();
+            viewPager.setCurrentItem(galImages.size() - 1);
+        }
+        else {
+            makeAndShowDuplicateToast();
         }
     }
 
@@ -467,6 +454,15 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
     private void makeAndShowDuplicateToast() {
         Toast toast = Toast.makeText(this, "This image has already been added to the photo hunt.", Toast.LENGTH_LONG);
+        TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+        if( v != null) v.setGravity(Gravity.CENTER);
+        toast.show();
+    }
+
+    public void makeAndShowSetLocationHintToast() {
+        Toast toast = Toast.makeText(this, "Image has no location. Long press to set a location.", Toast.LENGTH_SHORT);
+        TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+        if( v != null) v.setGravity(Gravity.CENTER);
         toast.show();
     }
 
@@ -641,25 +637,15 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
 
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            if(createNewPhotoHuntImageAdapter.getGalImages().size() == 0) {
-                viewPagerLayout.setVisibility(View.GONE);
-                return;
-            }
-            String filePath = createNewPhotoHuntImageAdapter.getGalImages().get(position);
-            locationStatus.setVisibility(View.INVISIBLE);
-
-            if(createNewPhotoHuntImageAdapter.getMetaLocation(filePath) != null || createNewPhotoHuntImageAdapter.getManualLocation(filePath) != null) {
-                locationStatus.setImageResource(R.drawable.ic_done_green_24dp);
-            }
-            else {
-                locationStatus.setImageResource(R.drawable.ic_report_problem_black_24dp);
-            }
-            locationStatus.setVisibility(View.VISIBLE);
+            // don't need to implement
         }
 
         @Override
         public void onPageSelected(int position) {
-            // don't need to implement
+            if(createNewPhotoHuntImageAdapter.getGalImages().size() == 0) {
+                viewPagerLayout.setVisibility(View.GONE);
+                return;
+            }
         }
 
         @Override

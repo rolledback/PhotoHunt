@@ -132,15 +132,8 @@
                 android:layout_below="@+id/private_options">
                 <android.support.v4.view.ViewPager
                     android:id="@+id/view_pager"
-                    android:layout_below="@+id/view_add_location_button"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/create_new_photo_hunt_image_size" />
-                <ImageView
-                    android:id="@+id/location_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top|right"
-                    android:layout_marginRight="10dp" />
             </FrameLayout>
 
             <RelativeLayout
