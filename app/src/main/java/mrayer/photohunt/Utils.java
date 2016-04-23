@@ -67,6 +67,10 @@ public class Utils {
         try {
             Metadata metadata = ImageMetadataReader.readMetadata(f);
             Directory directory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
+            if(directory == null) {
+                return null;
+            }
+
             GpsDescriptor descriptor = new GpsDescriptor((GpsDirectory)directory);
 
             // get the latitude and convert

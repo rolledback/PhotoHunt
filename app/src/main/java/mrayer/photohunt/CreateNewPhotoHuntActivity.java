@@ -573,7 +573,8 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
             this.photos = photos;
         }
 
-        @Override protected Void doInBackground(Void... params) {
+        @Override
+        protected Void doInBackground(Void... params) {
             int index = 0;
             int numPhoto = 0;
             int numImages = photos.size();

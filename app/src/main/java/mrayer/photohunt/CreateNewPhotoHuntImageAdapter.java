@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -78,7 +79,10 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
         View view = LayoutInflater.from(context).inflate(R.layout.create_photo_hunt_view_pager, container, false);
 
         holder.photo = (ImageView) view.findViewById(R.id.main_image);
+        holder.photo.setVisibility(View.INVISIBLE);
         holder.locStatus = (ImageView) view.findViewById(R.id.location_status);
+        holder.locStatus.setVisibility(View.INVISIBLE);
+        holder.spinner = (ProgressBar) view.findViewById(R.id.spinner);
 
         ImageView imageView = holder.photo;
         int padding = context.getResources().getDimensionPixelSize(R.dimen.fab_margin);
@@ -87,6 +91,11 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
 
         final String picturePath = galImages.get(position);
         File file = new File(picturePath);
+
+        int height = (int) context.getResources().getDimension(R.dimen.create_new_photo_hunt_image_size);
+        int width = context.getResources().getDisplayMetrics().widthPixels;
+
+        new OpenImageTask(picturePath, width, height, holder).execute();
 
         // get location if it exists
         LatLng metaLocation = Utils.getImageLocation(file);
@@ -101,16 +110,6 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
         else {
             holder.locStatus.setImageResource(R.drawable.ic_report_problem_black_24dp);
         }
-
-        int height = (int) context.getResources().getDimension(R.dimen.create_new_photo_hunt_image_size);
-        int width = context.getResources().getDisplayMetrics().widthPixels;
-
-        Bitmap bitmap = Utils.decodeFile(file, width, height);
-        Bitmap correctedBitmap = Utils.imageOrientationValidator(bitmap, picturePath);
-        imageView.setImageBitmap(correctedBitmap);
-
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, height);
-        view.setLayoutParams(params);
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -244,5 +243,38 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
     static class ViewHolder {
         ImageView photo;
         ImageView locStatus;
+        ProgressBar spinner;
+    }
+
+    private static class OpenImageTask extends AsyncTask<Void, Void, Bitmap> {
+
+        private File imageFile;
+        private String path;
+        private int width, height;
+        private ViewHolder holder;
+
+        public OpenImageTask(String path, int width, int height, ViewHolder holder) {
+            this.path = path;
+            this.width = width;
+            this.height = height;
+            this.holder = holder;
+            imageFile = new File(path);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            holder.photo.setImageBitmap(bitmap);
+            holder.photo.setVisibility(View.VISIBLE);
+            holder.locStatus.setVisibility(View.VISIBLE);
+            holder.spinner.setVisibility(View.GONE);
+        }
+
+        @Override
+        protected Bitmap doInBackground(Void... params) {
+            Bitmap bitmap = Utils.decodeFile(imageFile, width, height);
+            Bitmap correctedBitmap = Utils.imageOrientationValidator(bitmap, path);
+
+            return correctedBitmap;
+        }
     }
 }

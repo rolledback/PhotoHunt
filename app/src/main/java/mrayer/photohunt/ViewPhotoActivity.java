@@ -3,10 +3,9 @@ package mrayer.photohunt;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -15,19 +14,23 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
 public class ViewPhotoActivity extends AppCompatActivity {
+    private RelativeLayout relLayout;
     private ImageView imageView;
     private Button viewLocationButton;
+    private ProgressBar spinner;
 
     private String url;
     private String type;
@@ -50,26 +53,34 @@ public class ViewPhotoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("View Photo");
 
+        relLayout = (RelativeLayout) findViewById(R.id.view_photo_relative_layout);
         imageView = (ImageView) findViewById(R.id.view_photo_imageview);
         viewLocationButton = (Button) findViewById(R.id.view_photo_location_button);
         viewLocationButton.setVisibility(View.GONE);
+        relLayout.setVisibility(View.INVISIBLE);
+
+        spinner = (ProgressBar) findViewById(R.id.view_photo_spinner);
 
         if(getIntent().hasExtra("url")) {
             url = getIntent().getStringExtra("url");
             type = getIntent().getStringExtra("type");
             photo_id = getIntent().getStringExtra("id");
-
-            viewLocationButton.setClickable(false);
-            if (type.equals("Tour")) {
-                viewLocationButton.setVisibility(View.VISIBLE);
-                getLocation();
-            }
-
-            downLoadPhoto();
+            downloadPhoto();
         }
         else {
+            type = "";
             url = getIntent().getStringExtra("path");
             loadPhoto();
+        }
+    }
+
+    private void makeRelLayoutVisible() {
+        relLayout.setVisibility(View.VISIBLE);
+        spinner.setVisibility(View.GONE);
+        viewLocationButton.setClickable(false);
+        if (type.equals("Tour")) {
+            viewLocationButton.setVisibility(View.VISIBLE);
+            getLocation();
         }
     }
 
@@ -85,7 +96,6 @@ public class ViewPhotoActivity extends AppCompatActivity {
                     Log.d(Constants.ViewPhotoActivityTag, e.toString());
                 }
                 else {
-                    viewLocationButton.setClickable(true);
                     location = photo.getLocation();
                     viewLocationButton.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -97,21 +107,28 @@ public class ViewPhotoActivity extends AppCompatActivity {
                             startActivity(intent);
                         }
                     });
+                    viewLocationButton.setClickable(true);
                 }
             }
         });
     }
 
-    private void downLoadPhoto() {
-        Picasso.with(this).load(url).into(imageView);
+    private void downloadPhoto() {
+        Picasso.with(this).load(url).into(imageView, new Callback() {
+            @Override
+            public void onSuccess() {
+                makeRelLayoutVisible();
+            }
+
+            @Override
+            public void onError() {
+                // ???
+            }
+        });
     }
 
     private void loadPhoto() {
-        File imgFile = new File(url);
-        if(imgFile.exists()){
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            imageView.setImageBitmap(myBitmap);
-        }
+        new LoadPhotoTask(url, imageView, this).execute();
     }
 
     @Override
@@ -121,5 +138,37 @@ public class ViewPhotoActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private static class LoadPhotoTask extends AsyncTask<Void, Void, Bitmap> {
+
+        private String path;
+        private ImageView into;
+        private ViewPhotoActivity caller;
+
+        public LoadPhotoTask(String path, ImageView into, ViewPhotoActivity caller) {
+            this.path = path;
+            this.into = into;
+            this.caller = caller;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if(bitmap != null) {
+                into.setImageBitmap(bitmap);
+                caller.makeRelLayoutVisible();
+            }
+        }
+
+        @Override
+        protected Bitmap doInBackground(Void... params) {
+            File imgFile = new File(path);
+            if(imgFile.exists()){
+                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                return myBitmap;
+            }
+            return null;
+        }
+
     }
 }
