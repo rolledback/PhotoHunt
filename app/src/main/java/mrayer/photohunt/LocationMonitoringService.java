@@ -130,6 +130,9 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
 
             if(location.distanceTo(temp) < DIST)
             {
+                // Remove l from loc
+                loc.remove(l);
+
                 Intent notifyIntent = new Intent(this, CurrentPhotoHuntActivity.class);
 
                 // Because clicking the notification opens a new ("special") activity, there's
@@ -152,8 +155,7 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
                 // Notification ID allows you to update the notification later on
                 nm.notify(rand, notificationBuilder.build());
 
-                // Remove l from loc
-                loc.remove(temp);
+                Log.d(TAG, "Photos found: " + currentAlbumPref.getInt(getString(R.string.photos_found), -1));
 
                 SharedPreferences.Editor editor = currentAlbumPref.edit();
                 // Get the current photos found and increment it by 1
@@ -203,11 +205,13 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
                     Log.d(TAG, "User's completedAlbums: " + completedAlbums.size() + " number: " + count);
                 }
 
-                Log.d(TAG, "Photos found: " + currentAlbumPref.getInt(getString(R.string.photos_found), -1));
-
                 // If loc is empty, can stop monitoring locations
                 if(loc.size() == 0)
                 {
+                    Log.d(TAG, " no more photos - removing updates");
+
+                    // Remove geofences?
+
                     LocationServices.FusedLocationApi.removeLocationUpdates(googleAPI, this);
                 }
             }
@@ -219,8 +223,8 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
         Log.i(TAG, " location services connected.");
 
         LocationRequest locationReq = new LocationRequest();
-        locationReq.setInterval(5000); // 3 sec
-        locationReq.setFastestInterval(5000); // 3 sec
+        locationReq.setInterval(10000); // 3 sec
+        locationReq.setFastestInterval(10000); // 3 sec
         locationReq.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED

@@ -380,6 +380,8 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
                         // Success
                         Log.i(TAG, " geofence request success");
 
+                        // Geofences were set, can now start monitoring your location
+                        // By now, sharedPref has the list of photoLocations
                         Intent locMonitoring = new Intent(getApplicationContext(), LocationMonitoringService.class);
                         startService(locMonitoring);
                     }
