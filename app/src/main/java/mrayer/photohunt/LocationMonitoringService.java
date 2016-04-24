@@ -208,11 +208,19 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
                 // If loc is empty, can stop monitoring locations
                 if(loc.size() == 0)
                 {
-                    Log.d(TAG, " no more photos - removing updates");
-
                     // Remove geofences?
 
-                    LocationServices.FusedLocationApi.removeLocationUpdates(googleAPI, this);
+                    LocationServices.FusedLocationApi.removeLocationUpdates(googleAPI, this).setResultCallback(
+                            new ResultCallback<Status>() {
+                                @Override
+                                public void onResult(Status status) {
+                                    if (status.isSuccess()) {
+                                        Log.i(TAG, " no more photos - removed updates");
+                                        stopSelf();
+                                    }
+                                }
+                            }
+                    );
                 }
             }
         }
@@ -223,8 +231,8 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
         Log.i(TAG, " location services connected.");
 
         LocationRequest locationReq = new LocationRequest();
-        locationReq.setInterval(10000); // 3 sec
-        locationReq.setFastestInterval(10000); // 3 sec
+        locationReq.setInterval(7000); // 7 sec
+        locationReq.setFastestInterval(7000); // 7 sec
         locationReq.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
