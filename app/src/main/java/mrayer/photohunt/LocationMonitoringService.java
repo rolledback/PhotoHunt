@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
@@ -13,8 +14,10 @@ import android.location.Location;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.service.carrier.CarrierMessagingService;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
@@ -46,26 +49,19 @@ import java.util.Random;
 
 // Location code from http://developer.android.com/training/location/receive-location-updates.html
 
-public class LocationService extends IntentService implements GoogleApiClient.ConnectionCallbacks,
+public class LocationMonitoringService extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     static final int DIST = 10;
-    static final String TAG = "LocationService";
+    static final String TAG = "LM Service";
 
     int photosFound;
 
     GoogleApiClient googleAPI;
     List<LatLng> loc;
     int numGeofences;
+    int totalPhotos;
     SharedPreferences currentAlbumPref;
-
-    /**
-     * A constructor is required, and must call the super IntentService(String)
-     * constructor with a name for the worker thread.
-     */
-    public LocationService() {
-        super("LocationService");
-    }
 
     public void onCreate() {
         // Make a new GoogleAPIClient
@@ -75,12 +71,28 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
                 .addApi(LocationServices.API)
                 .build();
 
-        googleAPI.connect();
-        photosFound = 0;
-
         Context context = getApplicationContext();
         currentAlbumPref = context.getSharedPreferences(getString(R.string.current_album_pref),
                 Context.MODE_PRIVATE);
+
+        // Build up the list of locations
+        loc = new ArrayList<LatLng>();
+
+        totalPhotos = currentAlbumPref.getInt(getString(R.string.total_photos), -1);
+
+        for(int i = 1; i < totalPhotos + 1; i++)
+        {
+            String location = currentAlbumPref.getString("photo" + i, "");
+            String[] coord = location.split(",");
+            double lat = Double.parseDouble(coord[0]);
+            double lon = Double.parseDouble(coord[1]);
+            LatLng latLngCoord = new LatLng(lat, lon);
+            Log.d(TAG, " adding: " + latLngCoord.toString());
+            loc.add(latLngCoord);
+        }
+
+        googleAPI.connect();
+        photosFound = 0;
 
         super.onCreate();
     }
@@ -93,90 +105,13 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
 
     public void onDestroy() {
         googleAPI.disconnect();
-        super.onDestroy();
+        stopSelf();
     }
 
-    /**
-     * The IntentService calls this method from the default worker thread with
-     * the intent that started the service. When this method returns, IntentService
-     * stops the service, as appropriate.
-     */
+    @Nullable
     @Override
-    protected void onHandleIntent(Intent intent) {
-
-        GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
-
-        if (geofencingEvent.hasError()) {
-            Log.e(TAG, " error code: " + geofencingEvent.getErrorCode());
-            return;
-        }
-
-        // Get the transition type
-        int transition = geofencingEvent.getGeofenceTransition();
-
-        if (transition == Geofence.GEOFENCE_TRANSITION_ENTER) {
-            Log.d(TAG, " geofence entered");
-
-            Intent notifyIntent = new Intent(this, CurrentPhotoHuntActivity.class);
-
-            // Because clicking the notification opens a new ("special") activity, there's
-            // no need to create an artificial back stack.
-            PendingIntent pendingIntent = PendingIntent.getActivity(
-                    this,
-                    0,
-                    notifyIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
-            );
-
-            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                    .setSmallIcon(R.drawable.notification_icon)
-                    .setContentTitle("PhotoHunt")
-                    .setContentText("Geofence entered - you are close to a photo")
-                    .setContentIntent(pendingIntent);
-
-            int rand = new Random().nextInt();
-            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            // Notification ID allows you to update the notification later on
-            nm.notify(rand, notificationBuilder.build());
-
-            // Need to know what to compare location to once location monitoring occurs
-            // Need to get geofence locations from geofences that were triggered
-            List<Geofence> geofences = geofencingEvent.getTriggeringGeofences();
-            numGeofences = geofences.size();
-
-            loc = new ArrayList<LatLng>();
-            for (Geofence g : geofences) {
-                String[] coord = g.getRequestId().split(",");
-                double lat = Double.parseDouble(coord[0]);
-                double lon = Double.parseDouble(coord[1]);
-                LatLng location = new LatLng(lat, lon);
-                loc.add(location);
-            }
-
-        }
-
-        else if(transition == Geofence.GEOFENCE_TRANSITION_EXIT)
-        {
-            // Remove that lat/lng from list of locations - no longer in the geofence
-            List<Geofence> geofences = geofencingEvent.getTriggeringGeofences();
-            numGeofences = numGeofences - geofences.size();
-
-            for (Geofence g : geofences) {
-                String[] coord = g.getRequestId().split(",");
-                double lat = Double.parseDouble(coord[0]);
-                double lon = Double.parseDouble(coord[1]);
-                LatLng location = new LatLng(lat, lon);
-                loc.remove(location);
-            }
-
-            // Could stop location monitoring here if no geofences are entered
-            if(numGeofences < 0)
-            {
-                LocationServices.FusedLocationApi.removeLocationUpdates(googleAPI, this);
-            }
-        }
-
-
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
     @Override
@@ -284,8 +219,8 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
         Log.i(TAG, " location services connected.");
 
         LocationRequest locationReq = new LocationRequest();
-        locationReq.setInterval(3000); // 3 sec
-        locationReq.setFastestInterval(3000); // 3 sec
+        locationReq.setInterval(5000); // 3 sec
+        locationReq.setFastestInterval(5000); // 3 sec
         locationReq.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED

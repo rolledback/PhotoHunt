@@ -161,7 +161,7 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
         {
             @Override
             public void onClick(View v) {
-                stopService(new Intent(CurrentPhotoHuntActivity.this, LocationService.class));
+                stopService(new Intent(CurrentPhotoHuntActivity.this, LocationMonitoringService.class));
 
                 // Create a new googleAPI client
                 if (googleAPI == null) {

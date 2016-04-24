@@ -263,7 +263,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
         if (geofencePendingIntent != null) {
             return geofencePendingIntent;
         }
-        Intent intent = new Intent(this, LocationService.class);
+        Intent intent = new Intent(this, GeofenceService.class);
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
         // calling addGeofences() and removeGeofences()
         return PendingIntent.getService(this, 0, intent, PendingIntent.
@@ -379,6 +379,9 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
                     if (status.isSuccess()) {
                         // Success
                         Log.i(TAG, " geofence request success");
+
+                        Intent locMonitoring = new Intent(getApplicationContext(), LocationMonitoringService.class);
+                        startService(locMonitoring);
                     }
                 }
             });

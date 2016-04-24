@@ -157,7 +157,8 @@
             </meta-data>
         </activity>
 
-        <service android:name=".LocationService" />
+        <service android:name=".LocationMonitoringService" />
+        <service android:name=".GeofenceService" />
 
         <activity
             android:name=".CurrentPhotoHuntActivity"
