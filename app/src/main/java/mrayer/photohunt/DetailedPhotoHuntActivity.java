@@ -74,10 +74,10 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
     private AlertDialog.Builder dialogBuilder;
     private ProgressDialog dialog;
 
-    SharedPreferences currentAlbumPref;
+    private SharedPreferences currentAlbumPref;
 
-    GoogleApiClient googleAPI;
-    List<Geofence> geofences;
+    private GoogleApiClient googleAPI;
+    private List<Geofence> geofences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,7 +166,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
         // Create the shared preferences file
-        currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref),
+        currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
                 Context.MODE_PRIVATE);
     }
 
@@ -181,6 +181,13 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
 
     private void makeAndShowStartingToast() {
         Toast toast = Toast.makeText(this, "Starting the photo hunt.", Toast.LENGTH_SHORT);
+        TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+        if( v != null) v.setGravity(Gravity.CENTER);
+        toast.show();
+    }
+
+    private void makeAndShowAlreadyStartingToast() {
+        Toast toast = Toast.makeText(this, "You already have an active photo hunt.", Toast.LENGTH_SHORT);
         TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
         if( v != null) v.setGravity(Gravity.CENTER);
         toast.show();
@@ -208,6 +215,18 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
     }
 
     private void startPhotoHunt() {
+        final SharedPreferences.Editor editor = currentAlbumPref.edit();
+
+        boolean currentlyOnHunt = currentAlbumPref.getBoolean(getString(R.string.currently_have_active_hunt), false);
+        if(currentlyOnHunt) {
+            makeAndShowAlreadyStartingToast();
+            return;
+        }
+
+        // immediately set user as being on a hunt
+        editor.putBoolean(getString(R.string.currently_have_active_hunt), true);
+        editor.commit();
+
         final List<Photo> photos = new ArrayList<Photo>();
 
         // Get all the photos for that album
@@ -225,7 +244,6 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
                     // Add the total number of photos to the shared pref
                     // Set total number of photos found to 0
                     int totalPhotos = photos.size();
-                    SharedPreferences.Editor editor = currentAlbumPref.edit();
                     editor.putInt(getString(R.string.total_photos), totalPhotos);
                     editor.putInt(getString(R.string.photos_found), 0);
                     editor.putString(getString(R.string.album_id), albumId);

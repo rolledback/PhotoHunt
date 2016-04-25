@@ -1,6 +1,7 @@
 package mrayer.photohunt;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -236,5 +237,14 @@ public class Utils {
         combinedQuery.orderByDescending("createdAt");
 
         return combinedQuery;
+    }
+
+    public static void resetCurrentAlbumPrefs(Context context, SharedPreferences currentAlbumPref) {
+        SharedPreferences.Editor editor = currentAlbumPref.edit();
+        editor.putInt(context.getString(R.string.total_photos), -1);
+        editor.putInt(context.getString(R.string.photos_found), -1);
+        editor.putString(context.getString(R.string.album_id), "" + -1);
+        editor.putBoolean(context.getString(R.string.currently_have_active_hunt), false);
+        editor.commit();
     }
 }

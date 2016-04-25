@@ -31,6 +31,7 @@ import com.google.android.gms.location.LocationServices;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -59,13 +60,10 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
 
     private AlertDialog stopConfirmation;
     private AlertDialog.Builder dialogBuilder;
-    private ProgressDialog dialog;
 
-    private String TAG = "CurrentPH";
+    private GoogleApiClient googleAPI;
 
-    GoogleApiClient googleAPI;
-
-    SharedPreferences currentAlbumPref;
+    private SharedPreferences currentAlbumPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +94,7 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
         viewPhotosButton = (Button) findViewById(R.id.current_view_photos_button);
         stopHuntButton = (Button) findViewById(R.id.action_button);
 
-        currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref),
+        currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
                 Context.MODE_PRIVATE);
 
         // changed if user ends the photo hunt
@@ -173,11 +171,12 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
     public void onConnected(Bundle bundle) {
-        Log.i(TAG, " location services connected");
+        Log.i(Constants.CurrentPhotoHuntActivityTag, " location services connected");
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, " do not have correct permissions");
+            Log.d(Constants.CurrentPhotoHuntActivityTag, " do not have correct permissions");
         }
         else {
 
@@ -194,17 +193,10 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
                 @Override
                 public void onResult(Status status) {
                     if (status.isSuccess()) {
-                        Log.i(TAG, " previous geofences removed");
+                        Log.i(Constants.CurrentPhotoHuntActivityTag, " previous geofences removed");
                     }
                 }
             });
-
-            // Null out shared preferences
-            SharedPreferences.Editor editor = currentAlbumPref.edit();
-            editor.putInt(getString(R.string.total_photos), -1);
-            editor.putInt(getString(R.string.photos_found), -1);
-            editor.putString(getString(R.string.album_id), "" + -1);
-            editor.commit();
 
             finish();
         }
@@ -212,12 +204,12 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.i(TAG, " location services suspended");
+        Log.i(Constants.CurrentPhotoHuntActivityTag, " location services suspended");
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.e(TAG, " location services failed");
+        Log.e(Constants.CurrentPhotoHuntActivityTag, " location services failed");
     }
 
     private void confirmStopHunt() {

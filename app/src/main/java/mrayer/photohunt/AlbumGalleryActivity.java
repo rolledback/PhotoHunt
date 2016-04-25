@@ -16,13 +16,18 @@ import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.ParseUser;
@@ -34,7 +39,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
     private Handler messageHandler;
     private AlertDialog requestReviewDialog;
     private AlertDialog.Builder dialogBuilder;
-    private ProgressDialog dialog;
+    private SharedPreferences currentAlbumPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +87,9 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         };
 
         dialogBuilder = new AlertDialog.Builder(this);
+
+        currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
+                Context.MODE_PRIVATE);
 
         /**
          * May the souls of the buttons that were one initialized here rest in peace.
@@ -138,7 +146,8 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 startActivity(settingsIntent);
                 return true;
             case R.id.action_current_photo_hunt:
-                SharedPreferences currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref), Context.MODE_PRIVATE);
+                SharedPreferences currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
+                        Context.MODE_PRIVATE);
                 Log.d("AlbumGalleryActivity ", currentAlbumPref.getString(getString(R.string.album_id), "" + -1));
                 if (currentAlbumPref.getString(getString(R.string.album_id), "" + -1).equals("" + -1)) {
                     Toast.makeText(AlbumGalleryActivity.this, "You do not have a current photo hunt!", Toast.LENGTH_LONG).show();
@@ -181,23 +190,57 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         else if (requestCode == Constants.REQUEST_MANAGEMENT_RESULT && resultCode == Constants.DELETE_RESULT) {
             refreshList();
         }
-        else if (requestCode == Constants.REQUEST_CURRENT_RESULT && resultCode == Constants.ENDED_HUNT) {
-            likeToReviewDialog();
+        else if (requestCode == Constants.REQUEST_CURRENT_RESULT) {
+            if(resultCode == Constants.ENDED_HUNT) {
+                likeToReviewDialog();
+            }
+
+            // reset the shared prefs after completing the hunt
+            Utils.resetCurrentAlbumPrefs(this, currentAlbumPref);
         }
     }
 
     private void likeToReviewDialog() {
-        dialogBuilder.setTitle("Placeholder");
-        dialogBuilder.setMessage("Going to to do stuff here later.");
-        dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                requestReviewDialog.dismiss();
-                requestReviewDialog = null;
-            }
+        String justEndedId = currentAlbumPref.getString(getString(R.string.album_id), "-1");
 
+        LayoutInflater inflater = this.getLayoutInflater();
+        dialogBuilder.setTitle("Rate Photo Hunt");
+
+        View dialogView = inflater.inflate(R.layout.review_dialog, null);
+        final RatingBar ratingBar = (RatingBar) dialogView.findViewById(R.id.rating_bar);
+        final TextView comments = (TextView) dialogView.findViewById(R.id.comments_box);
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.setPositiveButton("Save Review", null);
+        dialogBuilder.setNegativeButton("No Thanks", null);
+
+        requestReviewDialog = dialogBuilder.create();
+        requestReviewDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                Button b = requestReviewDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                b.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(ratingBar.getRating() == 0 && comments.getText().length() == 0) {
+                            makeAndShowInvalidReviewToast();
+                        }
+                        else {
+                            requestReviewDialog.dismiss();
+                            requestReviewDialog = null;
+                        }
+                    }
+                });
+            }
         });
-        dialogBuilder.setNegativeButton("No", null);
-        requestReviewDialog = dialogBuilder.show();
+
+        requestReviewDialog.show();
+    }
+
+    private void makeAndShowInvalidReviewToast() {
+        Toast toast = Toast.makeText(this, "Please leave a comment for a 0 star review.", Toast.LENGTH_SHORT);
+        TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+        if( v != null) v.setGravity(Gravity.CENTER);
+        toast.show();
     }
 }

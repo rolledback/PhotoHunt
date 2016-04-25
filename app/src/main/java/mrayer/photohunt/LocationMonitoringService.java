@@ -75,7 +75,7 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
                 .build();
 
         Context context = getApplicationContext();
-        currentAlbumPref = context.getSharedPreferences(getString(R.string.current_album_pref),
+        currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
                 Context.MODE_PRIVATE);
 
         // Build up the list of locations

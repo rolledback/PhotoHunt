@@ -15,6 +15,7 @@
     <string name="title_activity_view_photo">ViewPhotoActivity</string>
     <string name="title_activity_album_search">AlbumSearchActivity</string>
     <string name="title_activity_user_search">UserSearchActivity</string>
+    <string name="title_activity_current_photo_hunt">CurrentPhotoHuntActivity</string>
 
     <!-- Create Photo Hunt Activity -->
     <string name="app_name">PhotoHunt</string>
@@ -67,5 +68,5 @@
     <string name="total_photos">total photos</string>
     <string name="photos_found">photos found</string>
     <string name="album_id">album ID</string>
-    <string name="title_activity_current_photo_hunt">CurrentPhotoHuntActivity</string>
+    <string name="currently_have_active_hunt">have_current_hunt</string>
 </resources>
