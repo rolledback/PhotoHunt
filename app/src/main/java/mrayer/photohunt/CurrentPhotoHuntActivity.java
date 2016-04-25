@@ -1,15 +1,15 @@
 package mrayer.photohunt;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -31,7 +31,6 @@ import com.google.android.gms.location.LocationServices;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -52,13 +51,13 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
     private ProgressBar imageSpinner;
 
     private Button viewPhotosButton;
-    private Button actionButton;
+    private Button stopHuntButton;
 
     private String albumId;
     private String type;
     private int totalPhotos;
 
-    private AlertDialog deleteConfirmation;
+    private AlertDialog stopConfirmation;
     private AlertDialog.Builder dialogBuilder;
     private ProgressDialog dialog;
 
@@ -67,10 +66,6 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
     GoogleApiClient googleAPI;
 
     SharedPreferences currentAlbumPref;
-
-    PendingIntent geofencePendingIntent;
-
-    // TODO: What happens if you don't have a current photo hunt?
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,12 +94,15 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
         imageSpinner = (ProgressBar) findViewById(R.id.spinner);
 
         viewPhotosButton = (Button) findViewById(R.id.current_view_photos_button);
-        actionButton = (Button) findViewById(R.id.action_button);
+        stopHuntButton = (Button) findViewById(R.id.action_button);
 
         currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref),
                 Context.MODE_PRIVATE);
 
-        ParseQuery<PhotoHuntAlbum> albumsByIdQuery = makeGeneralQuery();
+        // changed if user ends the photo hunt
+        setResult(Constants.CONTINUE_HUNT);
+
+        ParseQuery<PhotoHuntAlbum> albumsByIdQuery = Utils.makeGeneralQuery();
         albumsByIdQuery.whereEqualTo("albumId", currentAlbumPref.getString(getString(R.string.album_id), "-1"));
         albumsByIdQuery.findInBackground(new FindCallback<PhotoHuntAlbum>() {
             public void done(List<PhotoHuntAlbum> objects, ParseException e) {
@@ -156,29 +154,10 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
             }
         });
 
-        // Stop current photo hunt -- remove geofences
-        actionButton.setOnClickListener(new View.OnClickListener()
-        {
+        stopHuntButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // Stop location monitoring service
-                stopService(new Intent(CurrentPhotoHuntActivity.this, LocationMonitoringService.class));
-
-                // Create a new googleAPI client
-                if (googleAPI == null) {
-                    googleAPI = new GoogleApiClient.Builder(CurrentPhotoHuntActivity.this)
-                            .addConnectionCallbacks(CurrentPhotoHuntActivity.this)
-                            .addOnConnectionFailedListener(CurrentPhotoHuntActivity.this)
-                            .addApi(LocationServices.API)
-                            .build();
-
-                    googleAPI.connect();
-                }
-                else
-                {
-                    googleAPI.connect();
-                }
+                confirmStopHunt();
             }
         });
 
@@ -192,24 +171,6 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private ParseQuery<PhotoHuntAlbum> makeGeneralQuery() {
-        ParseQuery<PhotoHuntAlbum> queryNonPrivate = ParseQuery.getQuery("PhotoHuntAlbum");
-        queryNonPrivate.whereEqualTo("isPrivate", false);
-
-        ParseQuery<PhotoHuntAlbum> queryPrivate = ParseQuery.getQuery("PhotoHuntAlbum");
-        queryPrivate.whereEqualTo("isPrivate", true);
-        queryPrivate.whereEqualTo("whiteList", ParseUser.getCurrentUser().getUsername());
-
-        List<ParseQuery<PhotoHuntAlbum>> queries = new ArrayList<ParseQuery<PhotoHuntAlbum>>();
-        queries.add(queryNonPrivate);
-        queries.add(queryPrivate);
-
-        ParseQuery<PhotoHuntAlbum> combinedQuery = ParseQuery.or(queries);
-        combinedQuery.orderByDescending("createdAt");
-
-        return combinedQuery;
     }
 
     public void onConnected(Bundle bundle) {
@@ -259,4 +220,39 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
         Log.e(TAG, " location services failed");
     }
 
+    private void confirmStopHunt() {
+        dialogBuilder.setTitle("Warning");
+        dialogBuilder.setMessage("Are you sure you want to end your current photo hunt?");
+        dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                stopConfirmation.dismiss();
+                stopConfirmation = null;
+                setResult(Constants.ENDED_HUNT);
+                stopPhotoHunt();
+            }
+
+        });
+        dialogBuilder.setNegativeButton("No", null);
+        stopConfirmation = dialogBuilder.show();
+    }
+
+    // Stop current photo hunt -- finish ends up being called upon successful connection
+    private void stopPhotoHunt() {
+        // Stop location monitoring service
+        stopService(new Intent(CurrentPhotoHuntActivity.this, LocationMonitoringService.class));
+
+        // Create a new googleAPI client
+        if (googleAPI == null) {
+            googleAPI = new GoogleApiClient.Builder(CurrentPhotoHuntActivity.this)
+                    .addConnectionCallbacks(CurrentPhotoHuntActivity.this)
+                    .addOnConnectionFailedListener(CurrentPhotoHuntActivity.this)
+                    .addApi(LocationServices.API)
+                    .build();
+
+            googleAPI.connect();
+        } else {
+            googleAPI.connect();
+        }
+    }
 }

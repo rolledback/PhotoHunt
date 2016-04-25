@@ -39,7 +39,7 @@ public class UploadProgressNotification {
         notificationBuilder.setProgress(100, 0, false);
     }
 
-    public void setPhotoProgresses(int percentage, int photo) {
+    public synchronized void setPhotoProgresses(int percentage, int photo) {
         // Log.d(Constants.UploadProgressNotificationTag, "Set photo progress of photo " + photo + " to " + percentage);
         progresses[photo] = percentage;
         double totalProgressDouble = 0;

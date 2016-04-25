@@ -35,26 +35,8 @@ public class AlbumListAdapter extends BaseAdapter {
         albums = new ArrayList<PhotoHuntAlbum>();
     }
 
-    private ParseQuery<PhotoHuntAlbum> makeGeneralQuery() {
-        ParseQuery<PhotoHuntAlbum> queryNonPrivate = ParseQuery.getQuery("PhotoHuntAlbum");
-        queryNonPrivate.whereEqualTo("isPrivate", false);
-
-        ParseQuery<PhotoHuntAlbum> queryPrivate = ParseQuery.getQuery("PhotoHuntAlbum");
-        queryPrivate.whereEqualTo("isPrivate", true);
-        queryPrivate.whereEqualTo("whiteList", ParseUser.getCurrentUser().getUsername());
-
-        List<ParseQuery<PhotoHuntAlbum>> queries = new ArrayList<ParseQuery<PhotoHuntAlbum>>();
-        queries.add(queryNonPrivate);
-        queries.add(queryPrivate);
-
-        ParseQuery<PhotoHuntAlbum> combinedQuery = ParseQuery.or(queries);
-        combinedQuery.orderByDescending("createdAt");
-
-        return combinedQuery;
-    }
-
     public void loadAllAlbums() {
-        ParseQuery<PhotoHuntAlbum> allAlbumsQuery = makeGeneralQuery();
+        ParseQuery<PhotoHuntAlbum> allAlbumsQuery = Utils.makeGeneralQuery();
         allAlbumsQuery.findInBackground(new FindCallback<PhotoHuntAlbum>() {
             public void done(List<PhotoHuntAlbum> objects, ParseException e) {
                 if (e == null) {
@@ -67,7 +49,7 @@ public class AlbumListAdapter extends BaseAdapter {
     }
 
     public void loadAlbumsById(String userId) {
-        ParseQuery<PhotoHuntAlbum> albumsByIdQuery = makeGeneralQuery();
+        ParseQuery<PhotoHuntAlbum> albumsByIdQuery = Utils.makeGeneralQuery();
         albumsByIdQuery.whereEqualTo("authorId", userId);
         albumsByIdQuery.findInBackground(new FindCallback<PhotoHuntAlbum>() {
             public void done(List<PhotoHuntAlbum> objects, ParseException e) {

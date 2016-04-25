@@ -1,8 +1,10 @@
 package mrayer.photohunt;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -18,7 +20,6 @@ public class AlbumActivity extends AppCompatActivity {
     private int columnWidth;
 
     private String albumId;
-
     private String type;
 
     @Override

@@ -14,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -178,65 +179,20 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
         return super.onOptionsItemSelected(item);
     }
 
+    private void makeAndShowStartingToast() {
+        Toast toast = Toast.makeText(this, "Starting the photo hunt.", Toast.LENGTH_SHORT);
+        TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+        if( v != null) v.setGravity(Gravity.CENTER);
+        toast.show();
+    }
+
     private void setActionButtonListener(String action) {
         if(action.equals("start")){
             actionButton.setText("Start Photo Hunt");
             actionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                    final List<Photo> photos = new ArrayList<Photo>();
-
-                    // Get all the photos for that album
-                    ParseQuery<Photo> query = ParseQuery.getQuery("Photo");
-                    query.whereEqualTo("albumId", albumId);
-                    query.orderByAscending("index");
-                    query.findInBackground(new FindCallback<Photo>() {
-                        public void done(List<Photo> objects, ParseException e) {
-                            if (e == null) {
-                                photos.clear();
-                                photos.addAll(objects);
-
-                                geofences = new ArrayList<Geofence>();
-
-                                // Add the total number of photos to the shared pref
-                                // Set total number of photos found to 0
-                                int totalPhotos = photos.size();
-                                SharedPreferences.Editor editor = currentAlbumPref.edit();
-                                editor.putInt(getString(R.string.total_photos), totalPhotos);
-                                editor.putInt(getString(R.string.photos_found), 0);
-                                editor.putString(getString(R.string.album_id), albumId);
-                                int count = 1;
-
-                                // Create a list of geofences
-                                for (Photo p : photos) {
-                                    // Add in the geofence requestID so it can later be removed in CurrentPhotoHunt
-                                    editor.putString("photo" + count, p.getLocation().latitude + "," + p.getLocation().longitude);
-                                    count++;
-                                    geofences.add(new Geofence.Builder()
-                                            // Set the request ID, a string to identify geofence as photo ID
-                                            .setRequestId(p.getLocation().latitude + "," + p.getLocation().longitude)
-                                            .setCircularRegion(
-                                                    p.getLocation().latitude,
-                                                    p.getLocation().longitude,
-                                                    GEOFENCE_RADIUS_IN_METERS)
-                                            .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                                            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-                                                    Geofence.GEOFENCE_TRANSITION_EXIT)
-                                            .build());
-                                }
-
-                                editor.commit();
-
-                                // Actually connect to the Google API
-                                googleAPI.connect();
-
-                            } else {
-                                Log.d(TAG, " " + e.toString());
-                            }
-                        }
-                    });
-
+                    startPhotoHunt();
                 }
             });
         }
@@ -249,6 +205,61 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
                 }
             });
         }
+    }
+
+    private void startPhotoHunt() {
+        final List<Photo> photos = new ArrayList<Photo>();
+
+        // Get all the photos for that album
+        ParseQuery<Photo> query = ParseQuery.getQuery("Photo");
+        query.whereEqualTo("albumId", albumId);
+        query.orderByAscending("index");
+        query.findInBackground(new FindCallback<Photo>() {
+            public void done(List<Photo> objects, ParseException e) {
+                if (e == null) {
+                    photos.clear();
+                    photos.addAll(objects);
+
+                    geofences = new ArrayList<Geofence>();
+
+                    // Add the total number of photos to the shared pref
+                    // Set total number of photos found to 0
+                    int totalPhotos = photos.size();
+                    SharedPreferences.Editor editor = currentAlbumPref.edit();
+                    editor.putInt(getString(R.string.total_photos), totalPhotos);
+                    editor.putInt(getString(R.string.photos_found), 0);
+                    editor.putString(getString(R.string.album_id), albumId);
+                    int count = 1;
+
+                    // Create a list of geofences
+                    for (Photo p : photos) {
+                        // Add in the geofence requestID so it can later be removed in CurrentPhotoHunt
+                        editor.putString("photo" + count, p.getLocation().latitude + "," + p.getLocation().longitude);
+                        count++;
+                        geofences.add(new Geofence.Builder()
+                                // Set the request ID, a string to identify geofence as photo ID
+                                .setRequestId(p.getLocation().latitude + "," + p.getLocation().longitude)
+                                .setCircularRegion(
+                                        p.getLocation().latitude,
+                                        p.getLocation().longitude,
+                                        GEOFENCE_RADIUS_IN_METERS)
+                                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                                        Geofence.GEOFENCE_TRANSITION_EXIT)
+                                .build());
+                    }
+
+                    editor.commit();
+
+                    // Actually connect to the Google API
+                    googleAPI.connect();
+                    makeAndShowStartingToast();
+
+                } else {
+                    Log.d(TAG, " " + e.toString());
+                }
+            }
+        });
     }
 
     private GeofencingRequest getGeofencingRequest(List<Geofence> geofences) {

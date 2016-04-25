@@ -38,7 +38,9 @@ import com.parse.Parse;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -58,8 +60,9 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
     int photosFound;
 
     GoogleApiClient googleAPI;
-    List<LatLng> loc;
-    int numGeofences;
+
+    // location -> if it has been found
+    Map<LatLng, Boolean> locations;
     int totalPhotos;
     SharedPreferences currentAlbumPref;
 
@@ -76,7 +79,7 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
                 Context.MODE_PRIVATE);
 
         // Build up the list of locations
-        loc = new ArrayList<LatLng>();
+        locations = new HashMap<LatLng, Boolean>();
 
         totalPhotos = currentAlbumPref.getInt(getString(R.string.total_photos), -1);
 
@@ -88,7 +91,7 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
             double lon = Double.parseDouble(coord[1]);
             LatLng latLngCoord = new LatLng(lat, lon);
             Log.d(TAG, " adding: " + latLngCoord.toString());
-            loc.add(latLngCoord);
+            locations.put(latLngCoord, false);
         }
 
         googleAPI.connect();
@@ -115,12 +118,17 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
     }
 
     @Override
-    public void onLocationChanged(Location location) {
+    public synchronized void onLocationChanged(Location location) {
         // Compare to list of locations
         Log.d(TAG, " location changed");
 
-        for(LatLng l: loc)
+        for(LatLng l: locations.keySet())
         {
+            if(locations.get(l)) {
+                // if already found skip it
+                continue;
+            }
+
             Location temp = new Location("");
             temp.setLatitude(l.latitude);
             temp.setLongitude(l.longitude);
@@ -131,7 +139,7 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
             if(location.distanceTo(temp) < DIST)
             {
                 // Remove l from loc
-                loc.remove(l);
+                locations.put(l, true);
 
                 Intent notifyIntent = new Intent(this, CurrentPhotoHuntActivity.class);
 
@@ -165,6 +173,7 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
 
                 // Check to see if they completed the album
                 // TODO: What if they exit a geofence and re-enter? Could count photo more than once
+                int count = 0;
                 if(currentAlbumPref.getInt(getString(R.string.photos_found), -1) == currentAlbumPref.getInt(getString(R.string.total_photos), -2))
                 {
                     NotificationCompat.Builder notification = new NotificationCompat.Builder(this)
@@ -179,19 +188,17 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
 
                     ParseUser user = ParseUser.getCurrentUser();
 
-                    if(user.has("CompletedAlbums") && user.has("CompletedCount"))
-                    {
+                    if(user.has("CompletedAlbums") && user.has("CompletedCount")) {
                         List<String> completedAlbums = (ArrayList<String>) user.get("CompletedAlbums");
-                        int count = (int) user.get("CompletedCount");
+                        count = (int) user.get("CompletedCount");
                         completedAlbums.add(currentAlbumPref.getString(getString(R.string.album_id), "-1"));
                         count = count + 1;
                         user.put("CompletedAlbums", completedAlbums);
                         user.put("CompletedCount", count);
                     }
-                    else
-                    {
+                    else {
                         List<String> completedAlbums = new ArrayList<String>();
-                        int count = 1;
+                        count = 1;
                         completedAlbums.add(currentAlbumPref.getString(getString(R.string.album_id), "-1"));
                         user.put("CompletedAlbums", completedAlbums);
                         user.put("CompletedCount", count);
@@ -200,16 +207,14 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
                     user.saveInBackground();
 
                     List<String> completedAlbums = (ArrayList<String>) user.get("CompletedAlbums");
-                    int count = (int) user.get("CompletedCount");
+                    count = (int) user.get("CompletedCount");
 
                     Log.d(TAG, "User's completedAlbums: " + completedAlbums.size() + " number: " + count);
                 }
 
-                // If loc is empty, can stop monitoring locations
-                if(loc.size() == 0)
+                // If count is same size as number of photos, can stop monitoring locations
+                if(count == totalPhotos)
                 {
-                    // Remove geofences?
-
                     LocationServices.FusedLocationApi.removeLocationUpdates(googleAPI, this).setResultCallback(
                             new ResultCallback<Status>() {
                                 @Override

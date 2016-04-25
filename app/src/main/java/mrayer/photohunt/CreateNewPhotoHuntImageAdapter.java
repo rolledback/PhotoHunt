@@ -87,7 +87,6 @@ public class CreateNewPhotoHuntImageAdapter extends PagerAdapter {
         ImageView imageView = holder.photo;
         int padding = context.getResources().getDimensionPixelSize(R.dimen.fab_margin);
         imageView.setPadding(padding, padding, padding, padding);
-        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
         final String picturePath = galImages.get(position);
         File file = new File(picturePath);

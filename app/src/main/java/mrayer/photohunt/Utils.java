@@ -19,6 +19,8 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.GpsDescriptor;
 import com.drew.metadata.exif.GpsDirectory;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,6 +33,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Matthew on 3/16/2016.
@@ -54,7 +58,8 @@ public class Utils {
             // Decode with inSampleSize
             BitmapFactory.Options o2 = new BitmapFactory.Options();
             o2.inSampleSize = scale;
-            return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+            Bitmap retBitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+            return retBitmap;
         }
         catch (FileNotFoundException e) {
             Log.d(Constants.UtilsTag, "Unable to decode image file");
@@ -213,5 +218,23 @@ public class Utils {
     public static boolean validImage(String file) {
         file = file.toLowerCase();
         return file.endsWith(".jpg") || file.endsWith(".jpeg") || file.endsWith(".png");
+    }
+
+    public static ParseQuery<PhotoHuntAlbum> makeGeneralQuery() {
+        ParseQuery<PhotoHuntAlbum> queryNonPrivate = ParseQuery.getQuery("PhotoHuntAlbum");
+        queryNonPrivate.whereEqualTo("isPrivate", false);
+
+        ParseQuery<PhotoHuntAlbum> queryPrivate = ParseQuery.getQuery("PhotoHuntAlbum");
+        queryPrivate.whereEqualTo("isPrivate", true);
+        queryPrivate.whereEqualTo("whiteList", ParseUser.getCurrentUser().getUsername());
+
+        List<ParseQuery<PhotoHuntAlbum>> queries = new ArrayList<ParseQuery<PhotoHuntAlbum>>();
+        queries.add(queryNonPrivate);
+        queries.add(queryPrivate);
+
+        ParseQuery<PhotoHuntAlbum> combinedQuery = ParseQuery.or(queries);
+        combinedQuery.orderByDescending("createdAt");
+
+        return combinedQuery;
     }
 }

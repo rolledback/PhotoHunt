@@ -1,14 +1,16 @@
 package mrayer.photohunt;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
@@ -30,6 +32,9 @@ public class AlbumGalleryActivity extends AppCompatActivity {
     private AlbumListAdapter adapter;
     private ListView list;
     private Handler messageHandler;
+    private AlertDialog requestReviewDialog;
+    private AlertDialog.Builder dialogBuilder;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +80,8 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 }
             }
         };
+
+        dialogBuilder = new AlertDialog.Builder(this);
 
         /**
          * May the souls of the buttons that were one initialized here rest in peace.
@@ -133,15 +140,13 @@ public class AlbumGalleryActivity extends AppCompatActivity {
             case R.id.action_current_photo_hunt:
                 SharedPreferences currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref), Context.MODE_PRIVATE);
                 Log.d("AlbumGalleryActivity ", currentAlbumPref.getString(getString(R.string.album_id), "" + -1));
-                if (currentAlbumPref.getString(getString(R.string.album_id), "" + -1).equals("" + -1))
-                {
+                if (currentAlbumPref.getString(getString(R.string.album_id), "" + -1).equals("" + -1)) {
                     Toast.makeText(AlbumGalleryActivity.this, "You do not have a current photo hunt!", Toast.LENGTH_LONG).show();
                     return false;
                 }
-                else
-                {
+                else {
                     Intent currentIntent = new Intent(AlbumGalleryActivity.this, CurrentPhotoHuntActivity.class);
-                    startActivity(currentIntent);
+                    startActivityForResult(currentIntent, Constants.REQUEST_CURRENT_RESULT);
                 }
                 return true;
 
@@ -176,5 +181,23 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         else if (requestCode == Constants.REQUEST_MANAGEMENT_RESULT && resultCode == Constants.DELETE_RESULT) {
             refreshList();
         }
+        else if (requestCode == Constants.REQUEST_CURRENT_RESULT && resultCode == Constants.ENDED_HUNT) {
+            likeToReviewDialog();
+        }
+    }
+
+    private void likeToReviewDialog() {
+        dialogBuilder.setTitle("Placeholder");
+        dialogBuilder.setMessage("Going to to do stuff here later.");
+        dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                requestReviewDialog.dismiss();
+                requestReviewDialog = null;
+            }
+
+        });
+        dialogBuilder.setNegativeButton("No", null);
+        requestReviewDialog = dialogBuilder.show();
     }
 }

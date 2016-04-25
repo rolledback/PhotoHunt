@@ -47,9 +47,16 @@ public class Constants {
     // start activity for result code for AccountActivity
     public static final int REQUEST_MANAGEMENT_RESULT = 1;
 
-    // result codes for detailed DetailedPhotoHuntActivity
+    // result codes for DetailedPhotoHuntActivity
     public static final int NO_RESULT = 1;
     public static final int DELETE_RESULT = 2;
+
+    // start activity for result code for CurrentPhotoHuntActivity
+    public static final int REQUEST_CURRENT_RESULT = 1;
+
+    // result codes for CurrentPhotoHuntActivity
+    public static final int ENDED_HUNT = 1;
+    public static final int CONTINUE_HUNT = 2;
 
     // message codes
     public static final int UPLOAD_COMPLETE = 1;
