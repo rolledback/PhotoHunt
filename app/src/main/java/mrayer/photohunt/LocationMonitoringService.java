@@ -172,7 +172,6 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
                 editor.commit();
 
                 // Check to see if they completed the album
-                // TODO: What if they exit a geofence and re-enter? Could count photo more than once
                 int count = 0;
                 if(currentAlbumPref.getInt(getString(R.string.photos_found), -1) == currentAlbumPref.getInt(getString(R.string.total_photos), -2))
                 {
