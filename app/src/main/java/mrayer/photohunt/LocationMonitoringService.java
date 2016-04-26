@@ -209,11 +209,8 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
                     count = (int) user.get("CompletedCount");
 
                     Log.d(TAG, "User's completedAlbums: " + completedAlbums.size() + " number: " + count);
-                }
 
-                // If count is same size as number of photos, can stop monitoring locations
-                if(count == totalPhotos)
-                {
+                    // If count is same size as number of photos, can stop monitoring locations
                     LocationServices.FusedLocationApi.removeLocationUpdates(googleAPI, this).setResultCallback(
                             new ResultCallback<Status>() {
                                 @Override
