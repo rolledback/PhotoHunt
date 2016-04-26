@@ -1,5 +1,6 @@
 package mrayer.photohunt;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -16,11 +18,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +65,10 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
     private TextView albumSizeView;
     private TextView typeView;
     private TextView descriptionView;
+
+    private LinearLayout ratingsLayout;
+    private TextView ratingBarLabel;
+    private RatingBar ratingBar;
 
     private ImageView imageView;
     private ProgressBar imageSpinner;
@@ -109,6 +119,10 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
         descriptionView = (TextView) findViewById(R.id.detailed_description);
         typeView = (TextView) findViewById(R.id.detailed_type);
 
+        ratingsLayout = (LinearLayout) findViewById(R.id.ratings_layout);
+        ratingBarLabel = (TextView) findViewById(R.id.album_rating_bar_label);
+        ratingBar = (RatingBar) findViewById(R.id.album_rating_bar);
+
         imageView = (ImageView) findViewById(R.id.detailed_cover_photo);
         imageView.setVisibility(View.INVISIBLE);
 
@@ -134,6 +148,26 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
         albumSizeView.setText(Integer.toString(ppo.getInt("numPhotos")));
         descriptionView.setText(ppo.getString("description"));
         typeView.setText(type);
+        ratingBar.setRating((float) (double) ppo.getDouble("avgReview"));
+
+        final int numReviews = ppo.getInt("numReviews");
+        if(numReviews == 1) {
+            ratingBarLabel.setText("(" + numReviews + " review)");
+        }
+        else {
+            ratingBarLabel.setText("(" + numReviews + " reviews)");
+        }
+        ratingsLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(numReviews > 0) {
+                    launchReviewsDialog();
+                }
+                else {
+                    makeAndShowNoReviewsToast();
+                }
+            }
+        });
 
         // download image from url
         String coverPhotoUrl = ppo.getString("coverPhoto");
@@ -179,8 +213,31 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
         return super.onOptionsItemSelected(item);
     }
 
+    private void launchReviewsDialog() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("App Reviews");
+        dialog.setCancelable(true);
+
+        View view = getLayoutInflater().inflate(R.layout.review_list_dialog, null);
+
+        ListView list = (ListView) view.findViewById(R.id.review_list_dialog_list);
+        ReviewDialogListAdapter adapter = new ReviewDialogListAdapter(this, albumId);
+        adapter.loadReviews();
+        list.setAdapter(adapter);
+
+        dialog.setView(view);
+        dialog.show();
+    }
+
     private void makeAndShowStartingToast() {
         Toast toast = Toast.makeText(this, "Starting the photo hunt.", Toast.LENGTH_SHORT);
+        TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+        if( v != null) v.setGravity(Gravity.CENTER);
+        toast.show();
+    }
+
+    private void makeAndShowNoReviewsToast() {
+        Toast toast = Toast.makeText(this, "There are currently no reviews for this photo hunt.", Toast.LENGTH_SHORT);
         TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
         if( v != null) v.setGravity(Gravity.CENTER);
         toast.show();

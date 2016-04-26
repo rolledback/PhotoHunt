@@ -1,10 +1,12 @@
 package mrayer.photohunt;
 
+import com.parse.ParseClassName;
 import com.parse.ParseObject;
 
 /**
  * Created by Matthew on 4/25/2016.
  */
+@ParseClassName("Review")
 public class Review extends ParseObject {
 
     public Review() {

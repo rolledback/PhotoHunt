@@ -3,7 +3,6 @@ package mrayer.photohunt;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
-import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,6 +115,22 @@ public class PhotoHuntAlbum extends ParseObject {
         List<String> temp = new ArrayList<String>();
         temp.addAll(whiteList);
         put("whiteList", temp);
+    }
+
+    public double getAvgReview() {
+        return getDouble("avgReview");
+    }
+
+    public void setAvgReview(double avgReview) {
+        put("avgReview", avgReview);
+    }
+
+    public int getNumReviews() {
+        return getInt("numReviews");
+    }
+
+    public void setNumReviews(int numReviews) {
+        put("numReviews", numReviews);
     }
 
     public String getSearchName() {

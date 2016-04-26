@@ -30,7 +30,13 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
+import java.util.List;
 
 public class AlbumGalleryActivity extends AppCompatActivity {
 
@@ -141,10 +147,10 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 accountIntent.putExtra("accountType", "currentUser");
                 startActivityForResult(accountIntent, Constants.REQUEST_MANAGEMENT_RESULT);
                 return true;
-            case R.id.action_settings:
+            /* case R.id.action_settings:
                 Intent settingsIntent = new Intent(AlbumGalleryActivity.this, SettingsActivity.class);
                 startActivity(settingsIntent);
-                return true;
+                return true; */
             case R.id.action_current_photo_hunt:
                 SharedPreferences currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
                         Context.MODE_PRIVATE);
@@ -201,7 +207,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
     }
 
     private void likeToReviewDialog() {
-        String justEndedId = currentAlbumPref.getString(getString(R.string.album_id), "-1");
+        final String justEndedId = currentAlbumPref.getString(getString(R.string.album_id), "-1");
 
         LayoutInflater inflater = this.getLayoutInflater();
         dialogBuilder.setTitle("Rate Photo Hunt");
@@ -226,6 +232,13 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                             makeAndShowInvalidReviewToast();
                         }
                         else {
+                            Review review = new Review();
+                            review.setAuthor(ParseUser.getCurrentUser().getUsername());
+                            review.setRating(ratingBar.getRating());
+                            review.setAlbum(justEndedId);
+                            review.setText(comments.getText().toString());
+                            uploadReview(review);
+
                             requestReviewDialog.dismiss();
                             requestReviewDialog = null;
                         }
@@ -242,5 +255,42 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
         if( v != null) v.setGravity(Gravity.CENTER);
         toast.show();
+    }
+
+    private void uploadReview(final Review review) {
+        review.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e == null) {
+                    // update the average review of the album
+                    String albumId = review.getAlbum();
+                    try {
+                        ParseQuery<PhotoHuntAlbum> albumQuery = Utils.makeGeneralQuery();
+                        albumQuery.whereEqualTo("albumId", albumId);
+                        PhotoHuntAlbum album = albumQuery.getFirst();
+
+                        ParseQuery<Review> matchingReviewsQuery = new ParseQuery<Review>("Review");
+                        matchingReviewsQuery.whereEqualTo("albumId", albumId);
+                        List<Review> reviews = matchingReviewsQuery.find();
+
+                        double avg = 0;
+                        for(Review r: reviews) {
+                            avg += r.getRating();
+                        }
+                        avg /= reviews.size();
+
+                        album.setAvgReview(avg);
+                        album.setNumReviews(reviews.size());
+                        album.save();
+                    }
+                    catch (Exception e2) {
+                        Log.d(Constants.AlbumGalleryTag, e2.toString());
+                    }
+                }
+                else {
+                    Log.d(Constants.AlbumGalleryTag, e.toString());
+                }
+            }
+        });
     }
 }
