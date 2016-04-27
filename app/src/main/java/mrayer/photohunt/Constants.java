@@ -24,13 +24,25 @@ public class Constants {
     public static final String FavoriteUsersActivityTag = "FAV_USERS_ACTIVITY";
     public static final String CurrentPhotoHuntActivityTag = "CURRENT_HUNT_ACTIVITY";
 
-    // start activity for result codes for CreateNewPhotoHuntActivity
+    // Start activity for result codes:
+    // CreateNewPhotoHuntActivity
     public static final int REQUEST_LOAD_IMAGE = 1;
     public static final int REQUEST_IMAGE_CAPTURE = 2;
     public static final int REQUEST_SET_ADD_LOCATION = 3;
+    // AlbumGalleryActivity
+    public static final int REQUEST_CREATE_NEW_PHOTO_HUNT = 4;
+    // AccountActivity
+    public static final int REQUEST_MANAGEMENT_RESULT = 5;
+    // CurrentPhotoHuntActivity
+    public static final int REQUEST_CURRENT_RESULT = 6;
 
-    // start activity for result codes for AlbumGalleryActivity
-    public static final int REQUEST_CREATE_NEW_PHOTO_HUNT = 1;
+    // Result codes:
+    // DetailedPhotoHuntActivity
+    public static final int NO_RESULT = 1;
+    public static final int DELETE_RESULT = 2;
+    // CurrentPhotoHuntActivity
+    public static final int ENDED_HUNT = 3;
+    public static final int CONTINUE_HUNT = 4;
 
     // Number of columns of Album Grid View
     public static final int NUM_OF_COLUMNS = 3;
@@ -44,20 +56,6 @@ public class Constants {
     // Thumbnail dimensions
     public static final int THUMBNAIL_WIDTH = 500;
     public static final int THUMBNAIL_HEIGHT = 500;
-
-    // start activity for result code for AccountActivity
-    public static final int REQUEST_MANAGEMENT_RESULT = 1;
-
-    // result codes for DetailedPhotoHuntActivity
-    public static final int NO_RESULT = 1;
-    public static final int DELETE_RESULT = 2;
-
-    // start activity for result code for CurrentPhotoHuntActivity
-    public static final int REQUEST_CURRENT_RESULT = 1;
-
-    // result codes for CurrentPhotoHuntActivity
-    public static final int ENDED_HUNT = 1;
-    public static final int CONTINUE_HUNT = 2;
 
     // message codes
     public static final int UPLOAD_COMPLETE = 1;

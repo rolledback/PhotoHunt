@@ -142,12 +142,9 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
                             // ???
                         }
                     });
-
-                    // this only changes if the deletion took place
-                    setResult(Constants.NO_RESULT);
-
-                } else {
-                    Log.d(Constants.AlbumListAdapterTag, e.toString());
+                }
+                else {
+                    Log.d(Constants.CurrentPhotoHuntActivityTag, e.toString());
                 }
             }
         });
@@ -183,8 +180,7 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
             List<String> geofenceIDs = new ArrayList<String>();
 
             // Get the geofence IDs
-            for(int i = 1; i < totalPhotos + 1; i++)
-            {
+            for(int i = 1; i < totalPhotos + 1; i++) {
                 geofenceIDs.add(currentAlbumPref.getString("photo" + i, ""));
             }
 

@@ -1,6 +1,7 @@
 package mrayer.photohunt;
 
 import android.content.Context;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,11 +29,19 @@ import java.util.List;
 public class AlbumListAdapter extends BaseAdapter {
     private final Context context;
     private List<PhotoHuntAlbum> albums;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
-    public AlbumListAdapter(Context context) {
+    public AlbumListAdapter(Context context, SwipeRefreshLayout swipeRefreshLayout) {
         // make sure to call one of the load functions after constructing this object
         this.context = context;
+        this.swipeRefreshLayout = swipeRefreshLayout;
         albums = new ArrayList<PhotoHuntAlbum>();
+    }
+
+    private void checkRefreshLayout() {
+        if(swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
     }
 
     public void loadAllAlbums() {
@@ -44,6 +53,10 @@ public class AlbumListAdapter extends BaseAdapter {
                     albums.addAll(objects);
                     notifyDataSetChanged();
                 }
+                else {
+                    Log.d(Constants.AlbumListAdapterTag, e.toString());
+                }
+                checkRefreshLayout();
             }
         });
     }
@@ -61,6 +74,7 @@ public class AlbumListAdapter extends BaseAdapter {
                 else {
                     Log.d(Constants.AlbumListAdapterTag, e.toString());
                 }
+                checkRefreshLayout();
             }
         });
     }

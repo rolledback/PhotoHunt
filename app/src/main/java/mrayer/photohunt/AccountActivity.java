@@ -85,7 +85,7 @@ public class AccountActivity extends AppCompatActivity {
         numPhotoHunts = (TextView) findViewById(R.id.text_num_hunts);
 
         // Set up the adapter to get the data from Parse
-        adapter = new AlbumListAdapter(this);
+        adapter = new AlbumListAdapter(this, null);
 
         // Get the list view
         list = (ListView) findViewById(R.id.my_album_list);

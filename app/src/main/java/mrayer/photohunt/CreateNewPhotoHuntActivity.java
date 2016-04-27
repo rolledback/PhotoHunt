@@ -83,9 +83,9 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
     private Button uploadButton;
 
     private UploadProgressNotification uploadNotification;
-    private AlertDialog quitConfirmation;
 
     private AlertDialog.Builder dialogBuilder;
+    private AlertDialog quitConfirmation;
     private LayoutInflater inflater;
 
     private Set<String> whiteList;
@@ -354,7 +354,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         return true;
     }
 
-    public void confirmExit() {
+    private void confirmExit() {
         dialogBuilder.setTitle("Warning");
         dialogBuilder.setMessage("Your progress will be lost if you return to the gallery. " +
                 "Are you sure you want to continue?");
@@ -371,7 +371,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         quitConfirmation = dialogBuilder.show();
     }
 
-    public boolean userStartedCreating() {
+    private boolean userStartedCreating() {
         return inputNameEditText.getText().length() != 0 || inputLocationEditText.getText().length() != 0 ||
                 inputDescriptionEditText.getText().length() != 0 || viewPager.getAdapter().getCount() != 0;
     }

@@ -10,6 +10,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -46,6 +48,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
     private AlertDialog requestReviewDialog;
     private AlertDialog.Builder dialogBuilder;
     private SharedPreferences currentAlbumPref;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +62,16 @@ public class AlbumGalleryActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
 
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.album_gallery_swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshList();
+            }
+        });
+
         // Set up the adapter to get the data from Parse
-        adapter = new AlbumListAdapter(this);
+        adapter = new AlbumListAdapter(this, swipeRefreshLayout);
         adapter.loadAllAlbums();
 
         // Get the list view
@@ -92,6 +103,15 @@ public class AlbumGalleryActivity extends AppCompatActivity {
             }
         };
 
+        FloatingActionButton myFab = (FloatingActionButton) findViewById(R.id.add_photo_hunt_fab);
+        myFab.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(AlbumGalleryActivity.this, CreateNewPhotoHuntActivity.class);
+                intent.putExtra("callbackMessenger", new Messenger(messageHandler));
+                startActivityForResult(intent, Constants.REQUEST_CREATE_NEW_PHOTO_HUNT);
+            }
+        });
+
         dialogBuilder = new AlertDialog.Builder(this);
 
         currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
@@ -109,7 +129,6 @@ public class AlbumGalleryActivity extends AppCompatActivity {
     // Refresh list
     private void refreshList() {
         adapter.loadAllAlbums();
-        list.setAdapter(adapter);
     }
 
     @Override
@@ -128,14 +147,14 @@ public class AlbumGalleryActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_refresh_list:
+            /* case R.id.action_refresh_list:
                 refreshList();
-                return true;
-            case R.id.action_create_photo_hunt:
+                return true; */
+            /* case R.id.action_create_photo_hunt:
                 Intent intent = new Intent(AlbumGalleryActivity.this, CreateNewPhotoHuntActivity.class);
                 intent.putExtra("callbackMessenger", new Messenger(messageHandler));
                 startActivityForResult(intent, Constants.REQUEST_CREATE_NEW_PHOTO_HUNT);
-                return true;
+                return true; */
             case R.id.action_logout:
                 Intent logoutIntent = new Intent(AlbumGalleryActivity.this, LoginActivity.class);
                 startActivity(logoutIntent);
@@ -154,8 +173,8 @@ public class AlbumGalleryActivity extends AppCompatActivity {
             case R.id.action_current_photo_hunt:
                 SharedPreferences currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
                         Context.MODE_PRIVATE);
-                Log.d("AlbumGalleryActivity ", currentAlbumPref.getString(getString(R.string.album_id), "" + -1));
-                if (currentAlbumPref.getString(getString(R.string.album_id), "" + -1).equals("" + -1)) {
+                Log.d("AlbumGalleryActivity ", currentAlbumPref.getBoolean(getString(R.string.currently_have_active_hunt), false) ? "yes" : "no");
+                if (!currentAlbumPref.getBoolean(getString(R.string.currently_have_active_hunt), false)) {
                     Toast.makeText(AlbumGalleryActivity.this, "You do not have a current photo hunt!", Toast.LENGTH_LONG).show();
                     return false;
                 }
@@ -199,10 +218,8 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         else if (requestCode == Constants.REQUEST_CURRENT_RESULT) {
             if(resultCode == Constants.ENDED_HUNT) {
                 likeToReviewDialog();
+                Utils.resetCurrentAlbumPrefs(this, currentAlbumPref);
             }
-
-            // reset the shared prefs after completing the hunt
-            Utils.resetCurrentAlbumPrefs(this, currentAlbumPref);
         }
     }
 

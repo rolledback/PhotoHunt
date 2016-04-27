@@ -8,10 +8,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -81,6 +85,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
 
     private AlertDialog deleteConfirmation;
     private AlertDialog errorDialog;
+    private AlertDialog confirmNewHuntDialog;
     private AlertDialog.Builder dialogBuilder;
     private ProgressDialog dialog;
 
@@ -215,7 +220,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
 
     private void launchReviewsDialog() {
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setTitle("App Reviews");
+        dialog.setTitle("User Reviews");
         dialog.setCancelable(true);
 
         View view = getLayoutInflater().inflate(R.layout.review_list_dialog, null);
@@ -243,13 +248,6 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
         toast.show();
     }
 
-    private void makeAndShowAlreadyStartingToast() {
-        Toast toast = Toast.makeText(this, "You already have an active photo hunt.", Toast.LENGTH_SHORT);
-        TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
-        if( v != null) v.setGravity(Gravity.CENTER);
-        toast.show();
-    }
-
     private void setActionButtonListener(String action) {
         if(action.equals("start")){
             actionButton.setText("Start Photo Hunt");
@@ -271,14 +269,36 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
         }
     }
 
+    private void confirmNewHuntWhenHunting() {
+        dialogBuilder.setTitle("Warning");
+        dialogBuilder.setMessage("You already have a current photo hunt. Are you sure you want to start a new one?");
+        dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                confirmNewHuntDialog.dismiss();
+                confirmNewHuntDialog = null;
+                queryAndSetupGeofences();
+            }
+
+        });
+        dialogBuilder.setNegativeButton("No", null);
+        confirmNewHuntDialog = dialogBuilder.show();
+    }
+
     private void startPhotoHunt() {
         final SharedPreferences.Editor editor = currentAlbumPref.edit();
 
         boolean currentlyOnHunt = currentAlbumPref.getBoolean(getString(R.string.currently_have_active_hunt), false);
         if(currentlyOnHunt) {
-            makeAndShowAlreadyStartingToast();
-            return;
+            confirmNewHuntWhenHunting();
         }
+        else {
+            queryAndSetupGeofences();
+        }
+    }
+
+    private void queryAndSetupGeofences() {
+        final SharedPreferences.Editor editor = currentAlbumPref.edit();
 
         // immediately set user as being on a hunt
         editor.putBoolean(getString(R.string.currently_have_active_hunt), true);
