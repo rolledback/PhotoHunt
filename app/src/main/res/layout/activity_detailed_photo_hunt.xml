@@ -26,16 +26,8 @@
             android:id="@+id/main_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/detailed_name"
-                android:text="Default Photo Hunt Name"
-                android:textSize="20sp"
-                android:gravity="center"
-                android:padding="@dimen/detailed_photo_hunt_text_margins"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            android:orientation="vertical"
+            android:paddingTop="@dimen/detailed_photo_hunt_text_margins">
 
             <FrameLayout
                 android:id="@+id/cover_photo_frame"

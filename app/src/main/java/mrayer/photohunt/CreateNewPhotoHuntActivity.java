@@ -109,7 +109,7 @@ public class CreateNewPhotoHuntActivity extends AppCompatActivity {
         viewPagerLayout = (FrameLayout) findViewById(R.id.view_pager_layout);
         viewPagerLayout.setVisibility(View.GONE);
 
-        createNewPhotoHuntImageAdapter = new CreateNewPhotoHuntImageAdapter(this, inflater, dialogBuilder, this);
+        createNewPhotoHuntImageAdapter = new CreateNewPhotoHuntImageAdapter(this);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         viewPager.addOnPageChangeListener(listener = new CustomOnPageChangeListener());
         viewPager.setAdapter(createNewPhotoHuntImageAdapter);

@@ -46,6 +46,8 @@ public class AlbumGalleryActivity extends AppCompatActivity {
     private ListView list;
     private Handler messageHandler;
     private AlertDialog requestReviewDialog;
+    private AlertDialog confirmLogoutDialog;
+    private AlertDialog helpDialog;
     private AlertDialog.Builder dialogBuilder;
     private SharedPreferences currentAlbumPref;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -114,8 +116,13 @@ public class AlbumGalleryActivity extends AppCompatActivity {
 
         dialogBuilder = new AlertDialog.Builder(this);
 
+        buildConfirmLogoutDialog();
+
         currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
                 Context.MODE_PRIVATE);
+
+        buildConfirmLogoutDialog();
+        buildAndShowHelpDialog();
 
         /**
          * May the souls of the buttons that were one initialized here rest in peace.
@@ -156,10 +163,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 startActivityForResult(intent, Constants.REQUEST_CREATE_NEW_PHOTO_HUNT);
                 return true; */
             case R.id.action_logout:
-                Intent logoutIntent = new Intent(AlbumGalleryActivity.this, LoginActivity.class);
-                startActivity(logoutIntent);
-                ParseUser.logOut();
-                ParseUser currentUser = ParseUser.getCurrentUser(); // this will now be null
+                confirmLogoutDialog.show();
                 return true;
             case R.id.action_my_account:
                 Intent accountIntent = new Intent(AlbumGalleryActivity.this, AccountActivity.class);
@@ -182,6 +186,10 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                     Intent currentIntent = new Intent(AlbumGalleryActivity.this, CurrentPhotoHuntActivity.class);
                     startActivityForResult(currentIntent, Constants.REQUEST_CURRENT_RESULT);
                 }
+                return true;
+            case R.id.action_help:
+                Intent helpIntent = new Intent(AlbumGalleryActivity.this, HelpWebPageActivity.class);
+                startActivity(helpIntent);
                 return true;
 
             // uncomment corresponding test items in album_gallery_menu.xml to access these
@@ -265,6 +273,38 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         });
 
         requestReviewDialog.show();
+    }
+
+    public void buildConfirmLogoutDialog() {
+        dialogBuilder.setTitle("Logout");
+        dialogBuilder.setMessage("Are you sure you want to logout?");
+        dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent helpIntent = new Intent(AlbumGalleryActivity.this, HelpWebPageActivity.class);
+                helpDialog.dismiss();
+                helpDialog = null;
+                startActivity(helpIntent);
+            }
+
+        });
+        dialogBuilder.setNegativeButton("No", null);
+        confirmLogoutDialog = dialogBuilder.create();
+    }
+
+    public void buildAndShowHelpDialog() {
+        dialogBuilder.setTitle("Welcome!");
+        dialogBuilder.setMessage("Hi, welcome to PhotoHunt. Would you like to view the help page?");
+        dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent helpIntent = new Intent(AlbumGalleryActivity.this, HelpWebPageActivity.class);
+                startActivity(helpIntent);
+            }
+
+        });
+        dialogBuilder.setNegativeButton("No", null);
+        helpDialog = dialogBuilder.show();
     }
 
     private void makeAndShowInvalidReviewToast() {

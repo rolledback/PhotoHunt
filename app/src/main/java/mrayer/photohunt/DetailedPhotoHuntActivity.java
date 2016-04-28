@@ -60,10 +60,8 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
         GoogleApiClient.OnConnectionFailedListener {
 
     static final int GEOFENCE_RADIUS_IN_METERS = 150;
-    static final String TAG = "DetailedPHActivity";
-    PendingIntent geofencePendingIntent;
+    private PendingIntent geofencePendingIntent;
 
-    private TextView nameView;
     private TextView authorView;
     private TextView locationView;
     private TextView albumSizeView;
@@ -107,7 +105,6 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Detailed Photo Hunt");
 
         dialogBuilder = new AlertDialog.Builder(this);
 
@@ -117,7 +114,6 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
         albumId = ppo.getString("albumId");
         type = ppo.getString("type");
 
-        nameView = (TextView) findViewById(R.id.detailed_name);
         authorView = (TextView) findViewById(R.id.detailed_author);
         locationView = (TextView) findViewById(R.id.detailed_location);
         albumSizeView = (TextView) findViewById(R.id.detailed_album_size);
@@ -147,7 +143,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
         actionButton = (Button) findViewById(R.id.action_button);
         setActionButtonListener(intent.getStringExtra("action"));
 
-        nameView.setText(ppo.getString("name"));
+        getSupportActionBar().setTitle(ppo.getString("name"));
         authorView.setText(ppo.getString("author"));
         locationView.setText(ppo.getString("location"));
         albumSizeView.setText(Integer.toString(ppo.getInt("numPhotos")));
@@ -351,7 +347,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
                     makeAndShowStartingToast();
 
                 } else {
-                    Log.d(TAG, " " + e.toString());
+                    Log.d(Constants.DetailedPhotoHuntActivityTag, " " + e.toString());
                 }
             }
         });
@@ -453,11 +449,11 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.i(TAG, " location services connected");
+        Log.i(Constants.DetailedPhotoHuntActivityTag, " location services connected");
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
-            Log.d(TAG, " do not have correct permissions");
+            Log.d(Constants.DetailedPhotoHuntActivityTag, " do not have correct permissions");
         }
         else
         {
@@ -469,7 +465,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
                 @Override
                 public void onResult(Status status) {
                     if (status.isSuccess()) {
-                        Log.i(TAG, " previous geofences removed");
+                        Log.i(Constants.DetailedPhotoHuntActivityTag, " previous geofences removed");
                     }
                 }
             });
@@ -484,7 +480,7 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
                 public void onResult(Status status) {
                     if (status.isSuccess()) {
                         // Success
-                        Log.i(TAG, " geofence request success");
+                        Log.i(Constants.DetailedPhotoHuntActivityTag, " geofence request success");
 
                         // Geofences were set, can now start monitoring your location
                         // By now, sharedPref has the list of photoLocations
@@ -499,11 +495,11 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.i(TAG, " location services suspended");
+        Log.i(Constants.DetailedPhotoHuntActivityTag, " location services suspended");
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.e(TAG, " location services failed");
+        Log.e(Constants.DetailedPhotoHuntActivityTag, " location services failed");
     }
 }

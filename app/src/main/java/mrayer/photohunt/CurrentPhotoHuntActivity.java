@@ -41,7 +41,6 @@ import java.util.List;
 public class CurrentPhotoHuntActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
-    private TextView nameView;
     private TextView authorView;
     private TextView locationView;
     private TextView completedView;
@@ -78,9 +77,7 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Current Photo Hunt");
 
-        nameView = (TextView) findViewById(R.id.current_name);
         authorView = (TextView) findViewById(R.id.current_author);
         locationView = (TextView) findViewById(R.id.current_location);
         completedView = (TextView) findViewById(R.id.current_completed);
@@ -120,7 +117,7 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
                         }
                     });
 
-                    nameView.setText(album.getName());
+                    getSupportActionBar().setTitle(album.getName());
                     authorView.setText(album.getAuthor());
                     locationView.setText(album.getLocation());
                     completedView.setText(currentAlbumPref.getInt(getString(R.string.photos_found), -1) + " out of " + album.getNumPhotos());

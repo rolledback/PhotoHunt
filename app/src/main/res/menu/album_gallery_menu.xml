@@ -32,6 +32,10 @@
         android:icon="@drawable/ic_exit_to_app_white_24dp"
         android:title="Logout"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_help"
+        android:title="Help"
+        app:showAsAction="never"/>
     <!--<item-->
         <!--android:id="@+id/action_settings"-->
         <!--android:title="Settings"-->
