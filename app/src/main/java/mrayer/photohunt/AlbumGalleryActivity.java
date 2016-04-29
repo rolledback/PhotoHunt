@@ -287,6 +287,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 Intent logoutIntent = new Intent(AlbumGalleryActivity.this, LoginActivity.class);
                 startActivity(logoutIntent);
                 ParseUser.logOut();
+                finish();
             }
 
         });
