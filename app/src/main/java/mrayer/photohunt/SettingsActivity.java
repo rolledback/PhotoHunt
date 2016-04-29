@@ -1,5 +1,6 @@
 package mrayer.photohunt;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.WindowManager;
+
+import com.parse.ParseUser;
 
 import java.util.List;
 
@@ -40,17 +43,6 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Settings");
 
         getFragmentManager().beginTransaction().replace(R.id.content_frame, new PrefFragment()).commit();
-//        getPreferenceManager().setSharedPreferencesName("photo_hunt_prefs");
-//        addPreferencesFromResource(R.xml.preferences);
-//        final SharedPreferences prefs = getSharedPreferences("photo_hunt_prefs", MODE_PRIVATE);
-//
-//        final CheckBoxPreference accountPrivacyLevelPref = (CheckBoxPreference) findPreference("account_private");
-//        accountPrivacyLevelPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-//            @Override
-//            public boolean onPreferenceChange(Preference preference, Object newValue) {
-//                return true;
-//            }
-//        });
     }
 
     @Override

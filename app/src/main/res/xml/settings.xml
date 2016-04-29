@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="General">
+        <CheckBoxPreference
+            android:key="show_welcome_dialog"
+            android:title="Show Welcome Dialog On Startup"
+            android:defaultValue="true"
+            android:summary="Show the welcome dialog when you start PhotoHunt."/>
+    </PreferenceCategory>
+</PreferenceScreen>

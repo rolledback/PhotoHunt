@@ -1,6 +1,5 @@
 package mrayer.photohunt;
 
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,12 +26,13 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -47,9 +47,9 @@ public class AlbumGalleryActivity extends AppCompatActivity {
     private Handler messageHandler;
     private AlertDialog requestReviewDialog;
     private AlertDialog confirmLogoutDialog;
-    private AlertDialog helpDialog;
+    private AlertDialog welcomeDialog;
     private AlertDialog.Builder dialogBuilder;
-    private SharedPreferences currentAlbumPref;
+    private SharedPreferences photoHuntPrefs;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
@@ -118,11 +118,14 @@ public class AlbumGalleryActivity extends AppCompatActivity {
 
         buildConfirmLogoutDialog();
 
-        currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
+        photoHuntPrefs = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
                 Context.MODE_PRIVATE);
 
         buildConfirmLogoutDialog();
-        buildAndShowHelpDialog();
+
+        if(photoHuntPrefs.getBoolean("show_welcome_dialog", true)) {
+            buildAndShowWelcomeDialog();
+        }
 
         /**
          * May the souls of the buttons that were one initialized here rest in peace.
@@ -170,10 +173,10 @@ public class AlbumGalleryActivity extends AppCompatActivity {
                 accountIntent.putExtra("accountType", "currentUser");
                 startActivityForResult(accountIntent, Constants.REQUEST_MANAGEMENT_RESULT);
                 return true;
-            /* case R.id.action_settings:
+            case R.id.action_settings:
                 Intent settingsIntent = new Intent(AlbumGalleryActivity.this, SettingsActivity.class);
                 startActivity(settingsIntent);
-                return true; */
+                return true;
             case R.id.action_current_photo_hunt:
                 SharedPreferences currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
                         Context.MODE_PRIVATE);
@@ -226,13 +229,13 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         else if (requestCode == Constants.REQUEST_CURRENT_RESULT) {
             if(resultCode == Constants.ENDED_HUNT) {
                 likeToReviewDialog();
-                Utils.resetCurrentAlbumPrefs(this, currentAlbumPref);
+                Utils.resetCurrentAlbumPrefs(this, photoHuntPrefs);
             }
         }
     }
 
     private void likeToReviewDialog() {
-        final String justEndedId = currentAlbumPref.getString(getString(R.string.album_id), "-1");
+        final String justEndedId = photoHuntPrefs.getString(getString(R.string.album_id), "-1");
 
         LayoutInflater inflater = this.getLayoutInflater();
         dialogBuilder.setTitle("Rate Photo Hunt");
@@ -281,10 +284,9 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Intent helpIntent = new Intent(AlbumGalleryActivity.this, HelpWebPageActivity.class);
-                helpDialog.dismiss();
-                helpDialog = null;
-                startActivity(helpIntent);
+                Intent logoutIntent = new Intent(AlbumGalleryActivity.this, LoginActivity.class);
+                startActivity(logoutIntent);
+                ParseUser.logOut();
             }
 
         });
@@ -292,8 +294,20 @@ public class AlbumGalleryActivity extends AppCompatActivity {
         confirmLogoutDialog = dialogBuilder.create();
     }
 
-    public void buildAndShowHelpDialog() {
+    public void buildAndShowWelcomeDialog() {
+        View checkBoxView = View.inflate(this, R.layout.welcome_dialog, null);
+        CheckBox checkBox = (CheckBox) checkBoxView.findViewById(R.id.welcome_checkbox);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor editor = photoHuntPrefs.edit();
+                editor.putBoolean("show_welcome_dialog", !isChecked);
+                editor.commit();
+            }
+        });
+
         dialogBuilder.setTitle("Welcome!");
+        dialogBuilder.setView(checkBoxView);
         dialogBuilder.setMessage("Hi, welcome to PhotoHunt. Would you like to view the help page?");
         dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
@@ -304,7 +318,7 @@ public class AlbumGalleryActivity extends AppCompatActivity {
 
         });
         dialogBuilder.setNegativeButton("No", null);
-        helpDialog = dialogBuilder.show();
+        welcomeDialog = dialogBuilder.show();
     }
 
     private void makeAndShowInvalidReviewToast() {

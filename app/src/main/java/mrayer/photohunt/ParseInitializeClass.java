@@ -1,6 +1,7 @@
 package mrayer.photohunt;
 
 import android.app.Application;
+import android.preference.PreferenceManager;
 
 import com.parse.Parse;
 import com.parse.ParseObject;

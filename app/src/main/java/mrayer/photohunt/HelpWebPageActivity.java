@@ -29,7 +29,7 @@ public class HelpWebPageActivity extends AppCompatActivity {
 
         helpWebView = (WebView) findViewById(R.id.help_web_view);
         helpWebView.getSettings().setJavaScriptEnabled(true);
-        helpWebView.loadUrl("https://github.com/rolledback/PhotoHunt");
+        helpWebView.loadUrl("http://mrayermann.com/PhotoHunt/help.html");
     }
 
     @Override
