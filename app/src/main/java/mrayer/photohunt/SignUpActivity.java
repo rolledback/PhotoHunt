@@ -21,6 +21,8 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
+import java.util.ArrayList;
+
 public class SignUpActivity extends AppCompatActivity {
 
     private EditText usernameText;
@@ -85,6 +87,10 @@ public class SignUpActivity extends AppCompatActivity {
         ParseUser user = new ParseUser();
         user.setUsername(username);
         user.setPassword(password);
+        user.put("favoriteUsers", new ArrayList<String>());
+        user.put("numAlbums", 0);
+        user.put("completedCount", 0);
+        user.put("completedAlbums", new ArrayList<String>());
 
         user.signUpInBackground(new SignUpCallback() {
             public void done(ParseException e) {
