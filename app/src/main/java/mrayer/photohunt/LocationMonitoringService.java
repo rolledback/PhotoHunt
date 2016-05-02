@@ -2,6 +2,7 @@ package mrayer.photohunt;
 
 import android.Manifest;
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -64,7 +65,7 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
     // location -> if it has been found
     Map<LatLng, Boolean> locations;
     int totalPhotos;
-    SharedPreferences currentAlbumPref;
+    SharedPreferences photoHuntPrefs;
 
     public void onCreate() {
         // Make a new GoogleAPIClient
@@ -75,17 +76,17 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
                 .build();
 
         Context context = getApplicationContext();
-        currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
+        photoHuntPrefs = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
                 Context.MODE_PRIVATE);
 
         // Build up the list of locations
         locations = new HashMap<LatLng, Boolean>();
 
-        totalPhotos = currentAlbumPref.getInt(getString(R.string.total_photos), -1);
+        totalPhotos = photoHuntPrefs.getInt(getString(R.string.total_photos), -1);
 
         for(int i = 1; i < totalPhotos + 1; i++)
         {
-            String location = currentAlbumPref.getString("photo" + i, "");
+            String location = photoHuntPrefs.getString("photo" + i, "");
             String[] coord = location.split(",");
             double lat = Double.parseDouble(coord[0]);
             double lon = Double.parseDouble(coord[1]);
@@ -163,23 +164,27 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
                 // Notification ID allows you to update the notification later on
                 nm.notify(rand, notificationBuilder.build());
 
-                Log.d(TAG, "Photos found: " + currentAlbumPref.getInt(getString(R.string.photos_found), -1));
+                Log.d(TAG, "Photos found: " + photoHuntPrefs.getInt(getString(R.string.photos_found), -1));
 
-                SharedPreferences.Editor editor = currentAlbumPref.edit();
+                SharedPreferences.Editor editor = photoHuntPrefs.edit();
                 // Get the current photos found and increment it by 1
                 // Keeping track of the photos found in this class would not reset it properly
-                editor.putInt(getString(R.string.photos_found), currentAlbumPref.getInt(getString(R.string.photos_found), 0) + 1);
+                editor.putInt(getString(R.string.photos_found), photoHuntPrefs.getInt(getString(R.string.photos_found), 0) + 1);
                 editor.commit();
 
                 // Check to see if they completed the album
                 int count = 0;
-                if(currentAlbumPref.getInt(getString(R.string.photos_found), -1) == currentAlbumPref.getInt(getString(R.string.total_photos), -2))
+                if(photoHuntPrefs.getInt(getString(R.string.photos_found), -1) == photoHuntPrefs.getInt(getString(R.string.total_photos), -2))
                 {
                     NotificationCompat.Builder notification = new NotificationCompat.Builder(this)
                             .setSmallIcon(R.drawable.notification_icon)
                             .setContentTitle("PhotoHunt")
                             .setContentText("You have completed your current album!")
                             .setContentIntent(pendingIntent);
+
+                    if(!photoHuntPrefs.getBoolean("mute_notifications", true)) {
+                        notificationBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+                    }
 
                     rand = new Random().nextInt();
                     // Notification ID allows you to update the notification later on
@@ -190,7 +195,7 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
                     if(user.has("CompletedAlbums") && user.has("CompletedCount")) {
                         List<String> completedAlbums = (ArrayList<String>) user.get("CompletedAlbums");
                         count = (int) user.get("CompletedCount");
-                        completedAlbums.add(currentAlbumPref.getString(getString(R.string.album_id), "-1"));
+                        completedAlbums.add(photoHuntPrefs.getString(getString(R.string.album_id), "-1"));
                         count = count + 1;
                         user.put("CompletedAlbums", completedAlbums);
                         user.put("CompletedCount", count);
@@ -198,7 +203,7 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
                     else {
                         List<String> completedAlbums = new ArrayList<String>();
                         count = 1;
-                        completedAlbums.add(currentAlbumPref.getString(getString(R.string.album_id), "-1"));
+                        completedAlbums.add(photoHuntPrefs.getString(getString(R.string.album_id), "-1"));
                         user.put("CompletedAlbums", completedAlbums);
                         user.put("CompletedCount", count);
                     }

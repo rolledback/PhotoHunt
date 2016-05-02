@@ -1,11 +1,15 @@
 package mrayer.photohunt;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+
+import com.parse.ParseUser;
 
 import java.util.Arrays;
 
@@ -21,6 +25,7 @@ public class UploadProgressNotification {
     private NotificationManager notificationManager;
     private Messenger callbackMessenger;
     private int prevProgress;
+    private SharedPreferences photoHuntPrefs;
 
     public UploadProgressNotification(Context c, int numPhotos, Messenger callbackMessenger) {
         // Log.d(Constants.UploadProgressNotificationTag, "Creating upload dialog with " + numPhotos + " photos.");
@@ -29,14 +34,16 @@ public class UploadProgressNotification {
         notificationManager = (NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationBuilder = new NotificationCompat.Builder(c);
         prevProgress = 0;
+        photoHuntPrefs = c.getSharedPreferences(c.getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
+                Context.MODE_PRIVATE);
         buildNotification();
     }
 
     private void buildNotification() {
-        notificationBuilder.setContentTitle("PhotoHunt Upload");
-        notificationBuilder.setContentText("Upload in progress..");
-        notificationBuilder.setSmallIcon(R.drawable.ic_file_upload_black_24dp);
-        notificationBuilder.setProgress(100, 0, false);
+        notificationBuilder.setContentTitle("PhotoHunt Upload")
+            .setContentText("Upload in progress..")
+            .setSmallIcon(R.drawable.ic_file_upload_black_24dp)
+            .setProgress(100, 0, false);
     }
 
     public synchronized void setPhotoProgresses(int percentage, int photo) {
@@ -62,10 +69,18 @@ public class UploadProgressNotification {
         notificationManager.notify(1, notificationBuilder.build());
 
         if(totalProgress >= 100) {
-            notificationBuilder.setContentText("Upload complete! ");
-            notificationBuilder.setSmallIcon(R.drawable.ic_done_black_24dp);
-            notificationBuilder.setProgress(0, 0, false);
+            notificationBuilder.setContentText("Upload complete! ")
+                .setSmallIcon(R.drawable.ic_done_black_24dp)
+                .setProgress(0, 0, false);
+
+
+
+            if(!photoHuntPrefs.getBoolean("mute_notifications", true)) {
+                notificationBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+            }
+
             notificationManager.notify(1, notificationBuilder.build());
+
             Message msg = Message.obtain();
 
             msg.what = Constants.UPLOAD_COMPLETE;

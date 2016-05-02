@@ -1,10 +1,12 @@
 package mrayer.photohunt;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -12,6 +14,7 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.ParseUser;
 
 import java.util.List;
 import java.util.Random;
@@ -24,6 +27,7 @@ import java.util.Random;
 public class GeofenceService extends IntentService {
 
     private String TAG = "GeofenceService";
+    private SharedPreferences photoHuntPrefs;
 
     public GeofenceService()
     {
@@ -66,6 +70,14 @@ public class GeofenceService extends IntentService {
                     .setContentTitle("PhotoHunt")
                     .setContentText("Geofence entered - you are close to a photo")
                     .setContentIntent(pendingIntent);
+
+
+            photoHuntPrefs = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
+                    Context.MODE_PRIVATE);
+
+            if(!photoHuntPrefs.getBoolean("mute_notifications", true)) {
+                notificationBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+            }
 
             int rand = new Random().nextInt();
             NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
