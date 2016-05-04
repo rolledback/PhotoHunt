@@ -30,10 +30,12 @@ public class ParseProxyObject implements Serializable {
             Class classType = object.get(key).getClass();
             if(classType == byte[].class || classType == String.class || classType == Integer.class || classType == Boolean.class || classType == Double.class) {
                 values.put(key, object.get(key));
-            } else if(classType == ParseUser.class) {
+            }
+            else if(classType == ParseUser.class) {
                 ParseProxyObject parseUserObject = new ParseProxyObject((ParseObject)object.get(key));
                 values.put(key, parseUserObject);
-            } else if(classType == ParseFile.class){
+            }
+            else if(classType == ParseFile.class){
                 try {
                     values.put(key, ((ParseFile) object.get(key)).getUrl());
                 }

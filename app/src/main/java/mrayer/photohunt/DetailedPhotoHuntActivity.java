@@ -149,7 +149,16 @@ public class DetailedPhotoHuntActivity extends AppCompatActivity implements Goog
         albumSizeView.setText(Integer.toString(ppo.getInt("numPhotos")));
         descriptionView.setText(ppo.getString("description"));
         typeView.setText(type);
-        ratingBar.setRating((float) (double) ppo.getDouble("avgReview"));
+
+        try {
+            // If the avg review was a whole number, Parse saves it as an int, so sometimes
+            // this call will fail.
+            ratingBar.setRating((float) (double) ppo.getDouble("avgReview"));
+        }
+        catch(ClassCastException e) {
+            Log.d(Constants.DetailedPhotoHuntActivityTag, "Parse stored avg reviews as int.");
+            ratingBar.setRating((float) (double) (int) ppo.getInt("avgReview"));
+        }
 
         final int numReviews = ppo.getInt("numReviews");
         if(numReviews == 1) {
