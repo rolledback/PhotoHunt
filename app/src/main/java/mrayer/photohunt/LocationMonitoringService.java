@@ -55,17 +55,19 @@ import java.util.Random;
 public class LocationMonitoringService extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    static final int DIST = 10;
-    static final String TAG = "LM Service";
+    private static final int DIST = 10;
+    private static final String TAG = "LM Service";
 
-    int photosFound;
+    private int photosFound;
 
-    GoogleApiClient googleAPI;
+    private GoogleApiClient googleAPI;
 
     // location -> if it has been found
-    Map<LatLng, Boolean> locations;
-    int totalPhotos;
-    SharedPreferences photoHuntPrefs;
+    private Map<LatLng, Boolean> locations;
+    private int totalPhotos;
+    private SharedPreferences photoHuntPrefs;
+    private Notification stickyNotification = null;
+    private int stickyNotificationId;
 
     public void onCreate() {
         // Make a new GoogleAPIClient
@@ -98,6 +100,11 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
         googleAPI.connect();
         photosFound = 0;
 
+        stickyNotificationId = photoHuntPrefs.getInt("sticky_id", -1);
+        if(stickyNotificationId == -1) {
+            createStickyNotification();
+        }
+
         super.onCreate();
     }
 
@@ -109,6 +116,7 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
 
     public void onDestroy() {
         googleAPI.disconnect();
+
         stopSelf();
     }
 
@@ -156,8 +164,8 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
                 NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.notification_icon)
                         .setContentTitle("PhotoHunt")
-                        .setContentText("You are at a photo location!")
-                        .setContentIntent(pendingIntent);
+                        .setContentText("You are at a photo location!");
+                        // .setContentIntent(pendingIntent);
 
                 int rand = new Random().nextInt();
                 NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -179,8 +187,8 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
                     NotificationCompat.Builder notification = new NotificationCompat.Builder(this)
                             .setSmallIcon(R.drawable.notification_icon)
                             .setContentTitle("PhotoHunt")
-                            .setContentText("You have completed your current album!")
-                            .setContentIntent(pendingIntent);
+                            .setContentText("You have completed your current album!");
+                            // .setContentIntent(pendingIntent);
 
                     if(!photoHuntPrefs.getBoolean("mute_notifications", true)) {
                         notificationBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
@@ -268,5 +276,21 @@ public class LocationMonitoringService extends Service implements GoogleApiClien
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
+    }
+
+    private void createStickyNotification() {
+        NotificationCompat.Builder noti = new NotificationCompat.Builder(this)
+                .setContentTitle("PhotoHunt")
+                .setContentText("Photo hunt in progress. Monitoring your location.").setSmallIcon(R.drawable.app_icon)
+                .setOngoing(true);
+
+        stickyNotificationId = new Random().nextInt(999999);
+
+        SharedPreferences.Editor editor = photoHuntPrefs.edit();
+        editor.putInt("sticky_id", stickyNotificationId);
+        editor.commit();
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(stickyNotificationId, stickyNotification = noti.build());
     }
 }

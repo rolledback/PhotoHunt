@@ -68,8 +68,8 @@ public class GeofenceService extends IntentService {
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                     .setSmallIcon(R.drawable.notification_icon)
                     .setContentTitle("PhotoHunt")
-                    .setContentText("Geofence entered - you are close to a photo")
-                    .setContentIntent(pendingIntent);
+                    .setContentText("Geofence entered - you are close to a photo");
+                    // .setContentIntent(pendingIntent);
 
 
             photoHuntPrefs = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),

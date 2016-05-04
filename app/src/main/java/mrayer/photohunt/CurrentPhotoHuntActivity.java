@@ -1,8 +1,6 @@
 package mrayer.photohunt;
 
-import android.app.Activity;
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -62,7 +60,7 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
 
     private GoogleApiClient googleAPI;
 
-    private SharedPreferences currentAlbumPref;
+    private SharedPreferences photoHuntPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,14 +89,14 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
         viewPhotosButton = (Button) findViewById(R.id.current_view_photos_button);
         stopHuntButton = (Button) findViewById(R.id.action_button);
 
-        currentAlbumPref = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
+        photoHuntPrefs = this.getSharedPreferences(getString(R.string.current_album_pref) + "-" + ParseUser.getCurrentUser().getObjectId(),
                 Context.MODE_PRIVATE);
 
         // changed if user ends the photo hunt
         setResult(Constants.CONTINUE_HUNT);
 
         ParseQuery<PhotoHuntAlbum> albumsByIdQuery = Utils.makeGeneralQuery();
-        albumsByIdQuery.whereEqualTo("albumId", currentAlbumPref.getString(getString(R.string.album_id), "-1"));
+        albumsByIdQuery.whereEqualTo("albumId", photoHuntPrefs.getString(getString(R.string.album_id), "-1"));
         albumsByIdQuery.findInBackground(new FindCallback<PhotoHuntAlbum>() {
             public void done(List<PhotoHuntAlbum> objects, ParseException e) {
                 if (e == null) {
@@ -120,7 +118,7 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
                     getSupportActionBar().setTitle(album.getName());
                     authorView.setText(album.getAuthor());
                     locationView.setText(album.getLocation());
-                    completedView.setText(currentAlbumPref.getInt(getString(R.string.photos_found), -1) + " out of " + album.getNumPhotos());
+                    completedView.setText(photoHuntPrefs.getInt(getString(R.string.photos_found), -1) + " out of " + album.getNumPhotos());
                     descriptionView.setText(album.getDescription());
                     typeView.setText(type);
 
@@ -178,7 +176,7 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
 
             // Get the geofence IDs
             for(int i = 1; i < totalPhotos + 1; i++) {
-                geofenceIDs.add(currentAlbumPref.getString("photo" + i, ""));
+                geofenceIDs.add(photoHuntPrefs.getString("photo" + i, ""));
             }
 
             // Remove all the geofences
@@ -226,6 +224,16 @@ public class CurrentPhotoHuntActivity extends AppCompatActivity implements Googl
     private void stopPhotoHunt() {
         // Stop location monitoring service
         stopService(new Intent(CurrentPhotoHuntActivity.this, LocationMonitoringService.class));
+
+        int stickyNotificationId = photoHuntPrefs.getInt("sticky_id", -1);
+        if(stickyNotificationId != -1) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.cancel(stickyNotificationId);
+
+            SharedPreferences.Editor editor = photoHuntPrefs.edit();
+            editor.putInt("sticky_id", -1);
+            editor.commit();
+        }
 
         // Create a new googleAPI client
         if (googleAPI == null) {

@@ -245,6 +245,7 @@ public class Utils {
         editor.putInt(context.getString(R.string.photos_found), -1);
         editor.putString(context.getString(R.string.album_id), "" + -1);
         editor.putBoolean(context.getString(R.string.currently_have_active_hunt), false);
+        editor.putInt("sticky_id", -1);
         editor.commit();
     }
 }
